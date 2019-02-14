@@ -116,7 +116,7 @@ def run_loop(agent, protocol, args: List[str]):
     if parsed.output == '/dev/stdout':
         fo = sys.stdout
     else:
-        fo = open(fout, 'a')
+        fo = open(fout, 'w')
 
     while not os.path.exists(fin):
         logger.info(f'waiting for file {fin} to be created')
