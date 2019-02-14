@@ -1,0 +1,1 @@
+-e git://github.com/duckietown/aido-protocols.git@v3#egg=aido-protocols
