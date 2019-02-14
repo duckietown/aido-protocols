@@ -19,7 +19,6 @@ sys.stderr.flush()
 
 
 def aido_node_wrap_main():
-    print('OK')
 
     prog = 'aido_node_wrap'
     usage = ''
@@ -50,10 +49,10 @@ def aido_node_wrap_main():
     sys.path.insert(0, os.getcwd())
 
     protocol = import_name(pn)
-    print(protocol)
+    logger.info(protocol)
     check_isinstance(protocol, InteractionProtocol)
     k = import_name(kn)
-    print(k)
+    logger.info(k)
     if isinstance(k, type):
         agent = k()
     else:
@@ -95,6 +94,8 @@ class Context:
         self.of.write('\n')
         self.of.flush()
 
+    def log(self, s):
+        logger.info(s)
 
 def run_loop(agent, protocol, args: List[str]):
     parser = argparse.ArgumentParser()
@@ -104,7 +105,7 @@ def run_loop(agent, protocol, args: List[str]):
     parser.add_argument('--extra', default='/dev/stdout')
 
     parsed = parser.parse_args(args)
-    print(parsed)
+
 
     fin = parsed.input
     fout = parsed.output

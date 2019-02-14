@@ -1,1 +1,1 @@
--e git://github.com/duckietown/aido-protocols.git@v3#egg=aido-protocols
+-e git://github.com/duckietown/aido-protocols.git@master#egg=aido-protocols
