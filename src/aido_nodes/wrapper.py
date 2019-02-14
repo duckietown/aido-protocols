@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import select
+import stat
 import sys
 import time
 from typing import List
@@ -110,17 +111,27 @@ def run_loop(agent, protocol, args: List[str]):
     fin = parsed.input
     fout = parsed.output
 
-    if not os.path.exists(fout):
-        os.mkfifo(fout)
+    # if not os.path.exists(fout):
+    #     os.mkfifo(fout)
 
     if parsed.output == '/dev/stdout':
         fo = sys.stdout
     else:
+        logger.info(f'Opening output file {fout}')
+
+        if os.path.exists(fout):
+            is_fifo = stat.S_ISFIFO(os.stat(fout).st_mode)
+            if is_fifo:
+                logger.info('Fifo detected. This will block until a reader appears.')
+
         fo = open(fout, 'w')
+
 
     while not os.path.exists(fin):
         logger.info(f'waiting for file {fin} to be created')
         time.sleep(1)
+
+    logger.info(f'Starting reading')
 
     context = Context(fo)
     call_if_fun_exists(agent, 'init', context)
