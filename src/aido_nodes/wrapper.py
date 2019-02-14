@@ -101,8 +101,8 @@ def run_loop(agent, protocol, args: List[str]):
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', default='/dev/stdin')
     parser.add_argument('--output', default='/dev/stdout')
-    parser.add_argument('--config', default='/dev/stdin')
-    parser.add_argument('--extra', default='/dev/stdout')
+    # parser.add_argument('--config', default='/dev/stdin')
+    # parser.add_argument('--extra', default='/dev/stdout')
 
     parsed = parser.parse_args(args)
 
@@ -113,13 +113,14 @@ def run_loop(agent, protocol, args: List[str]):
     if not os.path.exists(fout):
         os.mkfifo(fout)
 
-    fo = open(fout, 'a')
+    if parsed.output == '/dev/stdout':
+        fo = sys.stdout
+    else:
+        fo = open(fout, 'a')
 
     while not os.path.exists(fin):
         logger.info(f'waiting for file {fin} to be created')
         time.sleep(1)
-
-
 
     context = Context(fo)
     call_if_fun_exists(agent, 'init', context)

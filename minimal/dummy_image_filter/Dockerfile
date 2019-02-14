@@ -5,6 +5,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-ENTRYPOINT aido_node_wrap \
-    --implementation dummy_image_filter.DummyFilter \
-    --protocol aido_nodes.image_filter
+ENTRYPOINT ["aido_node_wrap", "--implementation", "dummy_image_filter.DummyFilter", "--protocol",  "aido_nodes.image_filter"]
