@@ -25,6 +25,7 @@ setup(
         package_dir={'': 'src'},
         packages=['aido_nodes'],
         install_requires=[
+            'compmake',
 
         ],
         entry_points={

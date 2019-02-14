@@ -1,11 +1,13 @@
+from aido_nodes import Context
+
 
 class DummyFilter:
 
     def init(self):
         pass
 
-    def on_received_image(self, context, image):
-        context.publish('image', image)
+    def on_received_image(self, context: Context, data):
+        context.write('image', data)
 
-    def shutdown(self):
+    def finish(self):
         pass

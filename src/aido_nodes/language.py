@@ -28,7 +28,7 @@ class LanguageNotRecognized(Exception):
 # Language over events
 
 class Language(metaclass=ABCMeta):
-    @abstractmethod
+
     def reset(self):
         pass
 
@@ -40,29 +40,50 @@ class Language(metaclass=ABCMeta):
 class ExpectInputReceived(Language):
     channel: ChannelName
 
+    def push(self, x: Event):
+        pass # XXX
+
 @dataclass
 class ExpectOutputProduced(Language):
     channel: ChannelName
+
+    def push(self, x: Event):
+        pass # XXX
 
 @dataclass
 class InSequence(Language):
     ls: Tuple[Language, ...]
 
+    def push(self, x: Event):
+        pass # XXX
+
 @dataclass
 class ZeroOrOne(Language):
     l: Language
+
+    def push(self, x: Event):
+        pass # XXX
 
 @dataclass
 class ZeroOrMore(Language):
     l: Language
 
+    def push(self, x: Event):
+        pass # XXX
+
 @dataclass
 class OneOrMore(Language):
     l: Language
 
+    def push(self, x: Event):
+        pass # XXX
+
 @dataclass
 class Either(Language):
     ls: Tuple[Language, ...]
+
+    def push(self, x: Event):
+        pass # XXX
 
 # Interaction protocol
 

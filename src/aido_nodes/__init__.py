@@ -1,2 +1,4 @@
-def aido_node_wrap_main():
-    print('OK')
+__version__ = '1.0.0'
+from .language import *
+from .simulators import *
+from .wrapper import *

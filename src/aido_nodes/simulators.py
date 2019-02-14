@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Tuple
 
-from duckietown_types.language import ZeroOrMore, InSequence, ExpectInputReceived, \
+from .language import ZeroOrMore, InSequence, ExpectInputReceived, \
     ExpectOutputProduced, ChannelName, InteractionProtocol, ZeroOrOne
 
 
@@ -69,6 +69,10 @@ interaction_seed = ZeroOrOne(ExpectInputReceived(ChannelName("seed")))
 #                 (in:reset         out:reset-ack)* )
 #
 
+class StateDump:
+    pass
+class StepPhysicsACK:
+    pass
 
 simulator_protocol = InteractionProtocol(
         description="""\
@@ -101,6 +105,8 @@ simulator_protocol = InteractionProtocol(
 )
 
 
+class RequestRender:
+    pass
 
 
 renderer_protocol = InteractionProtocol(
@@ -115,7 +121,7 @@ renderer_protocol = InteractionProtocol(
             # Reset request
             ChannelName("reset"): str,
             # Render request - produces image
-            ChannelName("render_image"): RequestRender(img),
+            ChannelName("render_image"): RequestRender,
 
         },
         outputs={
@@ -124,4 +130,25 @@ renderer_protocol = InteractionProtocol(
         },
         interaction=...
 
+)
+
+
+
+image_filter = InteractionProtocol(
+        description="""
+        An image filter.
+    """,
+        inputs={
+            ChannelName("image"): DistortedImage,
+        },
+        outputs={
+            ChannelName("image"): PWMCommands,
+        },
+        interaction=ZeroOrMore(
+                InSequence(
+                        (ExpectInputReceived(ChannelName("image")),
+                         ExpectOutputProduced(ChannelName("image"))
+                         )
+                )
+        )
 )
