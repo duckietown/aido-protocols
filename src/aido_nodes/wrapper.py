@@ -12,7 +12,7 @@ from typing import List
 from aido_nodes import InteractionProtocol
 from compmake.utils import import_name
 from contracts import check_isinstance
-from zuper_json.ipce import object_to_ipce
+
 
 logging.basicConfig()
 logger = logging.getLogger('reader')
@@ -21,29 +21,11 @@ sys.stderr.flush()
 
 
 def aido_node_wrap_main():
-
     prog = 'aido_node_wrap'
     usage = ''
     parser = argparse.ArgumentParser(prog=prog, usage=usage)
     parser.add_argument('--implementation', required=True)
     parser.add_argument('--protocol', required=True)
-    # group.add_argument('--user-label', dest='message', default=None, type=str,
-    #                    help="Submission message")
-    # group.add_argument('--user-meta', dest='metadata', default=None, type=str,
-    #                    help="Custom JSON structure to attach to the submission")
-    #
-    # group = parser.add_argument_group("Building settings.")
-    # group.add_argument('--image', default=None, type=str,
-    #                    help="Specify image directly instead of building it.")
-    # group.add_argument('--no-push', dest='no_push', action='store_true', default=False,
-    #                    help="Disable pushing of container")
-    # group.add_argument('--no-submit', dest='no_submit', action='store_true', default=False,
-    #                    help="Disable submission (only build and push)")
-    # group.add_argument('--no-cache', dest='no_cache', action='store_true', default=False)
-    # group.add_argument('--impersonate', type=int, default=None)
-    #
-    # group.add_argument('-C', dest='cwd', default=None, help='Base directory')
-
     parsed, remaining = parser.parse_known_args()
     kn = parsed.implementation
     pn = parsed.protocol
@@ -82,11 +64,10 @@ def describe_agent(agent):
 
 
 def describe_protocol(protocol):
-    import zuper_json
-
+    from zuper_json.ipce import object_to_ipce
     s = object_to_ipce(protocol, globals())
-    print(s)
-    pass
+    print(json.dumps(s, indent=2))
+
 
 
 class Context:
