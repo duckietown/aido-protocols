@@ -12,6 +12,7 @@ from typing import List
 from aido_nodes import InteractionProtocol
 from compmake.utils import import_name
 from contracts import check_isinstance
+from zuper_json.ipce import object_to_ipce
 
 logging.basicConfig()
 logger = logging.getLogger('reader')
@@ -70,7 +71,7 @@ def aido_node_wrap_main():
     elif cmd == 'describe-agent':
         describe_agent(agent)
     elif cmd == 'describe-protocol':
-        describe_protocol(agent)
+        describe_protocol(protocol)
     else:
         msg = f'Could not interpret command {cmd}'
         raise Exception(msg)
@@ -81,6 +82,10 @@ def describe_agent(agent):
 
 
 def describe_protocol(protocol):
+    import zuper_json
+
+    s = object_to_ipce(protocol, globals())
+    print(s)
     pass
 
 

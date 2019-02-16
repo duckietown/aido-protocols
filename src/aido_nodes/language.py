@@ -1,12 +1,10 @@
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import NewType, Tuple, Dict
-
-
+from typing import NewType, Tuple, Dict, Type, Any
 
 # Events
 
-ChannelName = NewType('ChannelName', str)
+ChannelName = str #NewType('ChannelName', str)
 class Event:
     pass
 
@@ -27,6 +25,7 @@ class LanguageNotRecognized(Exception):
 
 # Language over events
 
+@dataclass
 class Language(metaclass=ABCMeta):
 
     def reset(self):
