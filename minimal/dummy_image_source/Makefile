@@ -1,4 +1,4 @@
-tag=dummy_agent
+tag=dummy_image_source
 
 build:
 	docker build -t $(tag) .
@@ -11,4 +11,4 @@ other=-v $(protocols):/src/aido-protocols/
 
 test:
 	docker run -i $(other) $(tag) describe-protocol
-	docker run -i $(other)  $(tag) run < data.json
+	docker run -i $(other) $(tag) run

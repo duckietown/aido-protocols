@@ -9,10 +9,10 @@ import sys
 import time
 from typing import List
 
-from aido_nodes import InteractionProtocol
 from compmake.utils import import_name
 from contracts import check_isinstance
 
+from aido_nodes import InteractionProtocol
 
 logging.basicConfig()
 logger = logging.getLogger('reader')
@@ -60,14 +60,22 @@ def aido_node_wrap_main():
 
 
 def describe_agent(agent):
-    pass
+    from zuper_json.ipce import object_to_ipce
+    res = {}
+    # K = type(agent)
+    # print(agent.__dict__)
+
+    if hasattr(agent, 'config'):
+        config_json = object_to_ipce(agent.config, globals())
+        res['config'] = config_json
+
+    print(json.dumps(res, indent=2))
 
 
 def describe_protocol(protocol):
     from zuper_json.ipce import object_to_ipce
     s = object_to_ipce(protocol, globals())
     print(json.dumps(s, indent=2))
-
 
 
 class Context:
@@ -84,15 +92,13 @@ class Context:
     def log(self, s):
         logger.info(s)
 
+
 def run_loop(agent, protocol, args: List[str]):
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', default='/dev/stdin')
     parser.add_argument('--output', default='/dev/stdout')
-    # parser.add_argument('--config', default='/dev/stdin')
-    # parser.add_argument('--extra', default='/dev/stdout')
 
     parsed = parser.parse_args(args)
-
 
     fin = parsed.input
     fout = parsed.output
@@ -112,7 +118,6 @@ def run_loop(agent, protocol, args: List[str]):
 
         fo = open(fout, 'w')
 
-
     while not os.path.exists(fin):
         logger.info(f'waiting for file {fin} to be created')
         time.sleep(1)
@@ -120,58 +125,84 @@ def run_loop(agent, protocol, args: List[str]):
     logger.info(f'Starting reading')
 
     context = Context(fo)
-    call_if_fun_exists(agent, 'init', context)
+    call_if_fun_exists(agent, 'init', context=context)
+
     with open(fin) as fifo:
-        while True:
-            timeout = 1.0
-            readyr, readyw, readyx = select.select([fifo], [], [fifo], timeout)
-            if readyr:
-                logger.info(f'reading...')
-                data = fifo.readline()
+        for parsed in inputs(fifo):
 
-                if data == '':
-                    logger.info(f'EOF')
-                    call_if_fun_exists(agent, 'finish', context)
-                    break
+            topic = parsed['topic']
+            data = parsed['data']
 
-                data = data.strip()
-                if not data:
-                    continue
+            if topic == 'set_config':
+                key = data['key']
+                value = data['value']
 
-                logger.info(f'read {data!r}')
-                parsed = json.loads(data)
+                if hasattr(agent, 'config'):
+                    config = agent.config
+                    if hasattr(config, key):
+                        setattr(agent.config, key, value)
+                    else:
+                        logger.error(f'Could not find config key {key}')
+                call_if_fun_exists(agent, 'on_updated_config', context=context, key=key, value=value)
 
-                topic = parsed['topic']
-                data = parsed['data']
-                expect_fn = f'on_received_{topic}'
-                if hasattr(agent, expect_fn):
-                    f = getattr(agent, expect_fn)
+                continue
 
-                    f(data=data, context=context)
-                else:
-                    msg = f'Missing function {expect_fn}'
-                    msg += f'\nI know {sorted(agent.__dict__)}'
-                    raise NotConforming(msg)
+            expect_fn = f'on_received_{topic}'
+            call_if_fun_exists(agent, expect_fn, data=data, context=context)
+            #
+            # if hasattr(agent, expect_fn):
+            #     f = getattr(agent, expect_fn)
+            #
+            #     f(data=data, context=context)
+            # else:
+            #     msg = f'Missing function {expect_fn}'
+            #     msg += f'\nI know {sorted(agent.__dict__)}'
+            #     raise NotConforming(msg)
+
+    call_if_fun_exists(agent, 'finish', context=context)
 
 
-            elif readyx:
-                logger.info('ex')
-            else:
-                logger.info('Input channel not ready.')
+def inputs(fifo):
+
+    while True:
+        timeout = 1.0
+        readyr, readyw, readyx = select.select([fifo], [], [fifo], timeout)
+        if readyr:
+            logger.info(f'reading...')
+            data = fifo.readline()
+
+            if data == '':
+                logger.info(f'EOF')
+                break
+
+            data = data.strip()
+            if not data:
+                continue
+
+            logger.info(f'read {data!r}')
+            parsed = json.loads(data)
+            yield parsed
+        elif readyx:
+            logger.info('ex')
+        else:
+            logger.info('Input channel not ready.')
+
 
 import contracts
 
-def call_if_fun_exists(ob, fname, context):
+
+def call_if_fun_exists(ob, fname, **kwargs):
+    kwargs = dict(kwargs)
     if not hasattr(ob, fname):
         msg = f'Missing function {fname}() for {contracts.describe_type(ob)}'
         logger.warning(msg)
         return
     f = getattr(ob, fname)
     a = inspect.getfullargspec(f)
-    if 'context' in a.args:
-        f(context=context)
-    else:
-        f()
+    for k, v in dict(kwargs).items():
+        if k not in a.args:
+            kwargs.pop(k)
+    f(**kwargs)
 
 
 class NotConforming(ValueError):

@@ -23,6 +23,11 @@ class JPGImage:
 
 
 @dataclass
+class EpisodeStart:
+    """ Marker for the start of an episode. """
+    episode_name: str
+
+@dataclass
 class Timestamp:
     pass
 

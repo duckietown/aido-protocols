@@ -8,7 +8,7 @@ class RandomAgent:
     def init(self, context):
         context.log('init()')
 
-    def on_received_image(self, context, data):
+    def on_received_camera_image(self, context, data):
         pwm_left  = np.random.uniform(0.0, 1.0)
         pwm_right = np.random.uniform(0.0, 1.0)
 
