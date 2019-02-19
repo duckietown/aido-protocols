@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Sequence, List, Union
 
 from aido_nodes import Language, OutputProduced, InputReceived, Event, ExpectInputReceived, ABCMeta, \
-    ExpectOutputProduced, InSequence, ZeroOrMore, NoMoreEvents, abstractmethod, Either, OneOrMore, ZeroOrOne
+    ExpectOutputProduced, InSequence, ZeroOrMore, abstractmethod, Either, OneOrMore, ZeroOrOne
 from aido_nodes.test_language import parse_language
 
 O = OutputProduced
@@ -137,7 +137,11 @@ class ProtocolCheckerSequence(ProtocolChecker):
         res = first.push(event)
         if isinstance(res, Enough):
             self.to_be_satisfied.pop(0)
+            
             if self.to_be_satisfied:
+                if self._rest_could_be_happy():
+                    return Enough()
+
                 return NeedMore()
             else:
                 return Enough()
@@ -148,11 +152,15 @@ class ProtocolCheckerSequence(ProtocolChecker):
         else:
             assert False
 
+    def _rest_could_be_happy(self):
+        happy = all([isinstance(_.finish(), Enough) for _ in self.to_be_satisfied])
+        return happy
+
     def finish(self) -> Union[NeedMore, Enough]:
-        if self.to_be_satisfied:
-            return NeedMore()
-        else:
+        if self._rest_could_be_happy():
             return Enough()
+        else:
+            return NeedMore()
 
 
 @dataclass
@@ -304,14 +312,14 @@ def assert_seq(s: str, seq: List[Event], expect: Sequence[type], final: type):
     for i, (e, r) in enumerate(zip(seq, expect)):
         res = pc.push(e)
         if not isinstance(res, r):
-            msg = f'Input {i} ({s}) response was {type(res).__name__} instead of {r.__name__}'
+            msg = f'Input {i} ({e}) response was {type(res).__name__} instead of {r.__name__}'
             msg += f'\n entire sequence: {seq}'
             msg += f'\n language: {l}'
             raise Exception(msg)
 
     res = pc.finish()
     if not isinstance(res, final):
-        msg = f'finish  response was {type(res).__name__} instead of {final.__name__}'
+        msg = f'finish response was {type(res).__name__} instead of {final.__name__}'
         msg += f'\n entire sequence: {seq}'
         msg += f'\n language: {l}'
         raise Exception(msg)
@@ -453,13 +461,38 @@ def test_protocol_complex1():
 
 def test_protocol_complex1_0():
     l = """
-        (
+        
             in:next_episode ; (
                 out:no_more_episodes | 
                 (out:episode_start ;
                     (in:next_image ; (out:image | out:no_more_images))*)
             )
-        )*            
+                    
     """
+    seq = [InputReceived("next_episode"), OutputProduced("no_more_episodes")]
+    assert_seq(l, seq, (NeedMore, Enough), Enough)
+
+
+def test_protocol_complex1_3():
+    l0 = """
+
+        out:episode_start ;
+            (in:next_image ; (out:image | out:no_more_images))*
+
+        """
+    seq = [OutputProduced("episode_start")]
+    assert_seq(l0, seq, (Enough,), Enough)
+
+
+def test_protocol_complex1_1():
+    l = """
+
+               in:next_episode ; (
+                   out:no_more_episodes | 
+                   (out:episode_start ;
+                       (in:next_image ; (out:image | out:no_more_images))*)
+               )
+
+       """
     seq = [InputReceived("next_episode"), OutputProduced("episode_start")]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
