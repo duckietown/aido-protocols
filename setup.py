@@ -26,7 +26,8 @@ setup(
         packages=['aido_nodes'],
         install_requires=[
             'compmake',
-
+            'pyparsing',
+            'PyContracts'
         ],
         entry_points={
             'console_scripts': [

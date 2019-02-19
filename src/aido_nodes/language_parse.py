@@ -5,6 +5,7 @@ from aido_nodes import ExpectInputReceived, ExpectOutputProduced, InSequence, Ze
 
 __all__ = [
     'parse_language',
+    'Syntax',
 ]
 
 ParserElement.enablePackrat()
@@ -58,7 +59,7 @@ class Syntax:
                                   [(S(L('*')), 1, opAssoc.LEFT, on_zero_or_more),
                                    (S(L('+')), 1, opAssoc.LEFT, on_one_or_more),
                                    (S(L('?')), 1, opAssoc.LEFT, on_zero_or_one),
-                                    (S(L(';')), 2, opAssoc.LEFT, on_in_sequence),
+                                   (S(L(';')), 2, opAssoc.LEFT, on_in_sequence),
                                    (S(L('|')), 2, opAssoc.LEFT, on_either),
 
                                    ])

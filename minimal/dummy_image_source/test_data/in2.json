@@ -1,0 +1,7 @@
+{"$schema": {"title": "LogEntry"}, "topic": "set_config", "data": {"key":  "shape", "value": [8, 8] }}
+{"$schema": {"title": "LogEntry"}, "topic": "next_episode", "data": null}
+{"topic": "next_image",   "data": null}
+{"topic": "next_image",   "data": null}
+{"topic": "next_episode", "data": null}
+{"topic": "next_image",   "data": null}
+

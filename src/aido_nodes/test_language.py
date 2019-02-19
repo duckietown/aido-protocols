@@ -1,9 +1,16 @@
-from contracts import check_isinstance
 from nose.tools import assert_equal
 
 from aido_nodes import Language, ExpectInputReceived, ExpectOutputProduced, InSequence, ZeroOrMore, ZeroOrOne, \
     OneOrMore, Either
 from aido_nodes.language_parse import Syntax
+from contracts import check_isinstance
+
+
+def parse_language(s: str) -> Language:
+    expr = Syntax.language
+    res = expr.parseString(s, parseAll=True)
+    res = res[0]
+    return res
 
 
 def expect_parse(expr, s, expected):
@@ -77,3 +84,17 @@ def test_parse_language_08():
             """
 
     expect_parse(Syntax.language, s, None)
+
+#
+# def test_parse_language_08():
+#     s = """
+#                 (
+#                     in:next_episode ; (
+#                         out:no_episodes |
+#                         (out:episode_start ;
+#                             (in:next_image ; (out:image | out:episode_end))*)
+#                     )
+#                 )*
+#             """
+#
+#     expect_parse(Syntax.language, s, None)

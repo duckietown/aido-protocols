@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -18,8 +18,9 @@ class WheelsCmd:
 
 @dataclass
 class JPGImage:
-    """ An image in JPG format. """
-    data: bytes
+    """ An image in JPG format.
+    """
+    jpg_data: bytes = field(metadata=dict(doc="Bytes of a JPG file"))
 
 
 @dataclass

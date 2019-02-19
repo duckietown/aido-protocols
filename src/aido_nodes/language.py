@@ -10,21 +10,24 @@ ChannelName = str  # NewType('ChannelName', str)
 class Event:
     pass
 
-
+@dataclass
 class InputReceived(Event):
     channel: ChannelName
 
-
+@dataclass
 class OutputProduced(Event):
     channel: ChannelName
 
+class NoMoreEvents(Event):
+    pass
 
+@dataclass
 class InputClosed(Event):
-    pass
+    channel: ChannelName
 
-
+@dataclass
 class OutputClosed(Event):
-    pass
+    channel: ChannelName
 
 
 class LanguageNotRecognized(Exception):
