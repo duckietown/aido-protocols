@@ -8,6 +8,8 @@ import numpy as np
 from aido_nodes.protocols import protocol_image_source, InteractionProtocol
 from aido_nodes.wrapper import wrap_direct
 
+
+# noinspection PyUnresolvedReferences
 @dataclass
 class DummyImageSourceConfig:
     """

@@ -9,10 +9,12 @@ import sys
 import time
 from typing import List, Optional
 
-from aido_nodes import InteractionProtocol, InputReceived
-from aido_nodes.test_protocol import get_checker, Unexpected
+from aido_nodes import InteractionProtocol, InputReceived, OutputProduced
+from aido_nodes.test_protocol import Unexpected, LanguageChecker
 from compmake.utils import import_name
 from contracts import check_isinstance
+from contracts.utils import format_obs
+
 from . import logger
 
 
@@ -86,7 +88,7 @@ class Context:
             msg = f'Output {topic} not found in protocol.'
             raise Exception(msg)
 
-        event = InputReceived(topic)
+        event = OutputProduced(topic)
         res = self.pc.push(event)
         if isinstance(res, Unexpected):
             msg = f'Unexpected output {topic}: {res}'
@@ -145,7 +147,7 @@ def run_loop(agent, protocol: InteractionProtocol, args: Optional[List[str]] = N
 
     logger.info(f'Starting reading')
 
-    pc = get_checker(protocol.interaction)
+    pc = LanguageChecker(protocol.interaction)
     context = Context(of=fo, protocol=protocol, pc=pc)
     call_if_fun_exists(agent, 'init', context=context)
 
@@ -182,11 +184,16 @@ def run_loop(agent, protocol: InteractionProtocol, args: Optional[List[str]] = N
 
                 ob = ipce_to_object(data, {}, {}, expect_type=klass)
 
+                # logger.info(f'Before push the state is\n{pc}')
+
                 event = InputReceived(topic)
                 res = pc.push(event)
+                # logger.info(f'After push of {event} the state is\n{pc}' )
                 if isinstance(res, Unexpected):
                     msg = f'Unexpected input "{topic}": {res}'
+                    msg += '\n' + format_obs(dict(pc=pc))
                     logger.error(msg)
+                    raise Exception(msg)
                 else:
                     expect_fn = f'on_received_{topic}'
                     call_if_fun_exists(agent, expect_fn, data=ob, context=context)
@@ -213,7 +220,7 @@ def inputs(fifo):
         timeout = 1.0
         readyr, readyw, readyx = select.select([fifo], [], [fifo], timeout)
         if readyr:
-            logger.info(f'reading...')
+            # logger.info(f'reading...')
             data = fifo.readline()
 
             if data == '':
@@ -224,7 +231,7 @@ def inputs(fifo):
             if not data:
                 continue
 
-            logger.info(f'read {data!r}')
+            # logger.info(f'read {data!r}')
             parsed = json.loads(data)
             yield parsed
         elif readyx:

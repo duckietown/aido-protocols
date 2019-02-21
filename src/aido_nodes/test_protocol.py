@@ -1,9 +1,12 @@
 from dataclasses import dataclass
-from typing import Sequence, List, Union
+from typing import Sequence, List, Union, Tuple, Optional, Set
 
-from aido_nodes import Language, OutputProduced, InputReceived, Event, ExpectInputReceived, ABCMeta, \
-    ExpectOutputProduced, InSequence, ZeroOrMore, abstractmethod, Either, OneOrMore, ZeroOrOne
+from networkx.drawing.nx_pydot import write_dot
+
+from aido_nodes import Language, OutputProduced, InputReceived, Event, ExpectInputReceived, ExpectOutputProduced, \
+    InSequence, ZeroOrMore, Either, OneOrMore, ZeroOrOne
 from aido_nodes.test_language import parse_language
+from contracts.utils import indent
 
 O = OutputProduced
 I = InputReceived
@@ -13,301 +16,153 @@ class Result:
     pass
 
 
+@dataclass
 class Enough(Result):
     pass
 
 
+@dataclass
 class Unexpected(Result):
-    pass
+    msg: str
+
+    def __repr__(self):
+        return 'Unexpected:' + indent(self.msg, '  ')
 
 
+@dataclass
 class NeedMore(Result):
     pass
 
 
-class ProtocolChecker(metaclass=ABCMeta):
-    def __init__(self, language: Language):
-        self.language = language
-        self.stack = []
+import networkx as nx
 
-    @abstractmethod
-    def push(self, event: Event) -> Result:
-        pass
-
-    @abstractmethod
-    def finish(self) -> Union[NeedMore, Enough]:
-        pass
+NodeName = Tuple[str, ...]
 
 
-@dataclass(repr=False)
-class ProtocolCheckerIR(ProtocolChecker):
-    l: ExpectInputReceived
-
-    def __post_init__(self):
-        self.received = False
-
-    def __repr__(self):
-        return f'Expect({self.l})'
-
-    def push(self, event: Event) -> Result:
-        if self.received:
-            return Unexpected()
-        if not isinstance(event, InputReceived):
-            return Unexpected()
-        if event.channel != self.l.channel:
-            return Unexpected()
-        self.received = True
-        return Enough()
-
-    def finish(self) -> Union[NeedMore, Enough]:
-        if self.received:
-            return Enough()
-        else:
-            return NeedMore()
+class Always:
+    pass
 
 
-@dataclass(repr=False)
-class ProtocolCheckerOP(ProtocolChecker):
-    l: ExpectOutputProduced
-
-    def __repr__(self):
-        return f'Expect({self.l})'
-
-    def __post_init__(self):
-        self.received = False
-
-    def push(self, event: Event) -> Result:
-        if self.received:
-            return Unexpected()
-
-        if not isinstance(event, OutputProduced):
-            return Unexpected()
-        if event.channel != self.l.channel:
-            return Unexpected()
-        self.received = True
-        return Enough()
-
-    def finish(self) -> Union[NeedMore, Enough]:
-        if self.received:
-            return Enough()
-        else:
-            return NeedMore()
-
-
-def get_checker(l: Language) -> ProtocolChecker:
+def get_nfa(g: Optional[nx.DiGraph], start_node: NodeName, accept_node: NodeName, l: Language,
+            prefix: Tuple[str, ...] = ()) -> nx.DiGraph:
+    g.add_node(start_node, label="/".join(start_node))
+    g.add_node(accept_node, label="/".join(accept_node))
     if isinstance(l, ExpectOutputProduced):
-        return ProtocolCheckerOP(l)
+        g.add_edge(start_node, accept_node, event_match=l, label=f'out-{l.channel}')
 
+    elif isinstance(l, ExpectInputReceived):
+        g.add_edge(start_node, accept_node, event_match=l, label=f'in-{l.channel}')
+    elif isinstance(l, InSequence):
+        current = start_node
+        for i, li in enumerate(l.ls):
+            if i == len(l.ls) - 1:
+                n = accept_node
+            else:
+                n = prefix + (f'after{i}',)
+            g.add_node(n)
+            get_nfa(g, start_node=current, accept_node=n, prefix=prefix + (f'{i}',), l=li)
+            current = n
+
+    elif isinstance(l, ZeroOrMore):
+        g.add_edge(start_node, accept_node, event_match=Always(), label='always')
+        get_nfa(g, start_node=accept_node, accept_node=accept_node, l=l.l, prefix=prefix + ('zero_or_more',))
+
+    elif isinstance(l, OneOrMore):
+        # start to accept
+        get_nfa(g, start_node=start_node, accept_node=accept_node, l=l.l, prefix=prefix + ('one_or_more', '1'))
+        # accept to accept
+        get_nfa(g, start_node=accept_node, accept_node=accept_node, l=l.l, prefix=prefix + ('one_or_more', '2'))
+
+    elif isinstance(l, ZeroOrOne):
+        g.add_edge(start_node, accept_node, event_match=Always(), label='always')
+        get_nfa(g, start_node=start_node, accept_node=accept_node, l=l.l, prefix=prefix + ('zero_or_one',))
+
+    elif isinstance(l, Either):
+        for i, li in enumerate(l.ls):
+            get_nfa(g, start_node=start_node, accept_node=accept_node, l=li, prefix=prefix + (f'either{i}',))
+    else:
+        assert False, type(l)
+
+
+def event_matches(l: Language, event: Event):
     if isinstance(l, ExpectInputReceived):
-        return ProtocolCheckerIR(l)
+        return isinstance(event, InputReceived) and event.channel == l.channel
 
-    if isinstance(l, InSequence):
-        return ProtocolCheckerSequence(l)
+    if isinstance(l, ExpectOutputProduced):
+        return isinstance(event, OutputProduced) and event.channel == l.channel
 
-    if isinstance(l, ZeroOrMore):
-        return ProtocolCheckerZeroOrMore(l)
-
-    if isinstance(l, OneOrMore):
-        return ProtocolCheckerOneOrMore(l)
-
-    if isinstance(l, ZeroOrOne):
-        return ProtocolCheckerZeroOrOne(l)
-
-    if isinstance(l, Either):
-        return ProtocolCheckerEither(l)
-
+    if isinstance(l, Always):
+        return False
     raise NotImplementedError(l)
 
 
-# @dataclass(repr=False)
-class ProtocolCheckerSequence(ProtocolChecker):
-    l: InSequence
+class LanguageChecker:
+    g: nx.DiGraph
+    active: Set[NodeName]
 
-    def __repr__(self):
-        return f'PCSequence({self.to_be_satisfied})'
+    def __init__(self, language):
+        self.g = nx.MultiDiGraph()
+        self.start_node = ('start',)
+        self.accept_node = ('accept',)
+        get_nfa(g=self.g, l=language, start_node=self.start_node, accept_node=self.accept_node, prefix=())
+        # for (a, b, data) in self.g.out_edges(data=True):
+        #     print(f'{a} -> {b} {data["event_match"]}')
+        write_dot(self.g, 'l.dot')
+        self.active = {self.start_node}
+        self._evolve_empty()
 
-    def __init__(self, l):
-        self.l = l
-        self.to_be_satisfied = [get_checker(_) for _ in self.l.ls]
+    def _evolve_empty(self):
+        now_active = set()
+        for node in self.active:
+            nalways = 0
+            nother = 0
+            for (_, neighbor, data) in self.g.out_edges([node], data=True):
+                # print(f'-> {neighbor} {data["event_match"]}')
+                if isinstance(data['event_match'], Always):
+                    now_active.add(neighbor)
+                    nalways += 1
+                else:
+                    nother += 1
+            if nother or (nalways == 0):
+                now_active.add(node)
 
-    def push(self, event: Event) -> Result:
-        if not self.to_be_satisfied:
-            return Unexpected()
-        first = self.to_be_satisfied[0]
-        res = first.push(event)
-        if isinstance(res, Enough):
-            self.to_be_satisfied.pop(0)
-            
-            if self.to_be_satisfied:
-                if self._rest_could_be_happy():
-                    return Enough()
+        self.active = now_active
 
-                return NeedMore()
-            else:
-                return Enough()
-        elif isinstance(res, Unexpected):
-            return Unexpected()
-        elif isinstance(res, NeedMore):
-            return NeedMore()
-        else:
-            assert False
+    def push(self, event) -> Result:
+        now_active = set()
+        # print(f'push: active is {self.active}')
+        # print(f'push: considering {event}')
+        for node in self.active:
+            for (_, neighbor, data) in self.g.out_edges([node], data=True):
+                if event_matches(data['event_match'], event):
+                    # print(f'now activating {neighbor}')
+                    now_active.add(neighbor)
+                # else:
+                #     print(f"event_match {event} does not match {data['event_match']}")
+        #
+        # if not now_active:
+        #     return Unexpected('')
 
-    def _rest_could_be_happy(self):
-        happy = all([isinstance(_.finish(), Enough) for _ in self.to_be_satisfied])
-        return happy
-
-    def finish(self) -> Union[NeedMore, Enough]:
-        if self._rest_could_be_happy():
-            return Enough()
-        else:
-            return NeedMore()
-
-
-@dataclass
-class ProtocolCheckerEither(ProtocolChecker):
-    l: Either
-
-    def __post_init__(self):
-        self.to_be_satisfied = {i: get_checker(_) for i, _ in enumerate(self.l.ls)}
-
-    def push(self, event: Event) -> Result:
-        enough = None
-        need_more = None
-        for k, v in list(self.to_be_satisfied.items()):
-            res = v.push(event)
-            if isinstance(res, Unexpected):
-                self.to_be_satisfied.pop(k)
-            elif isinstance(res, Enough):
-                enough = res
-            elif isinstance(res, NeedMore):
-                need_more = res
-
-        if enough is not None:
-            return enough
-
-        if need_more is not None:
-            return need_more
-
-        if not self.to_be_satisfied:
-            return Unexpected()
-
-        assert False, self.to_be_satisfied
+        self.active = now_active
+        # print(f'push: now active is {self.active}')
+        self._evolve_empty()
+        # print(f'push: now active is {self.active}')
+        return self.finish()
 
     def finish(self) -> Union[NeedMore, Enough, Unexpected]:
-        if not self.to_be_satisfied:
-            return Unexpected()
-
-        enough = None
-        for k, v in self.to_be_satisfied.items():
-            res = v.finish()
-            if isinstance(res, Enough):
-                enough = res
-
-        if enough is not None:
-            return enough
-
+        # print(f'finish: active is {self.active}')
+        if not self.active:
+            return Unexpected('no active')
+        if self.accept_node in self.active:
+            return Enough()
         return NeedMore()
 
-
-@dataclass
-class ProtocolCheckerZeroOrMore(ProtocolChecker):
-    l: ZeroOrMore
-
-    def __post_init__(self):
-        self.current = None
-
-    def push(self, event: Event) -> Result:
-        if self.current is None:
-            self.current = get_checker(self.l.l)
-
-        res = self.current.push(event)
-        if isinstance(res, Unexpected):
-            return res
-        elif isinstance(res, Enough):
-            self.current = None
-            return Enough()
-        elif isinstance(res, NeedMore):
-            return res
-        else:
-            assert False
-
-    def finish(self) -> Union[NeedMore, Enough]:
-        if self.current:
-            return NeedMore()
-        else:
-            return Enough()
-
-
-@dataclass
-class ProtocolCheckerOneOrMore(ProtocolChecker):
-    l: OneOrMore
-
-    def __post_init__(self):
-        self.nfound = 0
-        self.current = None
-
-    def push(self, event: Event) -> Result:
-        if self.current is None:
-            self.current = get_checker(self.l.l)
-
-        res = self.current.push(event)
-        if isinstance(res, Unexpected):
-            return res
-        elif isinstance(res, Enough):
-            self.current = None
-            self.nfound += 1
-            return Enough()
-        elif isinstance(res, NeedMore):
-            return res
-        else:
-            assert False
-
-    def finish(self) -> Union[NeedMore, Enough]:
-        if self.nfound == 0:
-            return NeedMore()
-
-        if self.current:
-            return self.current.finish()
-        else:
-            return Enough()
-
-
-@dataclass
-class ProtocolCheckerZeroOrOne(ProtocolChecker):
-    l: ZeroOrOne
-
-    def __post_init__(self):
-        self.nfound = 0
-        self.current = None
-
-    def push(self, event: Event) -> Result:
-        if self.nfound == 1:
-            return Unexpected()
-
-        if self.current is None:
-            self.current = get_checker(self.l.l)
-
-        res = self.current.push(event)
-        if isinstance(res, Unexpected):
-            return res
-        elif isinstance(res, Enough):
-            self.nfound += 1
-            return Enough()
-        elif isinstance(res, NeedMore):
-            return res
-        else:
-            assert False
-
-    def finish(self) -> Union[NeedMore, Enough]:
-        if self.current:
-            return self.current.finish()
-        else:
-            return Enough()
 
 
 def assert_seq(s: str, seq: List[Event], expect: Sequence[type], final: type):
     l = parse_language(s)
-    pc = get_checker(l)
+    pc = LanguageChecker(l)
+
     # all except last
     for i, (e, r) in enumerate(zip(seq, expect)):
         res = pc.push(e)
@@ -337,22 +192,22 @@ def test_proto_in1():
 
 def test_proto3():
     seq = [InputReceived("a")]
-    assert_seq("out:a", seq, (Unexpected,), NeedMore)
+    assert_seq("out:a", seq, (Unexpected,), Unexpected)
 
 
 def test_proto4():
     seq = [OutputProduced("a")]
-    assert_seq("in:a", seq, (Unexpected,), NeedMore)
+    assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
 
 def test_proto05():
     seq = [InputReceived("b")]
-    assert_seq("in:a", seq, (Unexpected,), NeedMore)
+    assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
 
 def test_proto06():
     seq = [OutputProduced("b")]
-    assert_seq("in:a", seq, (Unexpected,), NeedMore)
+    assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
 
 def test_proto07():
@@ -372,7 +227,7 @@ def test_proto09():
 
 def test_proto10():
     seq = [OutputProduced("a"), OutputProduced("b"), OutputProduced("c")]
-    assert_seq("out:a ; out:b", seq, (NeedMore, Enough, Unexpected), Enough)
+    assert_seq("out:a ; out:b", seq, (NeedMore, Enough, Unexpected), Unexpected)
 
 
 def test_proto_zom_01():
@@ -442,7 +297,7 @@ def test_proto_zoom_02():
 
 def test_proto_zoom_03():
     seq = [OutputProduced("a"), OutputProduced("a")]
-    assert_seq("out:a ?", seq, (Enough, Unexpected), Enough)
+    assert_seq("out:a ?", seq, (Enough, Unexpected), Unexpected)
 
 
 def test_protocol_complex1():
@@ -473,17 +328,6 @@ def test_protocol_complex1_0():
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
-def test_protocol_complex1_3():
-    l0 = """
-
-        out:episode_start ;
-            (in:next_image ; (out:image | out:no_more_images))*
-
-        """
-    seq = [OutputProduced("episode_start")]
-    assert_seq(l0, seq, (Enough,), Enough)
-
-
 def test_protocol_complex1_1():
     l = """
 
@@ -494,5 +338,35 @@ def test_protocol_complex1_1():
                )
 
        """
-    seq = [InputReceived("next_episode"), OutputProduced("episode_start")]
+    seq = [InputReceived("next_episode"),
+           OutputProduced("episode_start")]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
+
+
+def test_protocol_complex1_2():
+    l = """
+
+               in:next_episode ; (
+                   out:no_more_episodes | 
+                   (out:episode_start ;
+                       (in:next_image ; (out:image | out:no_more_images))*)
+               )
+
+       """
+    seq = [InputReceived("next_episode"),
+           OutputProduced("episode_start"),
+           InputReceived("next_image"),
+           OutputProduced("image"),
+           ]
+    assert_seq(l, seq, (NeedMore, Enough), Enough)
+
+
+def test_protocol_complex1_3():
+    l0 = """
+
+        out:episode_start ;
+            (in:next_image ; (out:image | out:no_more_images))*
+
+        """
+    seq = [OutputProduced("episode_start")]
+    assert_seq(l0, seq, (Enough,), Enough)
