@@ -2,13 +2,12 @@ tag=dummy_agent
 
 build:
 	docker build -t $(tag) .
+
 build-no-cache:
 	docker build -t $(tag)  --no-cache .
 
-protocols=/data/work/vmware-michela-shared/DT/dt-env/dt-env-developer/src/aido-protocols
+test-data1-direct:
+	./dummy_image_filter.py run < test_data/in1.json > test_data/out1.json
 
-other=-v $(protocols):/src/aido-protocols/
-
-test:
-	docker run -i $(other) $(tag) describe-protocol
-	docker run -i $(other)  $(tag) run < data.json
+test-data1-docker:
+	docker run -i $(tag) run < test_data/in1.json > test_data/out1.json

@@ -23,7 +23,6 @@ class RandomAgent:
 
 
 def main():
-
     import sys
     agent = RandomAgent()
     wrap_direct(agent=agent, protocol=agent.protocol, args=sys.argv[1:])

@@ -1,1 +1,2 @@
 -e git://github.com/duckietown/aido-protocols.git@master#egg=aido-protocols
+pydot

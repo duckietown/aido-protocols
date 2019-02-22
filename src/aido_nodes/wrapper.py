@@ -178,7 +178,7 @@ def run_loop(agent, protocol: InteractionProtocol, args: Optional[List[str]] = N
             else:
 
                 if topic not in protocol.inputs:
-                    msg = f'Input {topic} not found in protocol.'
+                    msg = f'Input channel "{topic}" not found in protocol. Known: {sorted(protocol.inputs)}'
                     raise Exception(msg)
 
                 klass = protocol.inputs[topic]
