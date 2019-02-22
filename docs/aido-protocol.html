@@ -1,0 +1,540 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
+<html>
+<head>
+<meta content="application/xhtml+xml; charset=utf-8" http-equiv="Content-Type"/>
+<link href="/data/work/vmware-michela-shared/mcdp/src/mcdp_web/static/css/compiled/v_manual_screen.css" rel="stylesheet" type="text/css"/>
+<title>aido-protocol</title>
+</head>
+<body>
+
+<section class="without-header-inside" level="book">
+
+
+<section class="with-header-inside" id="aido-protocol:section" level="part" status="ready">
+<h1 counter-part="1" id="part:aido-protocol" id-short="aido-protocol" label-name="AIDO Nodes Protocol" label-number="A" label-self="" label-what="Part" label-what-number="Part A" label-what-number-name="Part A - AIDO Nodes Protocol" status="ready">AIDO Nodes Protocol</h1>
+
+<section class="without-header-inside" level="sec">
+
+
+<section class="without-header-inside" level="sub">
+
+<p>This document describes the rationale and design for the AIDO protocol.</p>
+<ul class="toc" id="main_toc">
+  <li class="toc_li-depth--1 toc_li_for_unknown">
+  <a class="toc_link toc_link-depth-1 number_name toc_a_for_part" href="#part:aido-protocol"><span class="toc_what">Part</span> <span class="toc_number">A</span><span class="toc_sep"> - </span><span class="toc_name">AIDO Nodes Protocol</span></a><ul class="toc_ul-depth-1 toc_ul_for_part">
+    <li class="toc_li-depth-1 toc_li_for_part">
+    <a class="toc_link toc_link-depth-3 number_name toc_a_for_sec" href="#sec:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-1"><span class="toc_what">Unit</span> <span class="toc_number">A-1</span><span class="toc_sep"> - </span><span class="toc_name">Goals and non-goals</span></a><ul class="toc_ul-depth-3 toc_ul_for_sec">
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-2"><span class="toc_what">Section</span> <span class="toc_number">1.1</span><span class="toc_sep"> - </span><span class="toc_name">Goals</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-11"><span class="toc_what">Section</span> <span class="toc_number">1.2</span><span class="toc_sep"> - </span><span class="toc_name">Non-goals</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-13"><span class="toc_what">Section</span> <span class="toc_number">1.3</span><span class="toc_sep"> - </span><span class="toc_name">Why ROS is not a solution</span></a>
+      </li>
+    </ul>
+    </li>
+    <li class="toc_li-depth-1 toc_li_for_part">
+    <a class="toc_link toc_link-depth-3 number_name toc_a_for_sec" href="#sec:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-17"><span class="toc_what">Unit</span> <span class="toc_number">A-2</span><span class="toc_sep"> - </span><span class="toc_name">AIDO Nodes</span></a><ul class="toc_ul-depth-3 toc_ul_for_sec">
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-18"><span class="toc_what">Section</span> <span class="toc_number">2.1</span><span class="toc_sep"> - </span><span class="toc_name">Overview</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-19"><span class="toc_what">Section</span> <span class="toc_number">2.2</span><span class="toc_sep"> - </span><span class="toc_name">Individual JSON messages</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-20"><span class="toc_what">Section</span> <span class="toc_number">2.3</span><span class="toc_sep"> - </span><span class="toc_name">Formalizing the protocol</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-21"><span class="toc_what">Section</span> <span class="toc_number">2.4</span><span class="toc_sep"> - </span><span class="toc_name">Language describing the interaction</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-22"><span class="toc_what">Section</span> <span class="toc_number">2.5</span><span class="toc_sep"> - </span><span class="toc_name">User APIs</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-26"><span class="toc_what">Section</span> <span class="toc_number">2.6</span><span class="toc_sep"> - </span><span class="toc_name">Dockerization examples</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-27"><span class="toc_what">Section</span> <span class="toc_number">2.7</span><span class="toc_sep"> - </span><span class="toc_name">Extra features: configuration handling</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-28"><span class="toc_what">Section</span> <span class="toc_number">2.8</span><span class="toc_sep"> - </span><span class="toc_name">More complicated example of language</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-29"><span class="toc_what">Section</span> <span class="toc_number">2.9</span><span class="toc_sep"> - </span><span class="toc_name">Gains from formal definition</span></a>
+      </li>
+      <li class="toc_li-depth-3 toc_li_for_sec">
+      <a class="toc_link toc_link-depth-4 number_name toc_a_for_sub" href="#sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-32"><span class="toc_what">Section</span> <span class="toc_number">2.10</span><span class="toc_sep"> - </span><span class="toc_name">More detailed architecture</span></a>
+      </li>
+    </ul>
+    </li>
+  </ul>
+  </li>
+</ul>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-1:section" level="sec" status="ready">
+<h1 counter-part="1" counter-sec="1" id="sec:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-1" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-1" label-name="Goals and non-goals" label-number="A-1" label-self="" label-what="Unit" label-what-number="Unit A-1" label-what-number-name="Unit A-1 - Goals and non-goals" status="ready">Goals and non-goals</h1>
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-2:section" level="sub" status="unknown">
+<h2 counter-sec="1" counter-sub="1" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-2" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-2" label-name="Goals" label-number="1.1" label-self="" label-what="Section" label-what-number="Section 1.1" label-what-number-name="Section 1.1 - Goals" status="unknown">Goals</h2>
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-3:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="1" counter-subsub="1" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-3" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-3" label-name="Long shelf life" label-number="1.1.1" label-self="1) " label-what="Subsection" label-what-number="Subsection 1.1.1" label-what-number-name="Subsection 1.1.1 - Long shelf life" status="unknown">Long shelf life</h3>
+<p>We want to obtain a library of modules that have a long “shelf life”.</p>
+<p>For example, it should be easy to run “the line detector from 2018” in 2021.</p>
+<p>This also suggests that modules should be independent of middle-ware as much as possible.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-4:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="1" counter-subsub="2" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-4" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-4" label-name="Flexibility" label-number="1.1.2" label-self="2) " label-what="Subsection" label-what-number="Subsection 1.1.2" label-what-number-name="Subsection 1.1.2 - Flexibility" status="unknown">Flexibility</h3>
+<p>It should be possible to easily use a module in at least these scenarios:</p>
+<ul>
+<li>On the robot in real-time.</li>
+<li>Called as part of other modules (“module decorator”).</li>
+<li>In a simulation, with the simulator both local (same host) or remote.</li>
+<li>In “batch mode”, where the data is supplied from logs. </li>
+</ul>
+<p>It should be possible to run two instances of the same module / system on the same host.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-5:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="1" counter-subsub="3" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-5" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-5" label-name="Deterministic replay" label-number="1.1.3" label-self="3) " label-what="Subsection" label-what-number="Subsection 1.1.3" label-what-number-name="Subsection 1.1.3 - Deterministic replay" status="unknown">Deterministic replay</h3>
+<p>It should be possible to apply the same module to the same data and obtain the same output. </p>
+<p>Example violation: current Slimremote protocol runs simulation while it “waits” for the connection from the client.
+The result is then dependent on the network status.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-6:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="1" counter-subsub="4" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-6" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-6" label-name="Deterministic uncertainty." label-number="1.1.4" label-self="4) " label-what="Subsection" label-what-number="Subsection 1.1.4" label-what-number-name="Subsection 1.1.4 - Deterministic uncertainty." status="unknown">Deterministic uncertainty.</h3>
+<p>There should be a clear way for modules to access a seed to use for their random number generators.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-7:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="1" counter-subsub="5" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-7" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-7" label-name="Protocol checks" label-number="1.1.5" label-self="5) " label-what="Subsection" label-what-number="Subsection 1.1.5" label-what-number-name="Subsection 1.1.5 - Protocol checks" status="unknown">Protocol checks</h3>
+<p>It should be explicit what protocol a module uses, and it should be easy to check to avoid incompatibilities. </p>
+<p>Example: Understanding whether I can pipe <code>p1</code> into <code>p2</code>.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-8:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="1" counter-subsub="6" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-8" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-8" label-name="Resource limitation" label-number="1.1.6" label-self="6) " label-what="Subsection" label-what-number="Subsection 1.1.6" label-what-number-name="Subsection 1.1.6 - Resource limitation" status="unknown">Resource limitation</h3>
+<p>Should be possible to give hard constraints on memory/cpu for each node.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-9:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="1" counter-subsub="7" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-9" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-9" label-name="Protocol extendability" label-number="1.1.7" label-self="7) " label-what="Subsection" label-what-number="Subsection 1.1.7" label-what-number-name="Subsection 1.1.7 - Protocol extendability" status="unknown">Protocol extendability</h3>
+<p>The protocols should support a notion of extension; so that we can say that not only <code>p1</code> is different from <code>p2</code>, but also that any agent using <code>p1</code> would work with <code>p2</code>.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-10:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="1" counter-subsub="8" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-10" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-10" label-name="Meta information" label-number="1.1.8" label-self="8) " label-what="Subsection" label-what-number="Subsection 1.1.8" label-what-number-name="Subsection 1.1.8 - Meta information" status="unknown">Meta information</h3>
+<p>Nice to have some meta information in the module (who wrote, the description, etc.)</p>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-11:section" level="sub" status="ready">
+<h2 counter-sec="1" counter-sub="2" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-11" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-11" label-name="Non-goals" label-number="1.2" label-self="" label-what="Section" label-what-number="Section 1.2" label-what-number-name="Section 1.2 - Non-goals" status="ready">Non-goals</h2>
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-12:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="2" counter-subsub="1" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-12" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-12" label-name="Ultimate speed." label-number="1.2.1" label-self="1) " label-what="Subsection" label-what-number="Subsection 1.2.1" label-what-number-name="Subsection 1.2.1 - Ultimate speed." status="unknown">Ultimate speed.</h3>
+<p>We are OK in accepting a performance hit.</p>
+<p>(Note: did you know it takes 20ms to deserialize the line segment messages with ROS?)</p>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-13:section" level="sub" status="unknown">
+<h2 counter-sec="1" counter-sub="3" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-13" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-13" label-name="Why ROS is not a solution" label-number="1.3" label-self="" label-what="Section" label-what-number="Section 1.3" label-what-number-name="Section 1.3 - Why ROS is not a solution" status="unknown">Why ROS is not a solution</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>“Using ROS” is not a solution, due to the following problems.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-14:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="3" counter-subsub="1" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-14" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-14" label-name="Network trouble" label-number="1.3.1" label-self="1) " label-what="Subsection" label-what-number="Subsection 1.3.1" label-what-number-name="Subsection 1.3.1 - Network trouble" status="unknown">Network trouble</h3>
+<p>ROS insists on having two processes need to know the other hosts not only by IP, but also by hostname. This causes a bunch of problems.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-15:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="3" counter-subsub="2" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-15" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-15" label-name="Incompatibility" label-number="1.3.2" label-self="2) " label-what="Subsection" label-what-number="Subsection 1.3.2" label-what-number-name="Subsection 1.3.2 - Incompatibility" status="unknown">Incompatibility</h3>
+<p>ROS 1 does not allow Python 3.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-16:section" level="subsub" status="unknown"><h3 counter-sec="1" counter-sub="3" counter-subsub="3" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-16" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-16" label-name="Non-compositionality" label-number="1.3.3" label-self="3) " label-what="Subsection" label-what-number="Subsection 1.3.3" label-what-number-name="Subsection 1.3.3 - Non-compositionality" status="unknown">Non-compositionality</h3>
+<p>It is not possible to run two ROS independent instances of a system on the same machine.</p>
+</section>
+
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-17:section" level="sec" status="ready">
+<h1 counter-part="1" counter-sec="2" id="sec:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-17" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-17" label-name="AIDO Nodes" label-number="A-2" label-self="" label-what="Unit" label-what-number="Unit A-2" label-what-number-name="Unit A-2 - AIDO Nodes" status="ready">AIDO Nodes</h1>
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-18:section" level="sub" status="unknown">
+<h2 counter-sec="2" counter-sub="1" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-18" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-18" label-name="Overview" label-number="2.1" label-self="" label-what="Section" label-what-number="Section 2.1" label-what-number-name="Section 2.1 - Overview" status="unknown">Overview</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>We go back to the UNIX philosophy. “AIDO Nodes” or simply “nodes” are executable that read and write to <code>stdin</code> and <code>stdout</code>.</p>
+<p>The nodes are likely packaged in a Docker container. From our point of view, it does not matter whether
+we are running a naked executable or a containerized executable. In either case, there will be
+ a standard input / standard output to write to.   </p>
+<p>The data that is moved across these sockets is encoded as JSON-L: each line is a well-formed JSON message. 
+JSON also allows to add binary data, encoded as a base64 string. </p>
+<p>AIDO Nodes interact according to well-defined protocols that are formally specified.
+There are two levels of formalization:</p>
+<ol>
+<li>Describe which messages are valid messages. For this, we use JSON Schema.</li>
+<li>Describe what is a valid interaction or sequence of messages. For this, we use a regular language.</li>
+</ol>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-19:section" level="sub" status="unknown">
+<h2 counter-sec="2" counter-sub="2" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-19" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-19" label-name="Individual JSON messages" label-number="2.2" label-self="" label-what="Section" label-what-number="Section 2.2" label-what-number-name="Section 2.2 - Individual JSON messages" status="unknown">Individual JSON messages</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>The messages are of the form: </p>
+<pre class="syntax_highlight json"><code><span></span><span class="p">{</span><span class="nt">"topic"</span><span class="p">:</span> <span class="err">topic</span> <span class="err">name</span><span class="p">,</span> <span class="nt">"data"</span><span class="p">:</span> <span class="err">data</span><span class="p">}</span>
+</code></pre>
+<p>A newline delimiter separates the JSON messages.</p>
+<p>The “topic name” has the same semantics as in ROS: while there is only one pipe for stdin/stdout,
+there are different logical streams of data that are labeled with a topic name. </p>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-20:section" level="sub" status="unknown">
+<h2 counter-sec="2" counter-sub="3" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-20" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-20" label-name="Formalizing the protocol" label-number="2.3" label-self="" label-what="Section" label-what-number="Section 2.3" label-what-number-name="Section 2.3 - Formalizing the protocol" status="unknown">Formalizing the protocol</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>To define a protocol, we need to specify: </p>
+<ol>
+<li>What are the input and output channels.</li>
+<li>For each channel, what is the data format.</li>
+<li>What valid sequence of messages are accepted.</li>
+</ol>
+<p>Examples:</p>
+<ul>
+<li>An agent of type P1 accepts a sequence of images and outputs a series of commands (“left”, “right” velocity signals).</li>
+<li>An agent of type P2 accepts intrinsic and extrinsic image calibration data followed a sequence of images and outputs a series of commands (“left”, “right” velocity signals).</li>
+<li>An agent of type P3  accepts intrinsic and extrinsic image calibration data, a kinematic calibration file, followed a sequence of images and outputs a series of commands (“left”, “right” PWM signals).</li>
+<li>An agent of type P4  accepts extrinsic image calibration data, a kinematic calibration file, followed a sequence of <em>rectified</em> images and outputs a series of commands (“left”, “right” PWM signals).</li>
+</ul>
+<p>All of these are slighly different and failure of distinguishing between those caused much pain.</p>
+<p>Note that once we have these formalized, we can also do automatic conversion of protocols. (“If you have an agent of type P1, you can create an agent of type P2 by…”“.)</p>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-21:section" level="sub" status="unknown">
+<h2 counter-sec="2" counter-sub="4" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-21" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-21" label-name="Language describing the interaction" label-number="2.4" label-self="" label-what="Section" label-what-number="Section 2.4" label-what-number-name="Section 2.4 - Language describing the interaction" status="unknown">Language describing the interaction</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>One way to formalize the interaction protocols are via regular languages.</p>
+<p>We use this syntax:</p>
+<ul>
+<li>Define <code>in:<span class="placeholder">channel</span></code> as denoting the event “a message was received on channel <code><span class="placeholder">channel</span></code>”.</li>
+<li>Define <code>out:<span class="placeholder">channel</span></code> as denoting the event “a message was produced on channel <code><span class="placeholder">channel</span></code>”.</li>
+<li>Define <code>L*</code> as “Zero or more repetitions of <code>L</code>”.</li>
+<li>Define <code>L?</code> as “Zero or one repetitions of <code>L</code>”.</li>
+<li>Define <code>L+</code> as “One or more repetitions of <code>L</code>”.</li>
+<li>Define <code>A;B;C</code> as “<code>A</code> followed by <code>B</code> followed by <code>C</code>“</li>
+<li>Define <code>A|B|C</code> as “either <code>A</code> or  <code>B</code> or <code>C</code>“</li>
+</ul>
+<p>For example, consider the following protocol:</p>
+<p>“An agent that follows the protocol <code>LaneFilter</code> accepts one CameraCalibration message on the channel  <code>calibration</code>, followed by any number of images on the channel <code>image</code>, and to each image it will reply with a pose estimate on channel <code>estimate</code>.”</p>
+<p>As a formal language this can be written as:</p>
+<pre><code>LaneFilterLanguage := in:calibration (in:image ; out:estimate)*
+</code></pre>
+<p>This is then a formal description of the protocol; not only the data format, but also of the behavior of the component.</p>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-22:section" level="sub" status="unknown">
+<h2 counter-sec="2" counter-sub="5" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-22" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-22" label-name="User APIs" label-number="2.5" label-self="" label-what="Section" label-what-number="Section 2.5" label-what-number-name="Section 2.5 - User APIs" status="unknown">User APIs</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>Much of the complexity is hidden for the user.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-23:section" level="subsub" status="unknown"><h3 counter-sec="2" counter-sub="5" counter-subsub="1" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-23" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-23" label-name="Defining protocols using &lt;code&gt;InteractionProtocol&lt;/code&gt;" label-number="2.5.1" label-self="1) " label-what="Subsection" label-what-number="Subsection 2.5.1" label-what-number-name="Subsection 2.5.1 - Defining protocols using &lt;code&gt;InteractionProtocol&lt;/code&gt;" status="unknown">Defining protocols using <code>InteractionProtocol</code></h3>
+<p>Use the class <code>InterctionProtocol</code>. See <code>aido_nodes.protocols</code> for the currently defined protocols.</p>
+<p>Here is an example:</p>
+<pre class="syntax_highlight python"><code><span></span><span class="kn">from</span> <span class="nn">aido_nodes</span> <span class="kn">import</span> <span class="n">InteractionProtocol</span><span class="p">,</span> <span class="n">JPGImage</span><span class="p">,</span> <span class="n">parse_language</span>
+
+<span class="n">protocol_image_filter</span> <span class="o">=</span> <span class="n">InteractionProtocol</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"""Takes an image, returns an image."""</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">{</span><span class="s2">"image"</span><span class="p">:</span> <span class="n">JPGImage</span><span class="p">},</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">{</span><span class="s2">"transformed"</span><span class="p">:</span> <span class="n">JPGImage</span><span class="p">},</span>
+        <span class="n">interaction</span><span class="o">=</span><span class="n">parse_language</span><span class="p">(</span><span class="s2">" (in:image ; out:transformed)*"</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre>
+<p>Above, <code>JPGImage</code> is a regular Python dataclass. The JSON schema description
+will be generated from the Python dataclass annotations. </p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-24:section" level="subsub" status="unknown"><h3 counter-sec="2" counter-sub="5" counter-subsub="2" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-24" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-24" label-name="Creating nodes that follow the protocol" label-number="2.5.2" label-self="2) " label-what="Subsection" label-what-number="Subsection 2.5.2" label-what-number-name="Subsection 2.5.2 - Creating nodes that follow the protocol" status="unknown">Creating nodes that follow the protocol</h3>
+<p>There is an API that allows to easily create a node that follows the protocol while hiding all the complexity of
+JSON decoding/encoding. </p>
+<p>A minimal “image filter” can be realized as follows:</p>
+<pre class="syntax_highlight python"><code><span></span><span class="kn">from</span> <span class="nn">aido_nodes</span> <span class="kn">import</span> <span class="n">protocol_image_filter</span><span class="p">,</span> <span class="n">JPGImage</span><span class="p">,</span> <span class="n">wrap_direct</span>
+
+<span class="k">class</span> <span class="nc">DummyFilter</span><span class="p">:</span>
+
+    <span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol_image_filter</span>
+
+    <span class="k">def</span> <span class="nf">on_received_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">JPGImage</span><span class="p">):</span>
+        <span class="n">transformed</span> <span class="o">=</span> <span class="n">data</span> <span class="c1"># compute here</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"transformed"</span><span class="p">,</span> <span class="n">transformed</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="n">node</span> <span class="o">=</span> <span class="n">DummyFilter</span><span class="p">()</span>
+    <span class="n">wrap_direct</span><span class="p">(</span><span class="n">agent</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
+</code></pre>
+<p>The user must implement for each input channel <code><span class="placeholder">channel name</span></code> the  function <code>on_received_<span class="placeholder">channel name</span></code>. </p>
+<p>This function will be called with parameters <code>data</code>, containing the data received (already translated from
+JSON), and an object <code>context</code>. The object <code>context</code> provides the methods:</p>
+<pre class="syntax_highlight python"><code><span></span><span class="c1"># write to the given output channel</span>
+<span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">'channel'</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+<span class="c1"># log something</span>
+<span class="n">context</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">'log string'</span><span class="p">)</span>
+</code></pre>
+<p>If the node implements it, the API will also call the function <code>init()</code> at the beginning
+and <code>finish()</code> at the end. </p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-25:section" level="subsub" status="unknown"><h3 counter-sec="2" counter-sub="5" counter-subsub="3" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-25" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-25" label-name="Guarantees" label-number="2.5.3" label-self="3) " label-what="Subsection" label-what-number="Subsection 2.5.3" label-what-number-name="Subsection 2.5.3 - Guarantees" status="unknown">Guarantees</h3>
+<p>The node can assume that the sequence of calls will respect the protocol.
+For example, if the protocol is:</p>
+<p><code>in:calibration ; (in:image ; out:estimate)</code></p>
+<p>the node can assume that there is going to be a call to <code>on_received_calibration</code> before 
+any call to <code>on_received_image</code>.</p>
+<p>On the other hand, note that the node itself must respect the protocol that has been declared.</p>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-26:section" level="sub" status="unknown">
+<h2 counter-sec="2" counter-sub="6" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-26" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-26" label-name="Dockerization examples" label-number="2.6" label-self="" label-what="Section" label-what-number="Section 2.6" label-what-number-name="Section 2.6 - Dockerization examples" status="unknown">Dockerization examples</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>See the folder <code>minimal</code> in this repository for the minimal implementation
+of the protocols so far defined.</p>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-27:section" level="sub" status="unknown">
+<h2 counter-sec="2" counter-sub="7" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-27" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-27" label-name="Extra features: configuration handling" label-number="2.7" label-self="" label-what="Section" label-what-number="Section 2.7" label-what-number-name="Section 2.7 - Extra features: configuration handling" status="unknown">Extra features: configuration handling</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>If the node has an attribute called <code>config</code>, then the API automatically exposes that configuration.</p>
+<p>For example, suppose the node is the following:</p>
+<pre class="syntax_highlight python"><code><span></span><span class="kn">from</span> <span class="nn">aido_nodes</span> <span class="kn">import</span> <span class="n">protocol_image_filter</span><span class="p">,</span> <span class="n">JPGImage</span>
+
+<span class="k">class</span> <span class="nc">MyConfig</span><span class="p">:</span>
+    <span class="n">num_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span> 
+
+<span class="k">class</span> <span class="nc">MyFilter</span><span class="p">:</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">MyConfig</span> <span class="o">=</span> <span class="n">MyConfig</span><span class="p">()</span>
+
+    <span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol_image_filter</span>
+
+    <span class="k">def</span> <span class="nf">on_received_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">JPGImage</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">on_updated_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="s1">'Config was updated: {key} = {value!r}'</span><span class="p">)</span>
+</code></pre>
+<p>Then the node will also respond to “control” messages in the channel “<code>wrapper.set_config</code>” of the form: </p>
+<pre class="syntax_highlight json"><code><span></span><span class="p">{</span><span class="nt">"topic"</span><span class="p">:</span> <span class="s2">"wrapper.set_config"</span><span class="p">,</span>  <span class="nt">"data"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"key"</span><span class="p">:</span>  <span class="s2">"config key"</span><span class="p">,</span> <span class="nt">"value"</span><span class="p">:</span> <span class="err">config</span> <span class="err">value</span><span class="p">}}</span>
+</code></pre>
+<p>For example, in this case we can send a message like:</p>
+<pre class="syntax_highlight json"><code><span></span><span class="p">{</span><span class="nt">"topic"</span><span class="p">:</span> <span class="s2">"wrapper.set_config"</span><span class="p">,</span>   <span class="nt">"data"</span><span class="p">:</span> <span class="p">{</span><span class="nt">"key"</span><span class="p">:</span>  <span class="s2">"num_frames"</span><span class="p">,</span> <span class="nt">"value"</span><span class="p">:</span> <span class="mi">2</span><span class="p">}}</span>
+</code></pre>
+<p>The API will automatically update the field <code>node.config.num_frames</code>. Then it will call (if defined)
+the function <code>on_updated_config()</code>; useful if something needs to be re-initialized.</p>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-28:section" level="sub" status="unknown">
+<h2 counter-sec="2" counter-sub="8" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-28" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-28" label-name="More complicated example of language" label-number="2.8" label-self="" label-what="Section" label-what-number="Section 2.8" label-what-number-name="Section 2.8 - More complicated example of language" status="unknown">More complicated example of language</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>Consider the protocol called <code>aido_nodes.protocol_image_source</code>:</p>
+<pre class="syntax_highlight python"><code><span></span><span class="n">protocol_image_source</span> <span class="o">=</span> <span class="n">InteractionProtocol</span><span class="p">(</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">{</span><span class="s2">"next_image"</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="bp">None</span><span class="p">),</span> <span class="c1"># ask for the next image</span>
+                <span class="s2">"next_episode"</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="bp">None</span><span class="p">)},</span> <span class="c1"># ask for the next episode</span>
+        <span class="n">outputs</span><span class="o">=</span><span class="p">{</span><span class="s2">"image"</span><span class="p">:</span> <span class="n">JPGImage</span><span class="p">,</span> <span class="c1"># the output data</span>
+                 <span class="s2">"episode_start"</span><span class="p">:</span> <span class="n">EpisodeStart</span><span class="p">,</span> <span class="c1"># marks the start of episode</span>
+                 <span class="s2">"no_more_images"</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="bp">None</span><span class="p">),</span> 
+                 <span class="s2">"no_more_episodes"</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="bp">None</span><span class="p">)},</span>
+        <span class="n">interaction</span><span class="o">=</span><span class="n">parse_language</span><span class="p">(</span><span class="s2">"""</span>
+<span class="s2">                (</span>
+<span class="s2">                    in:next_episode ; (</span>
+<span class="s2">                        out:no_more_episodes | </span>
+<span class="s2">                        (out:episode_start ;</span>
+<span class="s2">                            (in:next_image ; (out:image | out:no_more_images))*)</span>
+<span class="s2">                    )</span>
+<span class="s2">                )*            </span>
+<span class="s2">            """</span><span class="p">),</span>
+<span class="p">)</span>
+</code></pre>
+<p><code>type(None)</code> means that those messages do not carry any payload. </p>
+<p>The informal description is:</p>
+<p>1) First, the node expects to receive a <code>next_episode</code> message to start the episode.
+2) To this, it can respond either with <code>no_more_episodes</code> or <code>episode_start</code>.
+3) Then it will expect messages <code>next_image</code> to which it will reply either with an <code>image</code> or with <code>no_more_images</code>.</p>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-29:section" level="sub" status="beta">
+<h2 counter-sec="2" counter-sub="9" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-29" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-29" label-name="Gains from formal definition" label-number="2.9" label-self="" label-what="Section" label-what-number="Section 2.9" label-what-number-name="Section 2.9 - Gains from formal definition" status="beta">Gains from formal definition</h2>
+
+<section class="without-header-inside" level="subsub">
+<p>We can then use the usual machinery of the field of formal languages to reason about composition and extendability.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-30:section" level="subsub" status="unknown"><h3 counter-sec="2" counter-sub="9" counter-subsub="1" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-30" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-30" label-name="Extending interaction protocol" label-number="2.9.1" label-self="1) " label-what="Subsection" label-what-number="Subsection 2.9.1" label-what-number-name="Subsection 2.9.1 - Extending interaction protocol" status="unknown">Extending interaction protocol</h3>
+<p>For example, we can describe backward-compatibility extensions of protocols.</p>
+<p>Imagine that there is a lane filter who can also accept IMU data. But not always it will provide an updated pose from the IMU data.</p>
+<p>Its language would be:</p>
+<pre><code>LaneFilterLanguage2 := in:calibration ( (in:image out:estimate) | (in:IMU out:estimate? ))*
+</code></pre>
+<p>It is possible (with some assumptions) to reason that LaneFilterLanguage1 is a sublanguage of LaneFilterLanguage2, so that an aidonode that implements the second can be used where the first would be used.</p>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-31:section" level="subsub" status="unknown"><h3 counter-sec="2" counter-sub="9" counter-subsub="2" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-31" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-31" label-name="Extending messages" label-number="2.9.2" label-self="2) " label-what="Subsection" label-what-number="Subsection 2.9.2" label-what-number-name="Subsection 2.9.2 - Extending messages" status="unknown">Extending messages</h3>
+<p>Another possibility is where the data type is extended.</p>
+<p>Already from JSON schema we have a notion of partial order. </p>
+<p>For example imagine a message with two fields:</p>
+<pre class="syntax_highlight json"><code><span></span><span class="p">{</span><span class="nt">"field1"</span><span class="p">:</span> <span class="err">...</span><span class="p">,</span> <span class="nt">"field2"</span><span class="p">:</span> <span class="err">...</span><span class="p">}</span>
+</code></pre>
+<p>Adding a field should be a backward compatible change (we did this a few times with AIDO).</p>
+<pre class="syntax_highlight json"><code><span></span><span class="p">{</span><span class="nt">"field1"</span><span class="p">:</span> <span class="err">...</span><span class="p">,</span> <span class="nt">"field2"</span><span class="p">:</span> <span class="err">...</span><span class="p">,</span> <span class="nt">"extra_field"</span><span class="p">:</span> <span class="err">...</span><span class="p">}</span>
+</code></pre>
+<p>Here is how it looks like in JSON Schema.</p>
+<p>Note that JSON Schema also allows defining various constraints (apart from the type, also minimum/maximum values etc.)</p>
+<p>The first schema is:</p>
+<pre class="syntax_highlight json"><code><span></span><span class="p">{</span>
+    <span class="nt">"title"</span><span class="p">:</span> <span class="s2">"Message v1"</span><span class="p">,</span>
+    <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"First version of the messages"</span><span class="p">,</span>
+    <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"object"</span><span class="p">,</span>
+    <span class="nt">"fields"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"field1"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"integer"</span><span class="p">,</span>
+            <span class="nt">"exclusiveMinimum"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="nt">"field2"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"string"</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>The second schema is:</p>
+<pre class="syntax_highlight json"><code><span></span><span class="p">{</span>
+    <span class="nt">"title"</span><span class="p">:</span> <span class="s2">"Message v1"</span><span class="p">,</span>
+    <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"First version of the messages"</span><span class="p">,</span>
+    <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"object"</span><span class="p">,</span>
+    <span class="nt">"fields"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"field1"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"integer"</span><span class="p">,</span>
+            <span class="nt">"exclusiveMinimum"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="nt">"field2"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"string"</span>
+        <span class="p">},</span>
+        <span class="nt">"extra_field"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"string"</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+</section>
+
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-32:section" level="sub" status="draft">
+<h2 counter-sec="2" counter-sub="10" id="sub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-32" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-32" label-name="More detailed architecture" label-number="2.10" label-self="" label-what="Section" label-what-number="Section 2.10" label-what-number-name="Section 2.10 - More detailed architecture" status="draft">More detailed architecture</h2>
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-33:section" level="subsub" status="unknown"><h3 counter-sec="2" counter-sub="10" counter-subsub="1" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-33" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-33" label-name="ROS wrapper" label-number="2.10.1" label-self="1) " label-what="Subsection" label-what-number="Subsection 2.10.1" label-what-number-name="Subsection 2.10.1 - ROS wrapper" status="unknown">ROS wrapper</h3>
+<div class="generated-figure-wrap" counter-fig="1" counter-sec="2" id="fig:wrapper-wrap" label-name="" label-number="2.1" label-self="" label-what="Figure" label-what-number="Figure 2.1" label-what-number-name="Figure 2.1 - "><figure class="figure generated-figure" counter-fig="2" counter-sec="2" id="fig:wrapper" label-name="" label-number="2.2" label-self="" label-what="Figure" label-what-number="Figure 2.2" label-what-number-name="Figure 2.2 - "><div class="figcontent"><div class="figure-conv-to-div">
+<img src="/data/work/vmware-michela-shared/DT/dt-env/dt-env-developer/src/aido-protocols/aido-protocol.assets/image-20190210152739118.png"/>
+</div><div style="clear: both"></div></div><figcaption counter-fig="2" counter-sec="2" label-name="" label-number="2.2" label-self="" label-what="Figure" label-what-number-name="Figure 2.2 - "></figcaption></figure></div>
+</section>
+
+
+
+<section class="with-header-inside" id="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-34:section" level="subsub" status="unknown"><h3 counter-sec="2" counter-sub="10" counter-subsub="2" id="subsub:autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-34" id-autogenerated="true" id-short="autoid-DO-NOT-USE-THIS-VERY-UNSTABLE-LINK-b522ee0a-34" label-name="Batch processing" label-number="2.10.2" label-self="2) " label-what="Subsection" label-what-number="Subsection 2.10.2" label-what-number-name="Subsection 2.10.2 - Batch processing" status="unknown">Batch processing</h3>
+<div class="generated-figure-wrap" counter-fig="3" counter-sec="2" id="fig:batch-wrap" label-name="" label-number="2.3" label-self="" label-what="Figure" label-what-number="Figure 2.3" label-what-number-name="Figure 2.3 - "><figure class="figure generated-figure" counter-fig="4" counter-sec="2" id="fig:batch" label-name="" label-number="2.4" label-self="" label-what="Figure" label-what-number="Figure 2.4" label-what-number-name="Figure 2.4 - "><div class="figcontent"><div class="figure-conv-to-div">
+<img src="/data/work/vmware-michela-shared/DT/dt-env/dt-env-developer/src/aido-protocols/aido-protocol.assets/image-20190210153222688.png"/>
+</div><div style="clear: both"></div></div><figcaption counter-fig="4" counter-sec="2" label-name="" label-number="2.4" label-self="" label-what="Figure" label-what-number-name="Figure 2.4 - "></figcaption></figure></div>
+<style type="text/css">
+img { max-width: 100%; }
+</style>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg"><defs id="MathJax_SVG_glyphs"></defs></svg></section>
+
+</section>
+
+</section>
+
+</section>
+
+</section>
+
+</body></html>
