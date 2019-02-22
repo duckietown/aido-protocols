@@ -1,6 +1,7 @@
 {"topic": "wrapper.set_config",   "data": {"key":  "shape", "value": [8, 8] }}
 {"topic": "wrapper.set_config",   "data": {"key":  "num_episodes", "value": 2}}
 {"topic": "wrapper.set_config",   "data": {"key":  "images_per_episode", "value": 2}}
+
 {"topic": "next_episode", "data": null}
 {"topic": "next_image",   "data": null}
 {"topic": "next_image",   "data": null}

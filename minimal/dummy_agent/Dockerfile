@@ -5,4 +5,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-ENTRYPOINT ["aido_node_wrap", "--implementation", "random_agent.RandomAgent", "--protocol",  "aido_nodes.protocol_agent_jpg_pwm"]
+ENTRYPOINT ["python3", "random_agent.py"]

@@ -44,10 +44,10 @@ def get_nfa(g: Optional[nx.DiGraph], start_node: NodeName, accept_node: NodeName
     g.add_node(start_node, label="/".join(start_node))
     g.add_node(accept_node, label="/".join(accept_node))
     if isinstance(l, ExpectOutputProduced):
-        g.add_edge(start_node, accept_node, event_match=l, label=f'out-{l.channel}')
+        g.add_edge(start_node, accept_node, event_match=l, label=f'out/{l.channel}')
 
     elif isinstance(l, ExpectInputReceived):
-        g.add_edge(start_node, accept_node, event_match=l, label=f'in-{l.channel}')
+        g.add_edge(start_node, accept_node, event_match=l, label=f'in/{l.channel}')
     elif isinstance(l, InSequence):
         current = start_node
         for i, li in enumerate(l.ls):
@@ -92,17 +92,26 @@ def event_matches(l: Language, event: Event):
     raise NotImplementedError(l)
 
 
+START = ('start',)
+ACCEPT = ('accept',)
+
+
 class LanguageChecker:
     g: nx.DiGraph
     active: Set[NodeName]
 
     def __init__(self, language):
         self.g = nx.MultiDiGraph()
-        self.start_node = ('start',)
-        self.accept_node = ('accept',)
+        self.start_node = START
+        self.accept_node = ACCEPT
         get_nfa(g=self.g, l=language, start_node=self.start_node, accept_node=self.accept_node, prefix=())
         # for (a, b, data) in self.g.out_edges(data=True):
         #     print(f'{a} -> {b} {data["event_match"]}')
+        a = 2
+        for n in self.g:
+            if n not in [START, ACCEPT]:
+                self.g.node[n]['label'] = f'S{a}'
+                a += 1
         write_dot(self.g, 'l.dot')
         self.active = {self.start_node}
         self._evolve_empty()

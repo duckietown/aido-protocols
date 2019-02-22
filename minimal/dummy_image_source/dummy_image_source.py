@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import base64
 from dataclasses import dataclass, field
 from typing import Tuple, ClassVar
 from aido_nodes import JPGImage
@@ -75,12 +74,6 @@ def bgr2jpg(image_cv) -> bytes:
     jpg_data = np.array(compress).tostring()
     return jpg_data
 
-#
-# def encode_bytes_as_json(b: bytes) -> dict:
-#     res = {}
-#     res['base64'] = base64.b64encode(b).decode('ascii')
-#     return res
-#
 
 def main():
 

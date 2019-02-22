@@ -43,6 +43,8 @@ def aido_node_wrap_main():
 
 
 def wrap_direct(agent, protocol, args: Optional[List[str]] = None):
+    if args is None:
+        args = sys.argv[1:]
     if not args:
         msg = 'Provide one command (run, describe-agent, describe-protocol)'
         raise Exception(msg)
@@ -85,7 +87,7 @@ class Context:
 
     def write(self, topic, data):
         if topic not in self.protocol.outputs:
-            msg = f'Output {topic} not found in protocol.'
+            msg = f'Output channel "{topic}" not found in protocol; know {sorted(self.protocol.outputs)}.'
             raise Exception(msg)
 
         event = OutputProduced(topic)
