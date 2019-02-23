@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 from dataclasses import dataclass, field
 from typing import Tuple, ClassVar
-from aido_nodes import JPGImage
+
 import numpy as np
 
-from aido_nodes.protocols import protocol_image_source, InteractionProtocol
-from aido_nodes.wrapper import wrap_direct
+from aido_nodes import wrap_direct, InteractionProtocol
+from aido_schemas import protocol_image_source, JPGImage
 
 
 # noinspection PyUnresolvedReferences
@@ -22,6 +22,7 @@ class DummyImageSourceConfig:
     images_per_episode: int = 120
     num_episodes: int = 10
 
+
 @dataclass
 class DummyImageSourceState:
     """
@@ -29,6 +30,7 @@ class DummyImageSourceState:
     """
     episode: int = -1
     nimages: int = -1
+
 
 @dataclass
 class DummyImageSource:
@@ -76,7 +78,6 @@ def bgr2jpg(image_cv) -> bytes:
 
 
 def main():
-
     import sys
     agent = DummyImageSource()
     wrap_direct(agent=agent, protocol=agent.protocol, args=sys.argv[1:])

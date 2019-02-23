@@ -1,6 +1,6 @@
 from aido_nodes import JPGImage, PWMCommands, Seed, Timestamp, StateDump, StepPhysicsACK, RequestRender
 from aido_nodes.language_parse import parse_language
-from .language import InteractionProtocol
+from aido_nodes.language import InteractionProtocol
 
 simulator_protocol = InteractionProtocol(
         description="""\

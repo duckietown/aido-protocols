@@ -100,15 +100,8 @@ class Context:
 
             from zuper_json.ipce import ipce_to_object, object_to_ipce
 
-            if isinstance(data, dict):
-                ob = ipce_to_object(data, {}, {}, expect_type=klass)
-            else:
-                ob = data
-                # TODO: check klass
-
-            data = object_to_ipce(ob, {})
-
-            # TODO: check here if the schema is correct
+            ob = ipce_to_object(data, {}, {}, expect_type=klass)
+            data = object_to_ipce(ob, {}, with_schema=False)
             m = {'topic': topic, 'data': data}
             j = json.dumps(m)
             self.of.write(j)

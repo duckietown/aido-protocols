@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from aido_nodes import JPGImage, wrap_direct
-from aido_nodes.protocols import protocol_image_filter
+from aido_nodes import wrap_direct
+from aido_schemas import protocol_image_filter, JPGImage
 
 class DummyImageFilter:
     protocol = protocol_image_filter

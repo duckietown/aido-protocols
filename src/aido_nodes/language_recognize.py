@@ -40,12 +40,11 @@ class Always:
 
 
 def get_nfa(g: Optional[nx.DiGraph], start_node: NodeName, accept_node: NodeName, l: Language,
-            prefix: Tuple[str, ...] = ()) -> nx.DiGraph:
+            prefix: Tuple[str, ...] = ()):
     g.add_node(start_node, label="/".join(start_node))
     g.add_node(accept_node, label="/".join(accept_node))
     if isinstance(l, ExpectOutputProduced):
         g.add_edge(start_node, accept_node, event_match=l, label=f'out/{l.channel}')
-
     elif isinstance(l, ExpectInputReceived):
         g.add_edge(start_node, accept_node, event_match=l, label=f'in/{l.channel}')
     elif isinstance(l, InSequence):

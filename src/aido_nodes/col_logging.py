@@ -74,3 +74,11 @@ def setup_logging():
     # logging.basicConfig()
     setup_logging_color()
     setup_logging_format()
+
+
+import logging
+
+logging.basicConfig()
+setup_logging()
+logger = logging.getLogger('reader')
+logger.setLevel(logging.DEBUG)
