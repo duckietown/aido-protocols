@@ -9,8 +9,7 @@ import sys
 import time
 from typing import List, Optional
 
-from aido_nodes import InteractionProtocol, InputReceived, OutputProduced
-from aido_nodes_tests.test_protocol import Unexpected, LanguageChecker
+from aido_nodes import InteractionProtocol, InputReceived, OutputProduced, Unexpected, LanguageChecker
 from compmake.utils import import_name
 from contracts import check_isinstance
 from contracts.utils import format_obs
