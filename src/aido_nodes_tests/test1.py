@@ -3,8 +3,26 @@ from comptests import comptest, run_module_tests
 
 @comptest
 def dummy1():
-    import aido_nodes
-    raise Exception()
+    pass
+
+
+@comptest
+def dummy2():
+    pass
+
+
+@comptest
+def dummy3():
+    pass
+
+
+@comptest
+def dummy4():
+    pass
+
+
+@comptest
+def dummy5():
     pass
 
 
