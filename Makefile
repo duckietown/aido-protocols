@@ -21,7 +21,7 @@ comptest_package=aido_nodes_tests
 out=out-comptests
 coverage_dir=out-coverage
 coverage_include='*src/aido_nodes*'
-coveralls_repo_token=xxxYp4i32KwzL4s6C76DfjJ3e6NqUgkXsv0X
+coveralls_repo_token=rqlJ5L8FdP2zmw3WVxQjlIeg71GaqMoHy
 coverage_run=coverage run
 
 tests-clean:
