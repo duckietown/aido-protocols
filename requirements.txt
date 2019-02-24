@@ -1,0 +1,15 @@
+-e git://github.com/AndreaCensi/zuper_utils.git@v4#egg=zuper_utils
+
+compmake
+pyparsing
+PyContracts
+networkx
+termcolor
+
+# testing
+comptests==1.4.27
+coverage
+coveralls
+# notebooks
+jupyter
+nbconvert

@@ -185,7 +185,7 @@ protocol_image_filter = InteractionProtocol(
         description="""Takes an image, returns an image.""",
         inputs={"image": JPGImage},
         outputs={"transformed": JPGImage},
-        interaction=parse_language(" (in:image ; out:transformed)*")
+        language=" (in:image ; out:transformed)*"
 )
 ```
 

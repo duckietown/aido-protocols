@@ -1,2 +1,3 @@
--e git://github.com/duckietown/aido-protocols.git@master#egg=aido-protocols
-pydot
+-e git://github.com/duckietown/aido-protocols.git@v4#egg=aido-protocols
+-e git://github.com/AndreaCensi/zuper_utils.git@v4#egg=zuper_utils
+

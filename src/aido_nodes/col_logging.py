@@ -1,6 +1,4 @@
-
 # coding=utf-8
-import logging
 
 import termcolor
 
@@ -14,11 +12,12 @@ def get_FORMAT_datefmt():
     datefmt = "%H:%M:%S"
     return FORMAT, datefmt
 
+
 def setup_logging_format():
     from logging import Logger, StreamHandler, Formatter
     import logging
 
-    FORMAT, datefmt  = get_FORMAT_datefmt()
+    FORMAT, datefmt = get_FORMAT_datefmt()
     logging.basicConfig(format=FORMAT, datefmt=datefmt)
 
     if Logger.root.handlers:  # @UndefinedVariable
@@ -74,3 +73,11 @@ def setup_logging():
     # logging.basicConfig()
     setup_logging_color()
     setup_logging_format()
+
+
+import logging
+
+logging.basicConfig()
+setup_logging()
+logger = logging.getLogger('reader')
+logger.setLevel(logging.DEBUG)

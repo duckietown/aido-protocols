@@ -1,6 +1,5 @@
-from aido_nodes import JPGImage, PWMCommands, EpisodeStart
-from aido_nodes.language_parse import parse_language
-from .language import InteractionProtocol
+from aido_nodes import InteractionProtocol
+from aido_schemas import JPGImage, PWMCommands, EpisodeStart
 
 protocol_agent_jpg_pwm = InteractionProtocol(
         description="""
@@ -9,18 +8,22 @@ Receives a DistortedImage, to which
 it replies with PWMCommands.
 
     """,
-        inputs={"camera_image": JPGImage},
+        inputs={"camera_image": JPGImage,
+                "episode_start": EpisodeStart},
         outputs={"pwm_commands": PWMCommands},
-        interaction=parse_language("""
-            (in:camera_image ; out:pwm_commands)*
-        """)
+        language="""
+            (in:episode_start ; (in:camera_image ; out:pwm_commands)*)*
+        """
 )
 
 protocol_image_filter = InteractionProtocol(
         description="""An image filter. Takes an image, returns an image.""",
-        inputs={"image": JPGImage},
+        inputs={"image": JPGImage,
+                "episode_start": EpisodeStart},
         outputs={"transformed": JPGImage},
-        interaction=parse_language(" (in:image ; out:transformed)*")
+        language="""
+        (in:episode_start ; (in:image ; out:transformed)*)*
+        """
 )
 
 protocol_image_source = InteractionProtocol(
@@ -37,7 +40,7 @@ It emits a series of EpisodeStart followed by a set of images.
                  "episode_start": EpisodeStart,
                  "no_more_images": type(None),
                  "no_more_episodes": type(None)},
-        interaction=parse_language("""
+        language="""
                 (
                     in:next_episode ; (
                         out:no_more_episodes | 
@@ -45,5 +48,5 @@ It emits a series of EpisodeStart followed by a set of images.
                             (in:next_image ; (out:image | out:no_more_images))*)
                     )
                 )*            
-            """),
+            """,
 )

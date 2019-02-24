@@ -23,15 +23,19 @@ setup(
         version=version,
         keywords='',
         package_dir={'': 'src'},
-        packages=['aido_nodes'],
+        packages=['aido_nodes', 'aido_schemas', 'aido_node_wrapper'],
         install_requires=[
             'compmake',
             'pyparsing',
-            'PyContracts'
+            'PyContracts',
+            'pyparsing',
+            'PyContracts',
+            'networkx',
+            'termcolor',
         ],
         entry_points={
             'console_scripts': [
-                'aido_node_wrap=aido_nodes:aido_node_wrap_main',
+                'aido_node_wrap=aido_node_wrapper:aido_node_wrap_main',
             ],
         },
 )
