@@ -1,5 +1,5 @@
+from aido_nodes import InteractionProtocol
 from aido_schemas import JPGImage, PWMCommands, EpisodeStart
-from aido_nodes import parse_language,  InteractionProtocol
 
 protocol_agent_jpg_pwm = InteractionProtocol(
         description="""
@@ -11,9 +11,9 @@ it replies with PWMCommands.
         inputs={"camera_image": JPGImage,
                 "episode_start": EpisodeStart},
         outputs={"pwm_commands": PWMCommands},
-        interaction=parse_language("""
+        language="""
             (in:episode_start ; (in:camera_image ; out:pwm_commands)*)*
-        """)
+        """
 )
 
 protocol_image_filter = InteractionProtocol(
@@ -21,9 +21,9 @@ protocol_image_filter = InteractionProtocol(
         inputs={"image": JPGImage,
                 "episode_start": EpisodeStart},
         outputs={"transformed": JPGImage},
-        interaction=parse_language("""
+        language="""
         (in:episode_start ; (in:image ; out:transformed)*)*
-        """)
+        """
 )
 
 protocol_image_source = InteractionProtocol(
@@ -40,7 +40,7 @@ It emits a series of EpisodeStart followed by a set of images.
                  "episode_start": EpisodeStart,
                  "no_more_images": type(None),
                  "no_more_episodes": type(None)},
-        interaction=parse_language("""
+        language="""
                 (
                     in:next_episode ; (
                         out:no_more_episodes | 
@@ -48,5 +48,5 @@ It emits a series of EpisodeStart followed by a set of images.
                             (in:next_image ; (out:image | out:no_more_images))*)
                     )
                 )*            
-            """),
+            """,
 )

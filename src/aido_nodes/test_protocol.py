@@ -2,12 +2,14 @@ from typing import Sequence, List
 
 from aido_nodes import OutputProduced, InputReceived, Event
 from aido_nodes.language_recognize import LanguageChecker, Enough, Unexpected, NeedMore
-from aido_nodes.test_language import parse_language
-
-
+from aido_nodes.language_parse import parse_language, language_to_str
+import re
 
 
 def assert_seq(s: str, seq: List[Event], expect: Sequence[type], final: type):
+    s = s.replace('\n', ' ').strip()
+    while '  ' in s:
+        s = s.replace('  ', ' ')
     l = parse_language(s)
     pc = LanguageChecker(l)
 
@@ -26,6 +28,12 @@ def assert_seq(s: str, seq: List[Event], expect: Sequence[type], final: type):
         msg += f'\n entire sequence: {seq}'
         msg += f'\n language: {l}'
         raise Exception(msg)
+
+    s2 = language_to_str(l)
+    print(s)
+    print(s2)
+    l2 = parse_language(s2)
+    assert l==l2, (s, s2)
 
 
 def test_proto_out1():

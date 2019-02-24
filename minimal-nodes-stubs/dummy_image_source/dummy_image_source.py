@@ -36,7 +36,6 @@ class DummyImageSourceState:
 class DummyImageSource:
     config: DummyImageSourceConfig = field(default_factory=DummyImageSourceConfig)
     state: DummyImageSourceState = field(default_factory=DummyImageSourceState)
-    protocol: ClassVar[InteractionProtocol] = protocol_image_source
 
     def init(self):
         self.state.episode = -1
@@ -80,7 +79,8 @@ def bgr2jpg(image_cv) -> bytes:
 def main():
     import sys
     agent = DummyImageSource()
-    wrap_direct(agent=agent, protocol=agent.protocol, args=sys.argv[1:])
+    protocol = protocol_image_source
+    wrap_direct(agent=agent, protocol=protocol)
 
 
 if __name__ == '__main__':

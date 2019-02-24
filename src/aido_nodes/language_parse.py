@@ -5,6 +5,7 @@ from aido_nodes import ExpectInputReceived, ExpectOutputProduced, InSequence, Ze
 
 __all__ = [
     'parse_language',
+    'language_to_str',
     'Syntax',
 ]
 
@@ -19,6 +20,29 @@ def parse_language(s: str) -> Language:
     res = Syntax.language.parseString(s, parseAll=True)
     res = res[0]
     return res
+
+
+def language_to_str(l: Language):
+    def quote_if(s):
+        if ';' in s or '|' in s:
+            return "("+s+')'
+        else:
+            return s
+    if isinstance(l, ExpectInputReceived):
+        return f"in:{l.channel}"
+    if isinstance(l, ExpectOutputProduced):
+        return f"out:{l.channel}"
+    if isinstance(l, InSequence):
+        return  " ; ".join(quote_if(language_to_str(_)) for _ in  l.ls)
+    if isinstance(l, Either):
+        return  " | ".join(quote_if(language_to_str(_)) for _ in  l.ls)
+    if isinstance(l, ZeroOrMore):
+        return "(" + language_to_str(l.l) + ")" + '*'
+    if isinstance(l, OneOrMore):
+        return "(" + language_to_str(l.l) + ")" + '+'
+    if isinstance(l, ZeroOrOne):
+        return "(" + language_to_str(l.l) + ")" + '?'
+    raise NotImplementedError(type(l))
 
 
 def on_input_received(s, loc, tokens):

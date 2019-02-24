@@ -65,7 +65,7 @@ def describe_agent(agent):
     from zuper_json.ipce import object_to_ipce
     res = {}
     if hasattr(agent, 'config'):
-        config_json = object_to_ipce(agent.config, globals())
+        config_json = object_to_ipce(agent.config, globals(), with_schema=False)
         res['config'] = config_json
 
     print(json.dumps(res, indent=2))
@@ -73,7 +73,7 @@ def describe_agent(agent):
 
 def describe_protocol(protocol):
     from zuper_json.ipce import object_to_ipce
-    s = object_to_ipce(protocol, globals())
+    s = object_to_ipce(protocol, globals(), with_schema=False)
     print(json.dumps(s, indent=2))
 
 
@@ -100,7 +100,10 @@ class Context:
 
             from zuper_json.ipce import ipce_to_object, object_to_ipce
 
-            ob = ipce_to_object(data, {}, {}, expect_type=klass)
+            if isinstance(data, dict):
+                ob = ipce_to_object(data, {}, {}, expect_type=klass)
+            else:
+                ob = data
             data = object_to_ipce(ob, {}, with_schema=False)
             m = {'topic': topic, 'data': data}
             j = json.dumps(m)
@@ -116,6 +119,8 @@ def run_loop(agent, protocol: InteractionProtocol, args: Optional[List[str]] = N
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', default='/dev/stdin')
     parser.add_argument('--output', default='/dev/stdout')
+    parser.add_argument('--loose', default=False, action='store_true')
+
     parsed = parser.parse_args(args)
 
     fin = parsed.input
