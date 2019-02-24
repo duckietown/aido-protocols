@@ -15,7 +15,7 @@ from compmake.utils import import_name
 from contracts import check_isinstance
 from contracts.utils import format_obs
 
-from . import logger
+from aido_nodes import logger
 
 
 def aido_node_wrap_main():

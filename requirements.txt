@@ -3,6 +3,8 @@
 compmake
 pyparsing
 PyContracts
+networkx
+termcolor
 
 # testing
 comptests==1.4.27
