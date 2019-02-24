@@ -3,7 +3,7 @@ from typing import Sequence, List
 from aido_nodes import OutputProduced, InputReceived, Event
 from aido_nodes.language_recognize import LanguageChecker, Enough, Unexpected, NeedMore
 from aido_nodes.language_parse import parse_language, language_to_str
-import re
+from comptests import comptest
 
 
 def assert_seq(s: str, seq: List[Event], expect: Sequence[type], final: type):
@@ -35,127 +35,128 @@ def assert_seq(s: str, seq: List[Event], expect: Sequence[type], final: type):
     l2 = parse_language(s2)
     assert l==l2, (s, s2)
 
-
+@comptest
 def test_proto_out1():
     seq = [OutputProduced("a")]
     assert_seq("out:a", seq, (Enough,), Enough)
 
 
+@comptest
 def test_proto_in1():
     seq = [InputReceived("a")]
     assert_seq("in:a", seq, (Enough,), Enough)
 
-
+@comptest
 def test_proto3():
     seq = [InputReceived("a")]
     assert_seq("out:a", seq, (Unexpected,), Unexpected)
 
-
+@comptest
 def test_proto4():
     seq = [OutputProduced("a")]
     assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
-
+@comptest
 def test_proto05():
     seq = [InputReceived("b")]
     assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
-
+@comptest
 def test_proto06():
     seq = [OutputProduced("b")]
     assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
-
+@comptest
 def test_proto07():
     seq = [OutputProduced("a"), OutputProduced("b")]
     assert_seq("out:a ; out:b", seq, (NeedMore, Enough), Enough)
 
-
+@comptest
 def test_proto08():
     seq = [OutputProduced("a"), OutputProduced("b")]
     assert_seq("out:a ; out:b ; out:b", seq, (NeedMore, NeedMore), NeedMore)
 
-
+@comptest
 def test_proto09():
     seq = [OutputProduced("a")]
     assert_seq("out:a ; out:b", seq, (NeedMore,), NeedMore)
 
-
+@comptest
 def test_proto10():
     seq = [OutputProduced("a"), OutputProduced("b"), OutputProduced("c")]
     assert_seq("out:a ; out:b", seq, (NeedMore, Enough, Unexpected), Unexpected)
 
-
+@comptest
 def test_proto_zom_01():
     seq = []
     assert_seq("out:a *", seq, (), Enough)
 
-
+@comptest
 def test_proto_zom_02():
     seq = [OutputProduced("a")]
     assert_seq("out:a *", seq, (Enough,), Enough)
 
-
+@comptest
 def test_proto_zom_03():
     seq = [OutputProduced("a"), OutputProduced("a")]
     assert_seq("out:a *", seq, (Enough, Enough), Enough)
 
-
+@comptest
 def test_proto_either_01():
     seq = [OutputProduced("a")]
     assert_seq("out:a | out:b ", seq, (Enough,), Enough)
 
-
+@comptest
 def test_proto_either_02():
     seq = [OutputProduced("b")]
     assert_seq("out:a | out:b ", seq, (Enough,), Enough)
 
-
+@comptest
 def test_proto_either_03():
     seq = [OutputProduced("c")]
     assert_seq("out:a | out:b | out:c ", seq, (Enough,), Enough)
 
-
+@comptest
 def test_proto_either_04():
     seq = [OutputProduced("a"), OutputProduced("b")]
     assert_seq("(out:a ; out:b) | (out:b ; out:a) ", seq, (NeedMore, Enough), Enough)
 
-
+@comptest
 def test_proto_either_05():
     seq = [OutputProduced("b"), OutputProduced("a")]
     assert_seq("(out:a ; out:b) | (out:b ; out:a) ", seq, (NeedMore, Enough,), Enough)
 
-
+@comptest
 def test_proto_oom_01():
     seq = []
     assert_seq("out:a +", seq, (), NeedMore)
 
-
+@comptest
 def test_proto_oom_02():
     seq = [OutputProduced("a")]
     assert_seq("out:a +", seq, (Enough,), Enough)
 
-
+@comptest
 def test_proto_oom_03():
     seq = [OutputProduced("a"), OutputProduced("a")]
     assert_seq("out:a +", seq, (Enough, Enough), Enough)
 
-
+@comptest
 def test_proto_zoom_01():
     seq = []
     assert_seq("out:a ?", seq, (), Enough)
 
-
+@comptest
 def test_proto_zoom_02():
     seq = [OutputProduced("a")]
     assert_seq("out:a ?", seq, (Enough,), Enough)
 
-
+@comptest
 def test_proto_zoom_03():
     seq = [OutputProduced("a"), OutputProduced("a")]
     assert_seq("out:a ?", seq, (Enough, Unexpected), Unexpected)
 
-
+@comptest
 def test_protocol_complex1():
     l = """
         (
@@ -169,7 +170,7 @@ def test_protocol_complex1():
     seq = [InputReceived("next_episode"), OutputProduced("episode_start")]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
-
+@comptest
 def test_protocol_complex1_0():
     l = """
         
@@ -183,7 +184,7 @@ def test_protocol_complex1_0():
     seq = [InputReceived("next_episode"), OutputProduced("no_more_episodes")]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
-
+@comptest
 def test_protocol_complex1_1():
     l = """
 
@@ -198,7 +199,7 @@ def test_protocol_complex1_1():
            OutputProduced("episode_start")]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
-
+@comptest
 def test_protocol_complex1_2():
     l = """
 
@@ -216,7 +217,7 @@ def test_protocol_complex1_2():
            ]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
-
+@comptest
 def test_protocol_complex1_3():
     l0 = """
 

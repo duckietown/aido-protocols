@@ -9,13 +9,12 @@ import sys
 import time
 from typing import List, Optional
 
-from aido_nodes import InteractionProtocol, InputReceived, OutputProduced
-from aido_nodes.test_protocol import Unexpected, LanguageChecker
+from aido_nodes import InteractionProtocol, InputReceived, OutputProduced, Unexpected, LanguageChecker
 from compmake.utils import import_name
 from contracts import check_isinstance
 from contracts.utils import format_obs
 
-from . import logger
+from aido_nodes import logger
 
 
 def aido_node_wrap_main():

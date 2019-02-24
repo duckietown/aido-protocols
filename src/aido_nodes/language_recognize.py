@@ -109,6 +109,7 @@ class LanguageChecker:
         a = 2
         for n in self.g:
             if n not in [START, ACCEPT]:
+                # noinspection PyUnresolvedReferences
                 self.g.node[n]['label'] = f'S{a}'
                 a += 1
         write_dot(self.g, 'l.dot')
