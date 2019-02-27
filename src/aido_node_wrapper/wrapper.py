@@ -1,20 +1,22 @@
 import argparse
 import inspect
 import json
-
 import os
 import select
 import stat
 import sys
 import time
-from typing import List, Optional
+from typing import List, Optional, Iterator, Dict
 
-from aido_nodes import InteractionProtocol, InputReceived, OutputProduced, Unexpected, LanguageChecker
+from networkx.drawing.nx_pydot import write_dot
+
+from aido_node_wrapper.constants import TOPIC_SET_CONFIG
+from aido_nodes import InteractionProtocol, InputReceived, OutputProduced, Unexpected, LanguageChecker, logger
+from aido_nodes.structures import TimingInfo, local_time
 from compmake.utils import import_name
 from contracts import check_isinstance
 from contracts.utils import format_obs
-
-from aido_nodes import logger
+from zuper_json.ipce import object_to_ipce, ipce_to_object
 
 
 def aido_node_wrap_main():
@@ -35,24 +37,24 @@ def aido_node_wrap_main():
     k = import_name(kn)
     logger.info(k)
     if isinstance(k, type):
-        agent = k()
+        node = k()
     else:
-        agent = k
-    check_implementation(agent, protocol)
+        node = k
+    check_implementation(node, protocol)
 
 
-def wrap_direct(agent, protocol, args: Optional[List[str]] = None):
+def wrap_direct(node, protocol, args: Optional[List[str]] = None):
     if args is None:
         args = sys.argv[1:]
     if not args:
-        msg = 'Provide one command (run, describe-agent, describe-protocol)'
+        msg = 'Provide one command (run, describe-node, describe-protocol)'
         raise Exception(msg)
 
     cmd = args.pop(0)
     if cmd == 'run':
-        run_loop(agent, protocol, args)
-    elif cmd == 'describe-agent':
-        describe_agent(agent)
+        run_loop(node, protocol, args)
+    elif cmd == 'describe-node':
+        describe_node(node)
     elif cmd == 'describe-protocol':
         describe_protocol(protocol)
     else:
@@ -60,11 +62,11 @@ def wrap_direct(agent, protocol, args: Optional[List[str]] = None):
         raise Exception(msg)
 
 
-def describe_agent(agent):
+def describe_node(node):
     from zuper_json.ipce import object_to_ipce
     res = {}
-    if hasattr(agent, 'config'):
-        config_json = object_to_ipce(agent.config, globals(), with_schema=False)
+    if hasattr(node, 'config'):
+        config_json = object_to_ipce(node.config, globals(), with_schema=False)
         res['config'] = config_json
 
     print(json.dumps(res, indent=2))
@@ -85,6 +87,8 @@ class Context:
         self.pc = pc
 
     def write(self, topic, data):
+        my_host_name = 'hostname'
+
         if topic not in self.protocol.outputs:
             msg = f'Output channel "{topic}" not found in protocol; know {sorted(self.protocol.outputs)}.'
             raise Exception(msg)
@@ -97,14 +101,17 @@ class Context:
         else:
             klass = self.protocol.outputs[topic]
 
-            from zuper_json.ipce import ipce_to_object, object_to_ipce
-
             if isinstance(data, dict):
-                ob = ipce_to_object(data, {}, {}, expect_type=klass)
-            else:
-                ob = data
-            data = object_to_ipce(ob, {}, with_schema=False)
-            m = {'topic': topic, 'data': data}
+                data = ipce_to_object(data, {}, {}, expect_type=klass)
+
+            acquired = {}
+            processed = {my_host_name: local_time()}
+            timing = TimingInfo(acquired=acquired, processed=processed)
+            m = {}
+            m['data'] = object_to_ipce(data, {}, with_schema=False)
+            m['timing'] = object_to_ipce(timing, {}, with_schema=False)
+            m['topic'] = topic
+
             j = json.dumps(m)
             self.of.write(j)
             self.of.write('\n')
@@ -114,7 +121,7 @@ class Context:
         logger.info(s)
 
 
-def run_loop(agent, protocol: InteractionProtocol, args: Optional[List[str]] = None):
+def run_loop(node, protocol: InteractionProtocol, args: Optional[List[str]] = None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', default='/dev/stdin')
     parser.add_argument('--output', default='/dev/stdout')
@@ -144,79 +151,95 @@ def run_loop(agent, protocol: InteractionProtocol, args: Optional[List[str]] = N
         logger.info(f'waiting for file {fin} to be created')
         time.sleep(1)
 
+
+
+    with open(fin) as fi:
+        loop(fi, fo, node, protocol)
+
+
+def loop(fi, fo, node, protocol):
     logger.info(f'Starting reading')
 
     pc = LanguageChecker(protocol.interaction)
+    fn = 'language.dot'
+    write_dot(pc.g, fn)
+    logger.info('Wrote graph to {fn}')
+
     context = Context(of=fo, protocol=protocol, pc=pc)
-    call_if_fun_exists(agent, 'init', context=context)
+    call_if_fun_exists(node, 'init', context=context)
 
-    with open(fin) as fifo:
-        for parsed in inputs(fifo):
-
-            topic: str = parsed['topic']
-            data = parsed['data']
-
-            if topic.startswith('wrapper.'):
-                topic = topic.replace('wrapper.', '')
-
-                if topic == 'set_config':
-                    key = data['key']
-                    value = data['value']
-
-                    if hasattr(agent, 'config'):
-                        config = agent.config
-                        if hasattr(config, key):
-                            setattr(agent.config, key, value)
-                        else:
-                            logger.error(f'Could not find config key {key}')
-                    call_if_fun_exists(agent, 'on_updated_config', context=context, key=key, value=value)
-                    continue
-
-            else:
-
-                if topic not in protocol.inputs:
-                    msg = f'Input channel "{topic}" not found in protocol. Known: {sorted(protocol.inputs)}'
-                    raise Exception(msg)
-
-                klass = protocol.inputs[topic]
-                from zuper_json.ipce import ipce_to_object
-
-                ob = ipce_to_object(data, {}, {}, expect_type=klass)
-
-                # logger.info(f'Before push the state is\n{pc}')
-
-                event = InputReceived(topic)
-                res = pc.push(event)
-                # logger.info(f'After push of {event} the state is\n{pc}' )
-                if isinstance(res, Unexpected):
-                    msg = f'Unexpected input "{topic}": {res}'
-                    msg += '\n' + format_obs(dict(pc=pc))
-                    logger.error(msg)
-                    raise Exception(msg)
-                else:
-                    expect_fn = f'on_received_{topic}'
-                    call_if_fun_exists(agent, expect_fn, data=ob, context=context)
-                #
-                # if hasattr(agent, expect_fn):
-                #     f = getattr(agent, expect_fn)
-                #
-                #     f(data=data, context=context)
-                # else:
-                #     msg = f'Missing function {expect_fn}'
-                #     msg += f'\nI know {sorted(agent.__dict__)}'
-                #     raise NotConforming(msg)
+    for parsed in inputs(fi):
+        topic = parsed['topic']
+        logger.info(f'received {topic}')
+        if topic.startswith('wrapper.'):
+            parsed['topic'] = topic.replace('wrapper.', '')
+            handle_message_wrapper(parsed, node, context)
+        else:
+            handle_message_node(parsed, protocol, pc, node, context)
 
     res = pc.finish()
     if isinstance(res, Unexpected):
         msg = f'Protocol did not finish: {res}'
         logger.error(msg)
 
-    call_if_fun_exists(agent, 'finish', context=context)
+    call_if_fun_exists(node, 'finish', context=context)
 
 
-def inputs(fifo):
+def handle_message_wrapper(parsed, node, context):
+    topic = parsed['topic']
+    data = parsed['data']
+
+    if topic == TOPIC_SET_CONFIG:
+        key = data['key']
+        value = data['value']
+
+        if hasattr(node, 'config'):
+            config = node.config
+            if hasattr(config, key):
+                setattr(node.config, key, value)
+            else:
+                logger.error(f'Could not find config key {key}')
+
+            call_if_fun_exists(node, 'on_updated_config', context=context, key=key, value=value)
+        else:
+            logger.warning('Node does not have the "config" attribute.')
+
+    else:
+        logger.error("unknown topic %s" % topic)
+
+
+def handle_message_node(parsed, protocol, pc: LanguageChecker, agent, context):
+    topic = parsed['topic']
+    data = parsed['data']
+
+    if topic not in protocol.inputs:
+        msg = f'Input channel "{topic}" not found in protocol. Known: {sorted(protocol.inputs)}'
+        raise Exception(msg)
+
+    klass = protocol.inputs[topic]
+    from zuper_json.ipce import ipce_to_object
+
+    ob = ipce_to_object(data, {}, {}, expect_type=klass)
+
+    # logger.info(f'Before push the state is\n{pc}')
+
+    event = InputReceived(topic)
+    res = pc.push(event)
+
+    names = pc.get_active_states_names()
+    logger.info(f'After push of {event}: result \n{res} active {names}' )
+    if isinstance(res, Unexpected):
+        msg = f'Unexpected input "{topic}": {res}'
+        msg += '\n' + format_obs(dict(pc=pc))
+        logger.error(msg)
+        raise Exception(msg)
+    else:
+        expect_fn = f'on_received_{topic}'
+        call_if_fun_exists(agent, expect_fn, data=ob, context=context)
+
+
+def inputs(fifo, timeout=1.0) -> Iterator[Dict]:
     while True:
-        timeout = 1.0
         readyr, readyw, readyx = select.select([fifo], [], [fifo], timeout)
         if readyr:
             # logger.info(f'reading...')
@@ -232,11 +255,14 @@ def inputs(fifo):
 
             # logger.info(f'read {data!r}')
             parsed = json.loads(data)
+
+            # check fields
+
             yield parsed
         elif readyx:
-            logger.info('ex')
+            logger.warning('Exceptional condition on input channel.')
         else:
-            logger.info('Input channel not ready.')
+            logger.warning(f'Input channel not ready after {timeout} seconds. Will re-try')
 
 
 import contracts
@@ -260,10 +286,10 @@ class NotConforming(ValueError):
     pass
 
 
-def check_implementation(agent, protocol: InteractionProtocol):
+def check_implementation(node, protocol: InteractionProtocol):
     for n in protocol.inputs:
         expect_fn = f'on_received_{n}'
-        if not hasattr(agent, expect_fn):
+        if not hasattr(node, expect_fn):
             msg = f'Missing function {expect_fn}'
-            msg += f'\nI know {sorted(agent.__dict__)}'
+            msg += f'\nI know {sorted(node.__dict__)}'
             raise NotConforming(msg)

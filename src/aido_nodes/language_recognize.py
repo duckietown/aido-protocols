@@ -4,7 +4,7 @@ from typing import Union, Tuple, Optional, Set
 from networkx.drawing.nx_pydot import write_dot
 
 from aido_nodes import Language, OutputProduced, InputReceived, Event, ExpectInputReceived, ExpectOutputProduced, \
-    InSequence, ZeroOrMore, Either, OneOrMore, ZeroOrOne
+    InSequence, ZeroOrMore, Either, OneOrMore, ZeroOrOne, logger
 from contracts.utils import indent
 
 
@@ -41,8 +41,11 @@ class Always:
 
 def get_nfa(g: Optional[nx.DiGraph], start_node: NodeName, accept_node: NodeName, l: Language,
             prefix: Tuple[str, ...] = ()):
-    g.add_node(start_node, label="/".join(start_node))
-    g.add_node(accept_node, label="/".join(accept_node))
+    # assert start_node != accept_node
+    if not start_node in g:
+        g.add_node(start_node, label="/".join(start_node))
+    if not accept_node in g:
+        g.add_node(accept_node, label="/".join(accept_node))
     if isinstance(l, ExpectOutputProduced):
         g.add_edge(start_node, accept_node, event_match=l, label=f'out/{l.channel}')
     elif isinstance(l, ExpectInputReceived):
@@ -50,15 +53,20 @@ def get_nfa(g: Optional[nx.DiGraph], start_node: NodeName, accept_node: NodeName
     elif isinstance(l, InSequence):
         current = start_node
         for i, li in enumerate(l.ls):
-            if i == len(l.ls) - 1:
-                n = accept_node
-            else:
-                n = prefix + (f'after{i}',)
+            # if i == len(l.ls) - 1:
+            #     n = accept_node
+            # else:
+            n = prefix + (f'after{i}',)
             g.add_node(n)
+            logger.debug(f'sequence {i} start {current} to {n}')
             get_nfa(g, start_node=current, accept_node=n, prefix=prefix + (f'{i}',), l=li)
             current = n
 
+        g.add_edge(current, accept_node, event_match=Always(), label='always')
+
     elif isinstance(l, ZeroOrMore):
+        logger.debug(f'zeroormore {start_node} -> {accept_node}')
+
         g.add_edge(start_node, accept_node, event_match=Always(), label='always')
         get_nfa(g, start_node=accept_node, accept_node=accept_node, l=l.l, prefix=prefix + ('zero_or_more',))
 
@@ -112,26 +120,36 @@ class LanguageChecker:
                 # noinspection PyUnresolvedReferences
                 self.g.node[n]['label'] = f'S{a}'
                 a += 1
-        write_dot(self.g, 'l.dot')
+            elif n == START:
+                # noinspection PyUnresolvedReferences
+                self.g.node[n]['label'] = 'start'
+            elif n == ACCEPT:
+                # noinspection PyUnresolvedReferences
+                self.g.node[n]['label'] = 'accept'
+
         self.active = {self.start_node}
+        logger.debug(f'active {self.active}')
         self._evolve_empty()
 
     def _evolve_empty(self):
-        now_active = set()
-        for node in self.active:
-            nalways = 0
-            nother = 0
-            for (_, neighbor, data) in self.g.out_edges([node], data=True):
-                # print(f'-> {neighbor} {data["event_match"]}')
-                if isinstance(data['event_match'], Always):
-                    now_active.add(neighbor)
-                    nalways += 1
-                else:
-                    nother += 1
-            if nother or (nalways == 0):
-                now_active.add(node)
+        while True:
+            now_active = set()
+            for node in self.active:
+                nalways = 0
+                nother = 0
+                for (_, neighbor, data) in self.g.out_edges([node], data=True):
+                    # print(f'-> {neighbor} {data["event_match"]}')
+                    if isinstance(data['event_match'], Always):
+                        now_active.add(neighbor)
+                        nalways += 1
+                    else:
+                        nother += 1
+                if nother or (nalways == 0):
+                    now_active.add(node)
 
-        self.active = now_active
+            if self.active == now_active:
+                break
+            self.active = now_active
 
     def push(self, event) -> Result:
         now_active = set()
@@ -161,3 +179,6 @@ class LanguageChecker:
         if self.accept_node in self.active:
             return Enough()
         return NeedMore()
+
+    def get_active_states_names(self):
+        return [self.g.nodes[_]['label'] for _ in self.active]

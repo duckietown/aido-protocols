@@ -3,3 +3,4 @@ __pycache__
 .registers
 .coverage
 out-comptests
+l.dot

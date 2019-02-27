@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-from aido_nodes import wrap_direct
+from aido_node_wrapper import wrap_direct
 from aido_schemas import protocol_image_filter, JPGImage
 
 class DummyImageFilter:
-    protocol = protocol_image_filter
 
     def init(self, context):
         context.log('init()')
@@ -18,9 +17,9 @@ class DummyImageFilter:
 
 
 def main():
-    import sys
-    agent = DummyImageFilter()
-    wrap_direct(agent=agent, protocol=agent.protocol, args=sys.argv[1:])
+    node = DummyImageFilter()
+    protocol = protocol_image_filter
+    wrap_direct(node=node, protocol=protocol)
 
 if __name__ == '__main__':
     main()

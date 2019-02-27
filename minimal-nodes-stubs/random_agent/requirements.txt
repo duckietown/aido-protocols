@@ -1,3 +1,4 @@
 -e git://github.com/duckietown/aido-protocols.git@v4#egg=aido-protocols
 -e git://github.com/AndreaCensi/zuper_utils.git@v4#egg=zuper_utils
 
+numpy

@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import Any, Optional
+
 from aido_nodes import InteractionProtocol
 from aido_schemas import JPGImage, PWMCommands, EpisodeStart
 

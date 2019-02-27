@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import numpy as np
 
-from aido_nodes import wrap_direct
+from aido_node_wrapper import wrap_direct
 from aido_schemas import PWMCommands, protocol_agent_jpg_pwm
 
 
@@ -22,10 +22,9 @@ class RandomAgent:
 
 
 def main():
-    import sys
-    agent = RandomAgent()
-    wrap_direct(agent=agent,
-                protocol=protocol_agent_jpg_pwm)
+    node = RandomAgent()
+    protocol = protocol_agent_jpg_pwm
+    wrap_direct(node=node, protocol=protocol)
 
 
 if __name__ == '__main__':

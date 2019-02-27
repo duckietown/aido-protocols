@@ -17,10 +17,10 @@ upload:
 	twine upload dist/*
 
 
-comptest_package=aido_nodes_tests
+comptest_package=aido_nodes_tests,aido_schemas_tests,aido_node_wrapper_tests
 out=out-comptests
 coverage_dir=out-coverage
-coverage_include='*src/aido_nodes*'
+coverage_include='*src/aido_*'
 
 coveralls_repo_token=rqlJ5L8FdP2zmw3WVxQjlIeg71GaqMoHy
 

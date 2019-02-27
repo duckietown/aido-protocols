@@ -213,7 +213,7 @@ class DummyFilter:
 
 if __name__ == '__main__':
     node = DummyFilter()
-    wrap_direct(agent=node, protocol=node.protocol)
+    wrap_direct(node=node, protocol=node.protocol)
 ```
 
 The user must implement for each input channel `![channel name]` the  function `on_received_![channel name]`. 

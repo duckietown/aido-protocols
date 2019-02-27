@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from dataclasses import dataclass, field
-from typing import Tuple, ClassVar
+from typing import Tuple
 
 import numpy as np
 
-from aido_nodes import wrap_direct, InteractionProtocol
+from aido_node_wrapper import wrap_direct
 from aido_schemas import protocol_image_source, JPGImage
 
 
@@ -62,6 +62,7 @@ class DummyImageSource:
         if self.state.episode >= self.config.num_episodes:
             context.write('no_more_episodes', None)
             return
+
         self.state.episode += 1
         self.state.nimages = 0
         es = dict(episode_name=f'episode{self.state.episode}')
@@ -77,10 +78,9 @@ def bgr2jpg(image_cv) -> bytes:
 
 
 def main():
-    import sys
-    agent = DummyImageSource()
+    node = DummyImageSource()
     protocol = protocol_image_source
-    wrap_direct(agent=agent, protocol=protocol)
+    wrap_direct(node=node, protocol=protocol)
 
 
 if __name__ == '__main__':

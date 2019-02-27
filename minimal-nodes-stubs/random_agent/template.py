@@ -19,11 +19,11 @@ class FakeEnvironment(Environment):
 
 def main():
     import sys
-    agent = RandomAgent()
+    node = RandomAgent()
     protocol = protocol_agent_jpg_pwm
 
     thread1.run(your_agent, my_fake_environment)
-    thread2.run(wrap_direct(agent=agent, protocol=protocol, args=sys.argv[1:]))
+    thread2.run(wrap_direct(node=node, protocol=protocol))
 
 #
 # class WrapsGymAgent:
