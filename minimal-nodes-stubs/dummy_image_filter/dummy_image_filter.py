@@ -7,9 +7,12 @@ class DummyImageFilter:
     def init(self, context):
         context.log('init()')
 
+    def on_received_episode_start(self, context, data):
+        context.write('episode_start', data=data)
+
     def on_received_image(self, context, data: JPGImage):
         transformed = data
-        context.write('transformed', transformed)
+        context.write('image', transformed)
 
     def finish(self, context):
         context.log('finish()')

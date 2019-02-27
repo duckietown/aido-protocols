@@ -4,8 +4,9 @@ from typing import Tuple
 
 import numpy as np
 
-from aido_node_wrapper import wrap_direct
-from aido_schemas import protocol_image_source, JPGImage
+from aido_node_wrapper import wrap_direct, TimingInfo
+from aido_nodes.structures import TimeSpec, timestamp_from_seconds
+from aido_schemas import protocol_image_source, JPGImage, EpisodeStart
 
 
 # noinspection PyUnresolvedReferences
@@ -30,6 +31,8 @@ class DummyImageSourceState:
     """
     episode: int = -1
     nimages: int = -1
+
+    episode_name: str = None
 
 
 @dataclass
@@ -56,7 +59,13 @@ class DummyImageSource:
         values = (128 + np.random.randn(H, W, 3) * 60).astype('uint8')
         jpg_data = bgr2jpg(values)
         image = JPGImage(jpg_data)
-        context.write('image', image)
+        delta = 0.15
+        t = self.state.nimages * delta
+        time = timestamp_from_seconds(t)
+        ts = TimeSpec(time=time, frame=self.state.episode_name, clock=context.get_hostname())
+        acquired = {'image': ts}
+        timing = TimingInfo(acquired=acquired)
+        context.write(topic='image', data=image, timing=timing)
 
     def _start_episode(self, context):
         if self.state.episode >= self.config.num_episodes:
@@ -65,8 +74,9 @@ class DummyImageSource:
 
         self.state.episode += 1
         self.state.nimages = 0
-        es = dict(episode_name=f'episode{self.state.episode}')
-        context.write('episode_start', es)
+        self.state.episode_name = f'episode{self.state.episode}'
+
+        context.write('episode_start', EpisodeStart(self.state.episode_name))
 
 
 def bgr2jpg(image_cv) -> bytes:

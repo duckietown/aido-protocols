@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-from typing import Any, Optional
-
 from aido_nodes import InteractionProtocol
 from aido_schemas import JPGImage, PWMCommands, EpisodeStart
 
@@ -23,9 +20,10 @@ protocol_image_filter = InteractionProtocol(
         description="""An image filter. Takes an image, returns an image.""",
         inputs={"image": JPGImage,
                 "episode_start": EpisodeStart},
-        outputs={"transformed": JPGImage},
+        outputs={"image": JPGImage,
+                 "episode_start": EpisodeStart},
         language="""
-        (in:episode_start ; (in:image ; out:transformed)*)*
+        (in:episode_start ; out:episode_start ; (in:image ; out:image)*)*
         """
 )
 

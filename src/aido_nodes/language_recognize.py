@@ -58,14 +58,14 @@ def get_nfa(g: Optional[nx.DiGraph], start_node: NodeName, accept_node: NodeName
             # else:
             n = prefix + (f'after{i}',)
             g.add_node(n)
-            logger.debug(f'sequence {i} start {current} to {n}')
+            # logger.debug(f'sequence {i} start {current} to {n}')
             get_nfa(g, start_node=current, accept_node=n, prefix=prefix + (f'{i}',), l=li)
             current = n
 
         g.add_edge(current, accept_node, event_match=Always(), label='always')
 
     elif isinstance(l, ZeroOrMore):
-        logger.debug(f'zeroormore {start_node} -> {accept_node}')
+        # logger.debug(f'zeroormore {start_node} -> {accept_node}')
 
         g.add_edge(start_node, accept_node, event_match=Always(), label='always')
         get_nfa(g, start_node=accept_node, accept_node=accept_node, l=l.l, prefix=prefix + ('zero_or_more',))

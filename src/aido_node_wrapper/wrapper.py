@@ -3,16 +3,17 @@ import inspect
 import json
 import os
 import select
+import socket
 import stat
 import sys
 import time
-from typing import List, Optional, Iterator, Dict
+from typing import List, Optional, Iterator, Dict, Tuple
 
 from networkx.drawing.nx_pydot import write_dot
 
 from aido_node_wrapper.constants import TOPIC_SET_CONFIG
 from aido_nodes import InteractionProtocol, InputReceived, OutputProduced, Unexpected, LanguageChecker, logger
-from aido_nodes.structures import TimingInfo, local_time
+from aido_nodes.structures import TimingInfo, local_time, TimeSpec, timestamp_from_seconds
 from compmake.utils import import_name
 from contracts import check_isinstance
 from contracts.utils import format_obs
@@ -81,13 +82,23 @@ def describe_protocol(protocol):
 class Context:
     protocol: InteractionProtocol
 
-    def __init__(self, of, protocol, pc):
+    def __init__(self, of, protocol, pc, node_name, tout: Dict[str, str]):
         self.of = of
         self.protocol = protocol
         self.pc = pc
+        self.node_name = node_name
+        self.hostname = socket.gethostname()
+        self.tout = tout
 
-    def write(self, topic, data):
-        my_host_name = 'hostname'
+        self.last_timing = None
+
+    def set_last_timing(self, timing: TimingInfo):
+        self.last_timing = timing
+
+    def get_hostname(self):
+        return self.hostname
+
+    def write(self, topic, data, timing=None):
 
         if topic not in self.protocol.outputs:
             msg = f'Output channel "{topic}" not found in protocol; know {sorted(self.protocol.outputs)}.'
@@ -104,13 +115,27 @@ class Context:
             if isinstance(data, dict):
                 data = ipce_to_object(data, {}, {}, expect_type=klass)
 
-            acquired = {}
-            processed = {my_host_name: local_time()}
-            timing = TimingInfo(acquired=acquired, processed=processed)
+            if timing is None:
+                timing = self.last_timing
+
+            s = time.time()
+            hostname = socket.gethostname()
+            if timing.received is None:
+                # XXX
+                time1 = timestamp_from_seconds(s)
+            else:
+                time1 = timing.received.time
+            processed = TimeSpec(time=time1,
+                                 time2=timestamp_from_seconds(s),
+                                 frame='epoch',
+                                 clock=hostname)
+            timing.processed[self.node_name] = processed
+            # timing = TimingInfo(acquired=acquired, processed=processed)
             m = {}
+            m['topic'] = self.tout.get(topic, topic)
             m['data'] = object_to_ipce(data, {}, with_schema=False)
+            timing.received = None
             m['timing'] = object_to_ipce(timing, {}, with_schema=False)
-            m['topic'] = topic
 
             j = json.dumps(m)
             self.of.write(j)
@@ -118,16 +143,38 @@ class Context:
             self.of.flush()
 
     def log(self, s):
-        logger.info(s)
+        prefix = f'{self.hostname}:{self.node_name}: '
+        logger.info(prefix + s)
+
+
+def get_translation_table(t: str) -> Tuple[Dict[str, str], Dict[str, str]]:
+    tout = {}
+    tin = {}
+    for t in t.split(','):
+        ts = t.split(':')
+        if ts[0] == 'in':
+            tin[ts[1]] = ts[2]
+
+        if ts[0] == 'out':
+            tout[ts[1]] = ts[2]
+
+    return tin, tout
 
 
 def run_loop(node, protocol: InteractionProtocol, args: Optional[List[str]] = None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--input', default='/dev/stdin')
     parser.add_argument('--output', default='/dev/stdout')
+    parser.add_argument('--name', default=None)
+
+    parser.add_argument('--translate', default='')
     parser.add_argument('--loose', default=False, action='store_true')
 
     parsed = parser.parse_args(args)
+
+    tin, tout = get_translation_table(parsed.translate)
+
+    # expect in:name1:name2, out:name2:name1
 
     fin = parsed.input
     fout = parsed.output
@@ -151,25 +198,30 @@ def run_loop(node, protocol: InteractionProtocol, args: Optional[List[str]] = No
         logger.info(f'waiting for file {fin} to be created')
         time.sleep(1)
 
+    node_name = parsed.name or type(node).__name__
+
+    try:
+        with open(fin) as fi:
+            loop(node_name, fi, fo, node, protocol, tin, tout)
+    except BaseException as e:
+        logger.error(f'Error in node {node_name}: \n{e}')
+        raise
 
 
-    with open(fin) as fi:
-        loop(fi, fo, node, protocol)
-
-
-def loop(fi, fo, node, protocol):
+def loop(node_name, fi, fo, node, protocol, tin, tout):
     logger.info(f'Starting reading')
 
     pc = LanguageChecker(protocol.interaction)
     fn = 'language.dot'
     write_dot(pc.g, fn)
-    logger.info('Wrote graph to {fn}')
+    logger.info(f'Wrote graph to {fn}')
 
-    context = Context(of=fo, protocol=protocol, pc=pc)
+    context = Context(of=fo, protocol=protocol, pc=pc, node_name=node_name, tout=tout)
     call_if_fun_exists(node, 'init', context=context)
 
     for parsed in inputs(fi):
         topic = parsed['topic']
+        topic = tin.get(topic, topic)
         logger.info(f'received {topic}')
         if topic.startswith('wrapper.'):
             parsed['topic'] = topic.replace('wrapper.', '')
@@ -217,17 +269,23 @@ def handle_message_node(parsed, protocol, pc: LanguageChecker, agent, context):
         raise Exception(msg)
 
     klass = protocol.inputs[topic]
-    from zuper_json.ipce import ipce_to_object
 
     ob = ipce_to_object(data, {}, {}, expect_type=klass)
+    if 'timing' in parsed:
+        timing = ipce_to_object(parsed['timing'], {}, {}, expect_type=TimingInfo)
+    else:
+        timing = TimingInfo()
 
+    timing.received = local_time()
+
+    context.set_last_timing(timing)
     # logger.info(f'Before push the state is\n{pc}')
 
     event = InputReceived(topic)
     res = pc.push(event)
 
-    names = pc.get_active_states_names()
-    logger.info(f'After push of {event}: result \n{res} active {names}' )
+    # names = pc.get_active_states_names()
+    # logger.info(f'After push of {event}: result \n{res} active {names}' )
     if isinstance(res, Unexpected):
         msg = f'Unexpected input "{topic}": {res}'
         msg += '\n' + format_obs(dict(pc=pc))
@@ -235,7 +293,7 @@ def handle_message_node(parsed, protocol, pc: LanguageChecker, agent, context):
         raise Exception(msg)
     else:
         expect_fn = f'on_received_{topic}'
-        call_if_fun_exists(agent, expect_fn, data=ob, context=context)
+        call_if_fun_exists(agent, expect_fn, data=ob, context=context, timing=timing)
 
 
 def inputs(fifo, timeout=1.0) -> Iterator[Dict]:
