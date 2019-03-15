@@ -1,0 +1,12 @@
+{"compat": ["aido2"], "topic": "wrapper.set_config",   "data": {"key":  "shape", "value": [8, 8] }}
+{"compat": ["aido2"], "topic": "wrapper.set_config",   "data": {"key":  "num_episodes", "value": 2}}
+{"compat": ["aido2"], "topic": "wrapper.set_config",   "data": {"key":  "images_per_episode", "value": 2}}
+
+{"compat": ["aido2"], "topic": "next_episode", "data": null}
+{"compat": ["aido2"], "topic": "next_image",   "data": null}
+{"compat": ["aido2"], "topic": "next_image",   "data": null}
+{"compat": ["aido2"], "topic": "next_episode", "data": null}
+{"compat": ["aido2"], "topic": "next_image",   "data": null}
+{"compat": ["aido2"], "topic": "next_image",   "data": null}
+{"compat": ["aido2"], "topic": "next_image",   "data": null}
+{"compat": ["aido2"], "topic": "next_episode", "data": null}

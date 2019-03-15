@@ -1,0 +1,4 @@
+{"compat": ["aido2"], "topic": "seed", "data": 12}
+{"compat": ["aido2"], "topic": "clear"}
+{"compat": ["aido2"], "topic": "set_map", "data":  {"map_data":  "TBD"}}
+{"compat": ["aido2"], "topic": "spawn_robot", "data":  {"robot_name": "ego", "configuration":  {"pose":  null, "velocity": null }}}

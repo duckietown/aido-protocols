@@ -1,0 +1,67 @@
+version: '2.4'
+services:
+  image_source:
+    environment:
+      AIDONODE_NAME: source
+      AIDONODE_DATA_IN: /test_data/in1.json
+      AIDONODE_DATA_OUT: fifo:/fifos/image_source/out
+      AIDONODE_META_IN:
+      AIDONODE_META_OUT: /test_data/meta_out.json
+      AIDONODE_ENCODING: cbor
+    build:
+      context: ./dummy_image_source
+    volumes: &volumes
+      - "fifos:/fifos"
+      - "./test_data:/test_data"
+      # Uncomment the following to use the current python code
+      #  - ../src:/src/aido-protocols/src
+    cpu_percent: 50
+    mem_limit: 100MB
+
+  filter1:
+    environment:
+      AIDONODE_NAME: filter1
+      AIDONODE_DATA_IN: /fifos/image_source/out
+      AIDONODE_DATA_OUT: fifo:/fifos/filter1/out
+      AIDONODE_META_IN:
+      AIDONODE_META_OUT:
+      AIDONODE_ENCODING: cbor
+    build:
+      context: ./dummy_image_filter
+    volumes: *volumes
+    cpu_percent: 50
+    mem_limit: 100MB
+
+  filter2:
+    build:
+      context: ./dummy_image_filter
+    environment:
+      AIDONODE_NAME: filter2
+      AIDONODE_DATA_IN: /fifos/filter1/out
+      #AIDONODE_DATA_OUT: fifo:/fifos/filter2/out
+      AIDONODE_DATA_OUT: /test_data/out.json
+      AIDONODE_META_IN:
+      AIDONODE_META_OUT:
+      AIDONODE_ENCODING: cbor
+    volumes: *volumes
+    cpu_percent: 50
+    mem_limit: 100MB
+
+#  agent:
+#    environment:
+#      AIDONODE_NAME: agent
+#      AIDONODE_DATA_IN: /fifos/filter2/out
+#      AIDONODE_DATA_OUT: /test_data/out.json
+#      AIDONODE_META_IN:
+#      AIDONODE_META_OUT:
+#      AIDONODE_TRANSLATE: in:image:camera_image
+#      AIDONODE_ENCODING: cbor
+#    build:
+#      context: ./random_agent
+#    volumes: *volumes
+#    cpu_percent: 50
+#    mem_limit: 100MB
+
+
+volumes:
+  fifos:

@@ -1,0 +1,16 @@
+-e git://github.com/AndreaCensi/zuper_utils.git@z1#egg=zuper_utils
+-e git://github.com/AndreaCensi/zuper_nodes.git@z1#egg=zuper_nodes
+
+compmake
+pyparsing
+PyContracts
+networkx
+termcolor
+
+# testing
+comptests==1.4.27
+coverage
+coveralls
+# notebooks
+jupyter
+nbconvert
