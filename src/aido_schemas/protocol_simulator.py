@@ -15,6 +15,7 @@ __all__ = [
     'RobotInterfaceDescription',
     'RobotConfiguration',
     'RobotPerformance',
+    'ScenarioRobotSpec',
     'SetRobotCommands',
     'GetRobotObservations',
     'GetRobotState',

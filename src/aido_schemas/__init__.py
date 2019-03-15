@@ -3,7 +3,7 @@ __version__ = '1.0.0'
 from zuper_nodes import InteractionProtocol, particularize, logger as zlogger
 
 logger = zlogger.getChild('aido_schemas')
-logger.info('aido_schemas {__version__}')
+logger.info(f'aido_schemas {__version__}')
 
 from zuper_nodes_wrapper import wrap_direct, Context
 
