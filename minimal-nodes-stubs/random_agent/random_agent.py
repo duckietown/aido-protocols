@@ -25,12 +25,12 @@ class RandomAgent:
             pwm_left = 0.0
             pwm_right = 0.0
         else:
-            pwm_left = np.random.uniform(0.0, 1.0)
-            pwm_right = np.random.uniform(0.0, 1.0)
+            pwm_left = np.random.uniform(0.5, 1.0)
+            pwm_right = np.random.uniform(0.5, 1.0)
         self.n += 1
 
-        pwm_left = 0.1
-        pwm_right = 0.2
+        # pwm_left = 1.0
+        # pwm_right = 1.0
         grey = RGB(0.0, 0.0, 0.0)
         led_commands = LEDSCommands(grey, grey, grey, grey, grey)
         pwm_commands = PWMCommands(motor_left=pwm_left, motor_right=pwm_right)

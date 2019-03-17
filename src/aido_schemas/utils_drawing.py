@@ -31,8 +31,7 @@ def read_map_info(filename) -> DuckietownMap:
     m = m[0]
     map_data_yaml = m['data']['map_data']
     map_data = yaml.load(map_data_yaml, Loader=yaml.SafeLoader)
-    # XXX: default tile size
-    duckietown_map = construct_map(map_data, tile_size=0.585)
+    duckietown_map = construct_map(map_data)
     return duckietown_map
 
 

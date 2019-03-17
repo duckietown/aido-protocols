@@ -1,11 +1,13 @@
 
 build:
+	make -C aido2-base-python3 build
 	make -C dummy_image_source build
 	make -C dummy_image_filter build
 	make -C dummy_simulator    build
 	make -C random_agent       build
 
 build-no-cache:
+	make -C aido2-base-python3 build-no-cache
 	make -C dummy_image_source build-no-cache
 	make -C dummy_image_filter build-no-cache
 	make -C dummy_simulator    build-no-cache
@@ -13,6 +15,7 @@ build-no-cache:
 
 
 push:
+	make -C aido2-base-python3 push
 	make -C dummy_image_source push
 	make -C dummy_image_filter push
 	make -C dummy_simulator    push

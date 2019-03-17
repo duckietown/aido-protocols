@@ -284,7 +284,7 @@ protocol_simulator = InteractionProtocol(
 
             "set_robot_commands": SetRobotCommands,
             "get_robot_observations": GetRobotObservations,
-            "get_robot_state": GetRobotObservations,
+            "get_robot_state": GetRobotState,
 
             # Dump state information
             "dump_state": DumpState,
@@ -297,5 +297,31 @@ protocol_simulator = InteractionProtocol(
             "robot_interface_description": RobotInterfaceDescription,
             "sim_state": SimulationState,
             "state_dump": StateDump,
+        },
+)
+
+protocol_evaluator = InteractionProtocol(
+        description="""Protocol for performance evaluator""",
+        language="""\
+            in:set_map ;
+            (
+                in:episode_start;
+                (
+                    in:set_sim_state |
+                    in:set_robot_state |
+                    (in:get_robot_performance; out:robot_performance)
+                )*
+            )*
+""",
+        inputs={
+
+            "set_map": SetMap,
+            "episode_start": EpisodeStart,
+            "set_robot_state": RobotState,
+            "set_sim_state": SimulationState,
+            "get_robot_performance": RobotName,
+        },
+        outputs={
+            "robot_performance": RobotPerformance,
         },
 )
