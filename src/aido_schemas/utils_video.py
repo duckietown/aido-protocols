@@ -10,22 +10,26 @@ class CBORRead(Generator):
     Block.alias('cborread')
     Block.output('image')
     Block.config('filename', 'CBOR file to read')
+    Block.config('robot_name', 'robot name', default='ego')
 
     def init(self):
         self.log = read_simulator_log_cbor(self.get_config('filename'))
         self.i = 0
-        self.n = len(self.log.observations)
+        log = self.log.robots[self.config.robot_name]
+        self.n = len(log.observations)
 
     def next_data_status(self):
+        log = self.log.robots[self.config.robot_name]
         if self.i < self.n:
-            return True, self.log.observations.timestamps[self.i]
+            return True, log.observations.timestamps[self.i]
         else:
             return False, None
 
     def update(self):
         i = self.i
-        timestamp = self.log.observations.timestamps[i]
-        value = self.log.observations.values[i]
+        log = self.log.robots[self.config.robot_name]
+        timestamp = log.observations.timestamps[i]
+        value = log.observations.values[i]
         self.set_output('image', value=value, timestamp=timestamp)
 
         self.i += 1

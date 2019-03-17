@@ -45,6 +45,7 @@ class RobotConfiguration:
 
 @dataclass
 class SpawnRobot:
+    playable: bool
     robot_name: RobotName
     configuration: RobotConfiguration
 
@@ -149,6 +150,7 @@ class StateDump:
 @dataclass
 class ScenarioRobotSpec:
     description: str
+    playable: bool
     configuration: RobotConfiguration
 
 
