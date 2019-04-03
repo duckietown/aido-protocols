@@ -1,15 +1,16 @@
 FROM python:3.7
 WORKDIR /project
 
+RUN apt-get update && apt-get install -y ffmpeg mencoder && apt-get clean && \
+    rm -r /var/lib/apt/lists/*
+
 
 RUN pip install -U pip
 
 
 COPY requirements.txt requirements-base.txt
-RUN pip install -r requirements-base.txt
+RUN pip install -r requirements-base.txt && rm -rf /root/.cache
 
-RUN apt-get update && apt-get install -y ffmpeg mencoder && apt-get clean && \
-    rm -r /var/lib/apt/lists/*
 
 ENV DISABLE_CONTRACTS 1
 
