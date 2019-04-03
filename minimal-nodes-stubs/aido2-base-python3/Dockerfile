@@ -10,6 +10,9 @@ RUN pip install -r requirements-base.txt
 
 RUN apt-get update && apt-get install -y ffmpeg mencoder && apt-get clean && \
     rm -r /var/lib/apt/lists/*
+
+ENV DISABLE_CONTRACTS 1
+
 #
 #
 #RUN build_deps="curl" && \
