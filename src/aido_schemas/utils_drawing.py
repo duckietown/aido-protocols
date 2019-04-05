@@ -57,6 +57,8 @@ import numpy as np
 
 
 def read_perfomance(filename) -> Dict[str, RuleEvaluationResult]:
+    sb = SampledSequenceBuilder[float]()
+    sb.add(0, 0)
     sequences: Dict[str, SampledSequenceBuilder] = defaultdict(lambda: SampledSequenceBuilder[float]())
 
     for i, ob in enumerate(read_topic(filename, 'timing_information')):
@@ -65,7 +67,6 @@ def read_perfomance(filename) -> Dict[str, RuleEvaluationResult]:
         phases.pop('$schema')
         for p, f in phases.items():
             sequences[p].add(t=i, v=f)
-
 
     evr = RuleEvaluationResult(None)
     for p, sb in sequences.items():

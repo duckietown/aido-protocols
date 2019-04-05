@@ -11,6 +11,7 @@ RUN pip install -U pip
 COPY requirements.txt requirements-base.txt
 RUN pip install -r requirements-base.txt && rm -rf /root/.cache
 
+RUN pip freeze | tee /pip-freeze.txt
 
 ENV DISABLE_CONTRACTS 1
 
