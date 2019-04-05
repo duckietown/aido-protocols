@@ -1,19 +1,37 @@
 import sys
-from collections import OrderedDict
-from typing import Dict
+from collections import OrderedDict, defaultdict
+from typing import *
 
+import cbor2
 import yaml
 
 from aido_schemas import RobotState, RobotObservations, Duckiebot1Observations, SetRobotCommands
 from duckietown_world import SE2Transform, SampledSequence, DuckietownMap, draw_static
 from duckietown_world.rules import evaluate_rules
-from duckietown_world.rules.rule import make_timeseries
+from duckietown_world.rules.rule import make_timeseries, RuleEvaluationResult
 from duckietown_world.seqs.tsequence import SampledSequenceBuilder
 from duckietown_world.svg_drawing.draw_log import SimulatorLog, timeseries_actions, RobotTrajectories
 from duckietown_world.svg_drawing.misc import TimeseriesPlot
 from zuper_json import read_cbor_or_json_objects
 from zuper_json.ipce import ipce_to_object
 from . import logger
+
+
+def log_summary(filename):
+    f = open(filename, 'rb')
+    counts = defaultdict(lambda: 0)
+    sizes = defaultdict(lambda: 0)
+    for ob in read_cbor_or_json_objects(f):
+        topic = ob['topic']
+        size_ob = len(cbor2.dumps(ob))
+        counts[topic] += 1
+        sizes[topic] += size_ob
+
+    ordered = sorted(counts, key=lambda x: sizes[x], reverse=True)
+    for topic in ordered:
+        count = counts[topic]
+        size_mb = sizes[topic] / (1024 * 1024.0)
+        logger.info('topic %25s: %4s messages  %.2f MB' % (topic, count, size_mb))
 
 
 def read_topic(filename, topic):
@@ -35,6 +53,29 @@ def read_map_info(filename) -> DuckietownMap:
     return duckietown_map
 
 
+import numpy as np
+
+
+def read_perfomance(filename) -> Dict[str, RuleEvaluationResult]:
+    sequences: Dict[str, SampledSequenceBuilder] = defaultdict(lambda: SampledSequenceBuilder[float]())
+
+    for i, ob in enumerate(read_topic(filename, 'timing_information')):
+        # ob = ipce_to_object(ob['data'], {}, {})
+        phases = ob['data']['phases']
+        phases.pop('$schema')
+        for p, f in phases.items():
+            sequences[p].add(t=i, v=f)
+
+
+    evr = RuleEvaluationResult(None)
+    for p, sb in sequences.items():
+        seq = sb.as_sequence()
+        total = float(np.mean(seq.values))
+        evr.set_metric((p,), total=total, incremental=seq, cumulative=None)
+
+    return {'performance': evr}
+
+
 def read_trajectories(filename) -> Dict[str, RobotTrajectories]:
     rs = list(read_topic(filename, 'robot_state'))
     if not rs:
@@ -45,13 +86,13 @@ def read_trajectories(filename) -> Dict[str, RobotTrajectories]:
 
     robot2trajs = {}
     for robot_name in robot_names:
-        ssb_pose = SampledSequenceBuilder()
-        ssb_actions = SampledSequenceBuilder()
-        ssb_wheels_velocities = SampledSequenceBuilder()
-        ssb_velocities = SampledSequenceBuilder()
+        ssb_pose = SampledSequenceBuilder[SE2Transform]()
+        ssb_actions = SampledSequenceBuilder[Any]()
+        ssb_wheels_velocities = SampledSequenceBuilder[Any]()
+        ssb_velocities = SampledSequenceBuilder[Any]()
         for r in rs:
 
-            robot_state: RobotState = ipce_to_object(r['data'], {}, {})
+            robot_state = cast(RobotState, ipce_to_object(r['data'], {}, {}))
             if robot_state.robot_name != robot_name:
                 continue
 
@@ -82,11 +123,11 @@ from duckietown_world.world_duckietown import DB18, construct_map
 
 
 def read_observations(filename, robot_name):
-    ssb = SampledSequenceBuilder()
+    ssb = SampledSequenceBuilder[bytes]()
     obs = list(read_topic(filename, 'robot_observations'))
     last_t = None
     for ob in obs:
-        ro: RobotObservations = ipce_to_object(ob['data'], {}, {})
+        ro = cast(RobotObservations, ipce_to_object(ob['data'], {}, {}))
         if ro.robot_name != robot_name:
             continue
         do: Duckiebot1Observations = ro.observations
@@ -97,15 +138,16 @@ def read_observations(filename, robot_name):
         if last_t != t:
             ssb.add(t, camera)
         last_t = t
-    return ssb.as_sequence()
+    res = ssb.as_sequence()
+    return res
 
 
 def read_commands(filename, robot_name):
-    ssb = SampledSequenceBuilder()
+    ssb = SampledSequenceBuilder[SetRobotCommands]()
     obs = list(read_topic(filename, 'set_robot_commands'))
     last_t = None
     for ob in obs:
-        ro: SetRobotCommands = ipce_to_object(ob['data'], {}, {})
+        ro = cast(SetRobotCommands, ipce_to_object(ob['data'], {}, {}))
         if ro.robot_name != robot_name:
             continue
         t = ro.t_effective
@@ -120,6 +162,7 @@ def read_commands(filename, robot_name):
 
 
 def read_simulator_log_cbor(filename) -> SimulatorLog:
+    render_time = read_perfomance(filename)
     duckietown_map = read_map_info(filename)
     robots = read_trajectories(filename)
 
@@ -129,15 +172,17 @@ def read_simulator_log_cbor(filename) -> SimulatorLog:
                                   robot,
                                   ground_truth=trajs.pose)
 
-    render_time = None
-
     return SimulatorLog(duckietown=duckietown_map,
                         robots=robots,
                         render_time=render_time)
 
 
 def read_and_draw(fn, output):
+    log_summary(fn)
+
+    logger.info('Reading logs...')
     log0 = read_simulator_log_cbor(fn)
+    logger.info('...done')
 
     robot_main = 'ego'
     if not robot_main in log0.robots:
@@ -152,16 +197,27 @@ def read_and_draw(fn, output):
     duckietown_env = log0.duckietown
     timeseries = OrderedDict()
 
+    logger.info('Computing timeseries_actions...')
     timeseries.update(timeseries_actions(log))
+    logger.info('Computing timeseries_wheels_velocities...')
     timeseries.update(timeseries_wheels_velocities(log.commands))
+    logger.info('Computing timeseries_robot_velocity...')
     timeseries.update(timeseries_robot_velocity(log.velocity))
+    logger.info('Evaluating rules...')
     interval = SampledSequence.from_iterator(enumerate(log.pose.timestamps))
     evaluated = evaluate_rules(poses_sequence=log.pose,
                                interval=interval,
                                world=duckietown_env,
                                ego_name=robot_main)
+    evaluated.update(log0.render_time)
+
+    for k, v in evaluated.items():
+        for kk, vv in v.metrics.items():
+            logger.info('%20s %20s %s' % (k, kk, vv))
     timeseries.update(make_timeseries(evaluated))
+    logger.info('Drawing...')
     draw_static(duckietown_env, output, images=images, timeseries=timeseries)
+    logger.info('...done.')
     return evaluated
 
 

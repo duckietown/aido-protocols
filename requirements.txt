@@ -8,7 +8,7 @@ networkx
 termcolor
 
 # testing
-comptests==1.4.27
+comptests==1.4.34
 coverage
 coveralls
 # notebooks
