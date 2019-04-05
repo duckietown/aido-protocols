@@ -1,4 +1,4 @@
-__version__ = '4.0.3'
+__version__ = '4.0.4'
 
 from zuper_nodes import InteractionProtocol, particularize, logger as zlogger
 
