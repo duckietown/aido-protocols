@@ -1,9 +1,10 @@
-# challenge name
-challenge: aido2_LF_r2-v4
+# challenge name(s); defaults to all compatible challenges
+# challenge: [c1,c2]
+
 # conventions + format
-protocol: aido2_db18_agent_1
+protocol: aido2_db18_agent-z2
 # any user label - displayed in "challenges list"
-user-label: Solution template
+user-label: random_agent
 # any JSON payload
 user-payload: {}
 
