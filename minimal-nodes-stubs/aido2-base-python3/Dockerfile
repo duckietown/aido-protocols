@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y ffmpeg mencoder && apt-get clean && \
     rm -r /var/lib/apt/lists/*
 
 
-RUN pip install -U pip
+RUN pip install -U pip && rm -rf /root/.cache
 
 
 COPY requirements.txt requirements-base.txt
