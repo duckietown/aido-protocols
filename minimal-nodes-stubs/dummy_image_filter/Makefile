@@ -1,4 +1,4 @@
-repo=aidonode-dummy_image_source
+repo=aidonode-dummy_image_source2
 # repo=$(shell basename -s .git `git config --get remote.origin.url`)
 branch=$(shell git rev-parse --abbrev-ref HEAD)
 tag=duckietown/$(repo):$(branch)

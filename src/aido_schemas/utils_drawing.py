@@ -1,5 +1,5 @@
 import sys
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 from typing import *
 
 import cbor2
@@ -12,6 +12,8 @@ from duckietown_world.rules.rule import make_timeseries, RuleEvaluationResult
 from duckietown_world.seqs.tsequence import SampledSequenceBuilder
 from duckietown_world.svg_drawing.draw_log import SimulatorLog, timeseries_actions, RobotTrajectories
 from duckietown_world.svg_drawing.misc import TimeseriesPlot
+from duckietown_world.world_duckietown.types import SE2v
+from duckietown_world.world_duckietown.utils import get_velocities_from_sequence
 from zuper_json import read_cbor_or_json_objects
 from zuper_json.ipce import ipce_to_object
 from . import logger
@@ -88,9 +90,10 @@ def read_trajectories(filename) -> Dict[str, RobotTrajectories]:
     robot2trajs = {}
     for robot_name in robot_names:
         ssb_pose = SampledSequenceBuilder[SE2Transform]()
+        ssb_pose_SE2 = SampledSequenceBuilder[SE2v]()
         ssb_actions = SampledSequenceBuilder[Any]()
         ssb_wheels_velocities = SampledSequenceBuilder[Any]()
-        ssb_velocities = SampledSequenceBuilder[Any]()
+        # ssb_velocities = SampledSequenceBuilder[Any]()
         for r in rs:
 
             robot_state = cast(RobotState, ipce_to_object(r['data'], {}, {}))
@@ -98,23 +101,25 @@ def read_trajectories(filename) -> Dict[str, RobotTrajectories]:
                 continue
 
             pose = robot_state.state.pose
-            velocity = robot_state.state.velocity
+            # velocity = robot_state.state.velocity
             last_action = robot_state.state.last_action
             wheels_velocities = robot_state.state.wheels_velocities
 
             t = robot_state.t_effective
+            ssb_pose_SE2.add(t, pose)
             ssb_pose.add(t, SE2Transform.from_SE2(pose))
             ssb_actions.add(t, last_action)
             ssb_wheels_velocities.add(t, wheels_velocities)
-            ssb_velocities.add(t, velocity)
+            # ssb_velocities.add(t, velocity)
 
+        seq_velocities = get_velocities_from_sequence(ssb_pose_SE2)
         observations = read_observations(filename, robot_name)
         commands = read_commands(filename, robot_name)
 
         robot2trajs[robot_name] = RobotTrajectories(ssb_pose.as_sequence(),
                                                     ssb_actions.as_sequence(),
                                                     ssb_wheels_velocities.as_sequence(),
-                                                    ssb_velocities.as_sequence(),
+                                                    seq_velocities,
                                                     observations=observations,
                                                     commands=commands)
     return robot2trajs
@@ -196,7 +201,7 @@ def read_and_draw(fn, output):
     else:
         images = None
     duckietown_env = log0.duckietown
-    timeseries = OrderedDict()
+    timeseries = {}
 
     logger.info('Computing timeseries_actions...')
     timeseries.update(timeseries_actions(log))
@@ -223,8 +228,8 @@ def read_and_draw(fn, output):
 
 
 def timeseries_wheels_velocities(log_commands):
-    timeseries = OrderedDict()
-    sequences = OrderedDict()
+    timeseries = {}
+    sequences = {}
     sequences['motor_left'] = log_commands.transform_values(lambda _: _.wheels.motor_left)
     sequences['motor_right'] = log_commands.transform_values(lambda _: _.wheels.motor_right)
     timeseries['pwm_commands'] = TimeseriesPlot('PWM commands', 'pwm_commands', sequences)
@@ -234,20 +239,24 @@ def timeseries_wheels_velocities(log_commands):
 import geometry
 
 
-def timeseries_robot_velocity(log_velocitiy):
-    timeseries = OrderedDict()
-    sequences = OrderedDict()
+def timeseries_robot_velocity(log_velocity):
+    timeseries = {}
+    sequences = {}
+
+    logger.info(log_velocity)
 
     def speed(x):
         l, omega = geometry.linear_angular_from_se2(x)
-        return l
+        return l[0]
 
     def omega(x):
         l, omega = geometry.linear_angular_from_se2(x)
         return omega
 
-    sequences['linear_speed'] = log_velocitiy.transform_values(lambda _: speed(_))
-    sequences['angular_velocity'] = log_velocitiy.transform_values(lambda _: omega(_))
+    sequences['linear_speed'] = log_velocity.transform_values(lambda _: speed(_))
+    sequences['angular_velocity'] = log_velocity.transform_values(lambda _: omega(_))
+    logger.info('linear speed: %s' % sequences['linear_speed'])
+    logger.info('angular velocity: %s' % sequences['angular_velocity'])
     timeseries['velocity'] = TimeseriesPlot('Velocities', 'velocities', sequences)
     return timeseries
 
