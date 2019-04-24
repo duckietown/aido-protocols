@@ -1,5 +1,6 @@
 import sys
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import *
 
 import cbor2
@@ -19,32 +20,39 @@ from zuper_json.ipce import ipce_to_object
 from . import logger
 
 
-def log_summary(filename):
-    f = open(filename, 'rb')
-    counts = defaultdict(lambda: 0)
-    sizes = defaultdict(lambda: 0)
-    for ob in read_cbor_or_json_objects(f):
-        topic = ob['topic']
-        size_ob = len(cbor2.dumps(ob))
-        counts[topic] += 1
-        sizes[topic] += size_ob
+@dataclass
+class LogData:
+    objects: List[dict]
+
+
+def log_summary(filename) -> LogData:
+    objects = []
+    with open(filename, 'rb') as f:
+        counts = defaultdict(lambda: 0)
+        sizes = defaultdict(lambda: 0)
+        for ob in read_cbor_or_json_objects(f):
+            topic = ob['topic']
+            size_ob = len(cbor2.dumps(ob))
+            counts[topic] += 1
+            sizes[topic] += size_ob
+            objects.append(ob)
 
     ordered = sorted(counts, key=lambda x: sizes[x], reverse=True)
     for topic in ordered:
         count = counts[topic]
         size_mb = sizes[topic] / (1024 * 1024.0)
         logger.info('topic %25s: %4s messages  %.2f MB' % (topic, count, size_mb))
+    return LogData(objects)
 
 
-def read_topic(filename, topic):
-    f = open(filename, 'rb')
-    for ob in read_cbor_or_json_objects(f):
+def read_topic2(ld: LogData, topic):
+    for ob in ld.objects:
         if ob['topic'] == topic:
             yield ob
 
 
-def read_map_info(filename) -> DuckietownMap:
-    m = list(read_topic(filename, 'set_map'))
+def read_map_info(ld: LogData) -> DuckietownMap:
+    m = list(read_topic2(ld, 'set_map'))
     if not m:
         msg = 'Could not find set_map'
         raise Exception(msg)
@@ -58,12 +66,12 @@ def read_map_info(filename) -> DuckietownMap:
 import numpy as np
 
 
-def read_perfomance(filename) -> Dict[str, RuleEvaluationResult]:
+def read_perfomance(ld:LogData) -> Dict[str, RuleEvaluationResult]:
     sb = SampledSequenceBuilder[float]()
     sb.add(0, 0)
     sequences: Dict[str, SampledSequenceBuilder] = defaultdict(lambda: SampledSequenceBuilder[float]())
 
-    for i, ob in enumerate(read_topic(filename, 'timing_information')):
+    for i, ob in enumerate(read_topic2(ld, 'timing_information')):
         # ob = ipce_to_object(ob['data'], {}, {})
         phases = ob['data']['phases']
         phases.pop('$schema')
@@ -79,8 +87,8 @@ def read_perfomance(filename) -> Dict[str, RuleEvaluationResult]:
     return {'performance': evr}
 
 
-def read_trajectories(filename) -> Dict[str, RobotTrajectories]:
-    rs = list(read_topic(filename, 'robot_state'))
+def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
+    rs = list(read_topic2(ld, 'robot_state'))
     if not rs:
         msg = 'Could not find robot_state'
         raise Exception(msg)
@@ -113,8 +121,8 @@ def read_trajectories(filename) -> Dict[str, RobotTrajectories]:
             # ssb_velocities.add(t, velocity)
 
         seq_velocities = get_velocities_from_sequence(ssb_pose_SE2)
-        observations = read_observations(filename, robot_name)
-        commands = read_commands(filename, robot_name)
+        observations = read_observations(ld, robot_name)
+        commands = read_commands(ld, robot_name)
 
         robot2trajs[robot_name] = RobotTrajectories(ssb_pose.as_sequence(),
                                                     ssb_actions.as_sequence(),
@@ -128,9 +136,9 @@ def read_trajectories(filename) -> Dict[str, RobotTrajectories]:
 from duckietown_world.world_duckietown import DB18, construct_map
 
 
-def read_observations(filename, robot_name):
+def read_observations(ld: LogData, robot_name):
     ssb = SampledSequenceBuilder[bytes]()
-    obs = list(read_topic(filename, 'robot_observations'))
+    obs = list(read_topic2(ld, 'robot_observations'))
     last_t = None
     for ob in obs:
         ro = cast(RobotObservations, ipce_to_object(ob['data'], {}, {}))
@@ -148,9 +156,9 @@ def read_observations(filename, robot_name):
     return res
 
 
-def read_commands(filename, robot_name):
+def read_commands(ld: LogData, robot_name):
     ssb = SampledSequenceBuilder[SetRobotCommands]()
-    obs = list(read_topic(filename, 'set_robot_commands'))
+    obs = list(read_topic2(ld, 'set_robot_commands'))
     last_t = None
     for ob in obs:
         ro = cast(SetRobotCommands, ipce_to_object(ob['data'], {}, {}))
@@ -167,10 +175,10 @@ def read_commands(filename, robot_name):
     return seq
 
 
-def read_simulator_log_cbor(filename) -> SimulatorLog:
-    render_time = read_perfomance(filename)
-    duckietown_map = read_map_info(filename)
-    robots = read_trajectories(filename)
+def read_simulator_log_cbor(ld: LogData) -> SimulatorLog:
+    render_time = read_perfomance(ld)
+    duckietown_map = read_map_info(ld)
+    robots = read_trajectories(ld)
 
     for robot_name, trajs in robots.items():
         robot = DB18()
@@ -183,11 +191,11 @@ def read_simulator_log_cbor(filename) -> SimulatorLog:
                         render_time=render_time)
 
 
-def read_and_draw(fn, output):
-    log_summary(fn)
+def read_and_draw(fn: str, output: str):
+    ld = log_summary(fn)
 
     logger.info('Reading logs...')
-    log0 = read_simulator_log_cbor(fn)
+    log0 = read_simulator_log_cbor(ld)
     logger.info('...done')
 
     robot_main = 'ego'
