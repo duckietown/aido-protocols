@@ -1,6 +1,7 @@
 import sys
 
-from aido_schemas.utils_drawing import read_simulator_log_cbor
+from aido_schemas.utils_drawing import read_simulator_log_cbor, log_summary
+from duckietown_world.svg_drawing.draw_log import SimulatorLog
 from procgraph import Generator, Block, register_model_spec, pg
 
 
@@ -13,7 +14,9 @@ class CBORRead(Generator):
     Block.config('robot_name', 'robot name', default='ego')
 
     def init(self):
-        self.log = read_simulator_log_cbor(self.get_config('filename'))
+        fn = self.get_config('filename')
+        self.ld = log_summary(fn)
+        self.log: SimulatorLog = read_simulator_log_cbor(self.ld)
         self.i = 0
         log = self.log.robots[self.config.robot_name]
         self.n = len(log.observations)
