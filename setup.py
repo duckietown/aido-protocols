@@ -21,27 +21,27 @@ version = get_version(filename='src/aido_schemas/__init__.py')
 line = 'daffy'
 
 setup(
-        name=f'aido-protocols-{line}',
-        version=version,
-        keywords='',
-        package_dir={'': 'src'},
-        packages=[
-            'aido_schemas',
-            'aido_schemas_tests',
+    name=f'aido-protocols-{line}',
+    version=version,
+    keywords='',
+    package_dir={'': 'src'},
+    packages=[
+        'aido_schemas',
+        'aido_schemas_tests',
+    ],
+    install_requires=[
+        'compmake',
+        'pyparsing',
+        'PyContracts',
+        'networkx',
+        'termcolor',
+        'cbor2',
+        'pydot',
+    ],
+    entry_points={
+        'console_scripts': [
+            'aido-log-draw=aido_schemas.utils_drawing:aido_log_draw_main',
+            'aido-log-video=aido_schemas.utils_video:aido_log_video_main',
         ],
-        install_requires=[
-            'compmake',
-            'pyparsing',
-            'PyContracts',
-            'networkx',
-            'termcolor',
-            'cbor2',
-
-        ],
-        entry_points={
-            'console_scripts': [
-                'aido-log-draw=aido_schemas.utils_drawing:aido_log_draw_main',
-                'aido-log-video=aido_schemas.utils_video:aido_log_video_main',
-            ],
-        },
+    },
 )

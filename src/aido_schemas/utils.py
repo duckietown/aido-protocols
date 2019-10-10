@@ -4,7 +4,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import *
 
-__all__ = ['TimeTracker']
+__all__ = ["TimeTracker"]
 
 
 @dataclass

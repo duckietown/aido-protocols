@@ -1,11 +1,12 @@
-__version__ = '5.0.5'
+__version__ = "5.0.5"
 
 
 import logging
+
 logging.basicConfig()
-logger = logging.getLogger('aido-protocols')
+logger = logging.getLogger("aido-protocols")
 logger.setLevel(logging.DEBUG)
-logger.info(f'aido-protocols {__version__}')
+logger.info(f"aido-protocols {__version__}")
 
 from zuper_nodes import InteractionProtocol, particularize
 

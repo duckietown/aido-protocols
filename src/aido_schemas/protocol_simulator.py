@@ -9,26 +9,26 @@ from .protocol_agent import EpisodeStart
 RobotName = str
 
 __all__ = [
-    'RobotState',
-    'RobotName',
-    'RobotObservations',
-    'RobotInterfaceDescription',
-    'RobotConfiguration',
-    'RobotPerformance',
-    'ScenarioRobotSpec',
-    'SetRobotCommands',
-    'GetRobotObservations',
-    'GetRobotState',
-    'Metric',
-    'PerformanceMetrics',
-    'protocol_simulator',
-    'protocol_scenario_maker',
-    'SetMap',
-    'SpawnRobot',
-    'Step',
-    'SimulationState',
-    'Scenario',
-    'StateDump',
+    "RobotState",
+    "RobotName",
+    "RobotObservations",
+    "RobotInterfaceDescription",
+    "RobotConfiguration",
+    "RobotPerformance",
+    "ScenarioRobotSpec",
+    "SetRobotCommands",
+    "GetRobotObservations",
+    "GetRobotState",
+    "Metric",
+    "PerformanceMetrics",
+    "protocol_simulator",
+    "protocol_scenario_maker",
+    "SetMap",
+    "SpawnRobot",
+    "Step",
+    "SimulationState",
+    "Scenario",
+    "StateDump",
 ]
 
 
@@ -92,6 +92,7 @@ class SimulationState:
         done_why: Human-readable short message.
         done_code: Short string to use as code for statistics.
     """
+
     done: bool
     done_why: Optional[str]
     done_code: Optional[str]
@@ -114,6 +115,7 @@ class PerformanceMetrics:
         Note that the values are *cumulative* to make it possible to have
         a sampling-invariant behavior.
     """
+
     metrics: Dict[str, Metric]
 
 
@@ -144,6 +146,7 @@ class DumpState:
 @dataclass
 class StateDump:
     """ Opaque object that contains the simulator's state, whichever it is. """
+
     state: Any
 
 
@@ -178,24 +181,20 @@ for the same values of the seed.
 """
 
 protocol_scenario_maker = InteractionProtocol(
-        description=description,
-        language="""\
+    description=description,
+    language="""\
         in:seed? ;
         (
             in:next_scenario ; 
             (out:finished | out:scenario)
         )*
 """,
-        inputs={
-            # Seed random number generator
-            "seed": int,
-            "next_scenario": type(None),
-
-        },
-        outputs={
-            "finished": type(None),
-            "scenario": Scenario,
-        },
+    inputs={
+        # Seed random number generator
+        "seed": int,
+        "next_scenario": type(None),
+    },
+    outputs={"finished": type(None), "scenario": Scenario},
 )
 description = """\
 
@@ -243,8 +242,8 @@ Sets seed for random process.
     """
 
 protocol_simulator = InteractionProtocol(
-        description=description,
-        language="""\
+    description=description,
+    language="""\
         
         in:seed? ;
             (
@@ -267,44 +266,37 @@ protocol_simulator = InteractionProtocol(
                 )* 
         )*
 """,
-        inputs={
-            # Seed random number generator
-            "seed": int,
-            "clear": type(None),
-
-            "set_map": SetMap,
-            "spawn_robot": SpawnRobot,
-            "get_robot_interface_description": RobotName,
-            "get_robot_performance": RobotName,
-
-            "get_sim_state": type(None),
-
-            "episode_start": EpisodeStart,
-
-            # Step physics
-            "step": Step,
-
-            "set_robot_commands": SetRobotCommands,
-            "get_robot_observations": GetRobotObservations,
-            "get_robot_state": GetRobotState,
-
-            # Dump state information
-            "dump_state": DumpState,
-        },
-        outputs={
-
-            "robot_observations": RobotObservations,
-            "robot_state": RobotState,
-            "robot_performance": RobotPerformance,
-            "robot_interface_description": RobotInterfaceDescription,
-            "sim_state": SimulationState,
-            "state_dump": StateDump,
-        },
+    inputs={
+        # Seed random number generator
+        "seed": int,
+        "clear": type(None),
+        "set_map": SetMap,
+        "spawn_robot": SpawnRobot,
+        "get_robot_interface_description": RobotName,
+        "get_robot_performance": RobotName,
+        "get_sim_state": type(None),
+        "episode_start": EpisodeStart,
+        # Step physics
+        "step": Step,
+        "set_robot_commands": SetRobotCommands,
+        "get_robot_observations": GetRobotObservations,
+        "get_robot_state": GetRobotState,
+        # Dump state information
+        "dump_state": DumpState,
+    },
+    outputs={
+        "robot_observations": RobotObservations,
+        "robot_state": RobotState,
+        "robot_performance": RobotPerformance,
+        "robot_interface_description": RobotInterfaceDescription,
+        "sim_state": SimulationState,
+        "state_dump": StateDump,
+    },
 )
 
 protocol_evaluator = InteractionProtocol(
-        description="""Protocol for performance evaluator""",
-        language="""\
+    description="""Protocol for performance evaluator""",
+    language="""\
             in:set_map ;
             (
                 in:episode_start;
@@ -315,15 +307,12 @@ protocol_evaluator = InteractionProtocol(
                 )*
             )*
 """,
-        inputs={
-
-            "set_map": SetMap,
-            "episode_start": EpisodeStart,
-            "set_robot_state": RobotState,
-            "set_sim_state": SimulationState,
-            "get_robot_performance": RobotName,
-        },
-        outputs={
-            "robot_performance": RobotPerformance,
-        },
+    inputs={
+        "set_map": SetMap,
+        "episode_start": EpisodeStart,
+        "set_robot_state": RobotState,
+        "set_sim_state": SimulationState,
+        "get_robot_performance": RobotName,
+    },
+    outputs={"robot_performance": RobotPerformance},
 )

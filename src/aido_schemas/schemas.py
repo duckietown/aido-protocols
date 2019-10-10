@@ -2,19 +2,24 @@ from dataclasses import dataclass
 
 from . import particularize
 from .protocol_agent import protocol_agent
-from .protocol_simulator import RobotName, protocol_simulator, SetRobotCommands, RobotObservations
+from .protocol_simulator import (
+    RobotName,
+    protocol_simulator,
+    SetRobotCommands,
+    RobotObservations,
+)
 
 __all__ = [
-    'PWMCommands',
-    'JPGImage',
-    'Duckiebot1Observations',
-    'Duckiebot1Commands',
-    'LEDSCommands',
-    'RGB',
-    'DB18SetRobotCommands',
-    'DB18RobotObservations',
-    'protocol_agent_duckiebot1',
-    'protocol_simulator_duckiebot1',
+    "PWMCommands",
+    "JPGImage",
+    "Duckiebot1Observations",
+    "Duckiebot1Commands",
+    "LEDSCommands",
+    "RGB",
+    "DB18SetRobotCommands",
+    "DB18RobotObservations",
+    "protocol_agent_duckiebot1",
+    "protocol_simulator_duckiebot1",
 ]
 
 
@@ -23,6 +28,7 @@ class PWMCommands:
     """
         PWM commands are floats between -1 and 1.
     """
+
     motor_left: float
     motor_right: float
 
@@ -41,6 +47,7 @@ class JPGImage:
 
         jpg_data: Bytes of a JPG file
     """
+
     jpg_data: bytes
 
 
@@ -72,12 +79,12 @@ class Duckiebot1Commands:
 
 
 description = """Particularization for Duckiebot1 observations and commands."""
-protocol_agent_duckiebot1 = \
-    particularize(protocol_agent,
-                  description=description,
-                  inputs={"observations": Duckiebot1Observations},
-                  outputs={"commands": Duckiebot1Commands},
-                  )
+protocol_agent_duckiebot1 = particularize(
+    protocol_agent,
+    description=description,
+    inputs={"observations": Duckiebot1Observations},
+    outputs={"commands": Duckiebot1Commands},
+)
 
 
 @dataclass
@@ -95,9 +102,9 @@ class DB18RobotObservations(RobotObservations):
 
 
 description = """Particularization for Duckiebot1 observations and commands."""
-protocol_simulator_duckiebot1 = \
-    particularize(protocol_simulator,
-                  description=description,
-                  inputs={"set_robot_commands": DB18SetRobotCommands},
-                  outputs={"robot_observations": DB18RobotObservations},
-                  )
+protocol_simulator_duckiebot1 = particularize(
+    protocol_simulator,
+    description=description,
+    inputs={"set_robot_commands": DB18SetRobotCommands},
+    outputs={"robot_observations": DB18RobotObservations},
+)
