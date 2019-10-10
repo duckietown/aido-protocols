@@ -18,8 +18,10 @@ def get_version(filename):
 
 version = get_version(filename='src/aido_schemas/__init__.py')
 
+line = 'daffy'
+
 setup(
-        name='aido-protocols',
+        name=f'aido-protocols-{line}',
         version=version,
         keywords='',
         package_dir={'': 'src'},
@@ -31,13 +33,13 @@ setup(
             'compmake',
             'pyparsing',
             'PyContracts',
-            'pyparsing',
-            'PyContracts',
             'networkx',
             'termcolor',
+            'cbor2',
+
         ],
         entry_points={
-            'console_scripts': [ 
+            'console_scripts': [
                 'aido-log-draw=aido_schemas.utils_drawing:aido_log_draw_main',
                 'aido-log-video=aido_schemas.utils_video:aido_log_video_main',
             ],

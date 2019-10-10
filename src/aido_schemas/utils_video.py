@@ -13,6 +13,7 @@ class CBORRead(Generator):
     Block.config('filename', 'CBOR file to read')
     Block.config('robot_name', 'robot name', default='ego')
 
+    # noinspection PyAttributeOutsideInit
     def init(self):
         fn = self.get_config('filename')
         self.ld = log_summary(fn)

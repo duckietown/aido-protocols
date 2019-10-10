@@ -5,6 +5,7 @@ from typing import *
 
 import cbor2
 import yaml
+from zuper_ipce.json2cbor import read_cbor_or_json_objects
 
 from aido_schemas import RobotState, RobotObservations, Duckiebot1Observations, SetRobotCommands
 from duckietown_world import SE2Transform, SampledSequence, DuckietownMap, draw_static
@@ -15,8 +16,8 @@ from duckietown_world.svg_drawing.draw_log import SimulatorLog, timeseries_actio
 from duckietown_world.svg_drawing.misc import TimeseriesPlot
 from duckietown_world.world_duckietown.types import SE2v
 from duckietown_world.world_duckietown.utils import get_velocities_from_sequence
-from zuper_json import read_cbor_or_json_objects
-from zuper_json.ipce import ipce_to_object
+
+from zuper_ipce.conv_object_from_ipce import object_from_ipce
 from . import logger
 
 
@@ -104,7 +105,7 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
         # ssb_velocities = SampledSequenceBuilder[Any]()
         for r in rs:
 
-            robot_state = cast(RobotState, ipce_to_object(r['data'], {}, {}))
+            robot_state = cast(RobotState, object_from_ipce(r['data']))
             if robot_state.robot_name != robot_name:
                 continue
 
@@ -141,7 +142,7 @@ def read_observations(ld: LogData, robot_name):
     obs = list(read_topic2(ld, 'robot_observations'))
     last_t = None
     for ob in obs:
-        ro = cast(RobotObservations, ipce_to_object(ob['data'], {}, {}))
+        ro = cast(RobotObservations, object_from_ipce(ob['data']))
         if ro.robot_name != robot_name:
             continue
         do: Duckiebot1Observations = ro.observations
@@ -161,7 +162,7 @@ def read_commands(ld: LogData, robot_name):
     obs = list(read_topic2(ld, 'set_robot_commands'))
     last_t = None
     for ob in obs:
-        ro = cast(SetRobotCommands, ipce_to_object(ob['data'], {}, {}))
+        ro = cast(SetRobotCommands, object_from_ipce(ob['data']))
         if ro.robot_name != robot_name:
             continue
         t = ro.t_effective
