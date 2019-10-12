@@ -2,7 +2,8 @@ numpy==1.16.2
 opencv-python==4.1.0.25
 aido-protocols-daffy>=5.0.6
 
--e git://github.com/duckietown/duckietown-world.git@aido2#egg=duckietown-world
--e git://github.com/duckietown/duckietown-challenges.git@v4#egg=duckietown-challenges
+duckietown-world-daffy
+duckietown-challenges-daffy
+
 -e git://github.com/AndreaCensi/procgraph.git@master-python3#egg=procgraph
 
