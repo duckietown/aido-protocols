@@ -37,6 +37,8 @@ setup(
         'termcolor',
         'cbor2',
         'pydot',
+        'zuper-ipce-z5',
+        'zuper-nodes-z5',
     ],
     entry_points={
         'console_scripts': [
