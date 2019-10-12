@@ -1,7 +1,7 @@
 from setuptools import setup
 
 
-def get_version(filename):
+def get_version(filename: str):
     import ast
     version = None
     with open(filename) as f:

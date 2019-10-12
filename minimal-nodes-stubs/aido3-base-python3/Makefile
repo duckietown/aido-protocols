@@ -1,4 +1,4 @@
-repo=aido2-base-python3
+repo=aido3-base-python3
 # repo=$(shell basename -s .git `git config --get remote.origin.url`)
 branch=$(shell git rev-parse --abbrev-ref HEAD)
 tag=duckietown/$(repo):$(branch)
