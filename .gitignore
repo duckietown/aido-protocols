@@ -7,3 +7,5 @@ l.dot
 out*json
 language.dot
 dist
+minimal-nodes-stubs/res.json
+minimal-nodes-stubs/res1.cbor
