@@ -104,6 +104,10 @@ class Metric:
     cumulative_value: float
     description: str
 
+    def __post_init__(self):
+        if isinstance(self.cumulative_value, int):
+            self.cumulative_value = float(self.cumulative_value)
+
 
 @dataclass
 class PerformanceMetrics:
