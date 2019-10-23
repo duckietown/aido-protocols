@@ -34,7 +34,7 @@ __all__ = [
 
 @dataclass
 class SetMap:
-    map_data: Any
+    map_data: object
 
 
 @dataclass
@@ -54,7 +54,7 @@ class SpawnRobot:
 class SetRobotCommands:
     robot_name: RobotName
     t_effective: float
-    commands: Any
+    commands: object
 
 
 @dataclass
@@ -73,14 +73,14 @@ class GetRobotState:
 class RobotObservations:
     robot_name: RobotName
     t_effective: float
-    observations: Any
+    observations: object
 
 
 @dataclass
 class RobotState:
     robot_name: RobotName
     t_effective: float
-    state: Any
+    state: object
 
 
 @dataclass
@@ -151,7 +151,7 @@ class DumpState:
 class StateDump:
     """ Opaque object that contains the simulator's state, whichever it is. """
 
-    state: Any
+    state: object
 
 
 @dataclass

@@ -253,10 +253,10 @@ def timeseries_wheels_velocities(log_commands):
     timeseries = {}
     sequences = {}
     sequences["motor_left"] = log_commands.transform_values(
-        lambda _: _.wheels.motor_left
+        lambda _: _.wheels.motor_left, float
     )
     sequences["motor_right"] = log_commands.transform_values(
-        lambda _: _.wheels.motor_right
+        lambda _: _.wheels.motor_right, float
     )
     timeseries["pwm_commands"] = TimeseriesPlot(
         "PWM commands", "pwm_commands", sequences
@@ -273,16 +273,16 @@ def timeseries_robot_velocity(log_velocity):
 
     logger.info(log_velocity)
 
-    def speed(x):
+    def speed(x) -> float:
         l, omega = geometry.linear_angular_from_se2(x)
         return l[0]
 
-    def omega(x):
+    def omega(x) -> float :
         l, omega = geometry.linear_angular_from_se2(x)
         return omega
 
-    sequences["linear_speed"] = log_velocity.transform_values(lambda _: speed(_))
-    sequences["angular_velocity"] = log_velocity.transform_values(lambda _: omega(_))
+    sequences["linear_speed"] = log_velocity.transform_values(lambda _: speed(_), float)
+    sequences["angular_velocity"] = log_velocity.transform_values(lambda _: omega(_), float)
     logger.info("linear speed: %s" % sequences["linear_speed"])
     logger.info("angular velocity: %s" % sequences["angular_velocity"])
     timeseries["velocity"] = TimeseriesPlot("Velocities", "velocities", sequences)
