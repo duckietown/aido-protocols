@@ -32,6 +32,15 @@ class PWMCommands:
     motor_left: float
     motor_right: float
 
+    def __post_init__(self):
+        self.motor_left = float(self.motor_left)
+        self.motor_right = float(self.motor_right)
+        m = max(abs(self.motor_left), abs(self.motor_right))
+        if m > 1:
+            msg = f'Expected values to be between -1 and 1. Obtained {self.motor_left}, {self.motor_right}'
+            raise ValueError(msg)
+
+
 
 # @dataclass
 # class WheelsCmd:
