@@ -2,7 +2,7 @@ numpy==1.16.2
 opencv-python==4.1.0.25
 zuper-nodes-z5>=5.0.8
 
-aido-protocols-daffy>=5.0.17
+aido-protocols-daffy>=5.0.18
 duckietown-world-daffy>=5.0.8
 duckietown-challenges-daffy>=5.0.7
 
