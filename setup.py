@@ -33,12 +33,12 @@ setup(
         'compmake',
         'pyparsing',
         'PyContracts',
-        'networkx',
+        'networkx<=2.2',
         'termcolor',
         'cbor2',
         'pydot',
-        'zuper-ipce-z5',
-        'zuper-nodes-z5',
+        'zuper-ipce-z5>=5.1.0',
+        'zuper-nodes-z5>=5.0.7',
     ],
     entry_points={
         'console_scripts': [
