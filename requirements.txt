@@ -1,5 +1,5 @@
-zuper-ipce-z5>=5.1.0
-zuper-nodes-z5>=5.0.8
+zuper-ipce-z5>=5.1.2
+zuper-nodes-z5>=5.0.9
 
 compmake
 pyparsing

@@ -1,9 +1,12 @@
 numpy==1.16.2
 opencv-python==4.1.0.25
-zuper-nodes-z5>=5.0.8
+zuper-nodes-z5>=5.0.9
+zuper-typing-z5>=5.0.12
+zuper-ipce-z5>=5.1.2
+zuper-commons-z5>=5.0.7
 
 aido-protocols-daffy>=5.0.18
 duckietown-world-daffy>=5.0.8
-duckietown-challenges-daffy>=5.0.7
+duckietown-challenges-daffy>=5.1.1
 
 -e git://github.com/AndreaCensi/procgraph.git@master-python3#egg=procgraph

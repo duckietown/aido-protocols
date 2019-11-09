@@ -2,7 +2,7 @@
 import time
 from contextlib import contextmanager
 from dataclasses import dataclass, field
-from typing import *
+from typing import Dict
 
 __all__ = ["TimeTracker"]
 
