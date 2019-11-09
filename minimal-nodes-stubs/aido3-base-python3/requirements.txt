@@ -6,7 +6,7 @@ zuper-ipce-z5>=5.1.2
 zuper-commons-z5>=5.0.7
 
 aido-protocols-daffy>=5.0.18
-duckietown-world-daffy>=5.0.8
+duckietown-world-daffy>=5.0.10
 duckietown-challenges-daffy>=5.1.1
 
 -e git://github.com/AndreaCensi/procgraph.git@master-python3#egg=procgraph
