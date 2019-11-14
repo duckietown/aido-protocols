@@ -5,7 +5,7 @@ zuper-typing-z5>=5.0.12
 zuper-ipce-z5>=5.1.2
 zuper-commons-z5>=5.0.7
 
-aido-protocols-daffy>=5.0.18
+aido-protocols-daffy>=5.0.19
 duckietown-world-daffy>=5.0.10
 duckietown-challenges-daffy>=5.1.1
 
