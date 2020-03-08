@@ -9,3 +9,4 @@ language.dot
 dist
 minimal-nodes-stubs/res.json
 minimal-nodes-stubs/res1.cbor
+minimal-nodes-stubs/res2.cbor
