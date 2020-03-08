@@ -18,7 +18,7 @@ def get_version(filename: str):
 
 version = get_version(filename='src/aido_schemas/__init__.py')
 
-line = 'daffy'
+line = 'daffy-aido4'
 
 setup(
     name=f'aido-protocols-{line}',
@@ -35,9 +35,9 @@ setup(
         'PyContracts',
         'networkx<=2.2',
         'termcolor',
-        'cbor2',
+        'cbor2<5',
         'pydot',
-        'zuper-ipce-z5>=5.1.0',
+        'zuper-ipce-z5>=5.3.0',
         'zuper-nodes-z5>=5.0.7',
     ],
     entry_points={

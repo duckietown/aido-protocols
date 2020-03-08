@@ -1,4 +1,4 @@
-zuper-ipce-z5>=5.1.2
+zuper-ipce-z5>=5.3.0
 zuper-nodes-z5>=5.0.9
 
 compmake
@@ -14,5 +14,5 @@ coveralls
 # notebooks
 jupyter
 nbconvert
-cbor2
+cbor2<5
 pydot

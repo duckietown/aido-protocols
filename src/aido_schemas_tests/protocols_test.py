@@ -1,6 +1,6 @@
 from aido_schemas import protocol_image_source
 from comptests import comptest
-from zuper_nodes import OutputProduced, Enough, Unexpected
+from zuper_nodes import OutputProduced, Unexpected
 from zuper_nodes_tests.test_protocol import assert_seq
 
 

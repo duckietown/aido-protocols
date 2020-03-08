@@ -37,9 +37,8 @@ class PWMCommands:
         self.motor_right = float(self.motor_right)
         m = max(abs(self.motor_left), abs(self.motor_right))
         if m > 1:
-            msg = f'Expected values to be between -1 and 1. Obtained {self.motor_left}, {self.motor_right}'
+            msg = f"Expected values to be between -1 and 1. Obtained {self.motor_left}, {self.motor_right}"
             raise ValueError(msg)
-
 
 
 # @dataclass

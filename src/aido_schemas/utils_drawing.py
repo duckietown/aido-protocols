@@ -277,12 +277,14 @@ def timeseries_robot_velocity(log_velocity):
         l, omega = geometry.linear_angular_from_se2(x)
         return l[0]
 
-    def omega(x) -> float :
+    def omega(x) -> float:
         l, omega = geometry.linear_angular_from_se2(x)
         return omega
 
     sequences["linear_speed"] = log_velocity.transform_values(lambda _: speed(_), float)
-    sequences["angular_velocity"] = log_velocity.transform_values(lambda _: omega(_), float)
+    sequences["angular_velocity"] = log_velocity.transform_values(
+        lambda _: omega(_), float
+    )
     logger.info("linear speed: %s" % sequences["linear_speed"])
     logger.info("angular velocity: %s" % sequences["angular_velocity"])
     timeseries["velocity"] = TimeseriesPlot("Velocities", "velocities", sequences)
