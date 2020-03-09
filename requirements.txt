@@ -4,7 +4,7 @@ zuper-nodes-z6
 compmake
 pyparsing
 PyContracts
-networkx>=2.4
+networkx<3
 termcolor
 
 # testing
