@@ -1,17 +1,6 @@
 
 all:
 
-base=aido3-base-python3
-
-build-base-images:
-	make -C minimal-nodes-stubs/$(base) build
-
-build-base-images-no-cache:
-	make -C minimal-nodes-stubs/$(base) build-no-cache
-
-push-base-images:
-	make -C minimal-nodes-stubs/$(base) push
-
 
 bump-upload:
 	$(MAKE) bump
