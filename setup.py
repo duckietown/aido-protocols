@@ -31,7 +31,7 @@ setup(
         "compmake",
         "pyparsing",
         "PyContracts",
-        "networkx<3",
+        "networkx>=2,<3",
         "termcolor",
         "pydot",
         "zuper-ipce-z6",

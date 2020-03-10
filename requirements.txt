@@ -1,18 +1,18 @@
-zuper-ipce-z6
-zuper-nodes-z6
+zuper-ipce-z6==6.0.22
+zuper-nodes-z6==6.0.10
 
-compmake
-pyparsing
-PyContracts
-networkx<3
-termcolor
+compmake==4.0.4
+pyparsing==2.4.6
+PyContracts==1.8.12
+networkx>=2.4,<3
+termcolor==1.1.0
 
 # testing
 comptests==1.4.34
-coverage
-coveralls
+coverage==5.0.3
+coveralls==1.11.1
 # notebooks
-jupyter
-nbconvert
+jupyter==1.0.0
+nbconvert==5.6.1
 
-pydot
+pydot==1.4.1

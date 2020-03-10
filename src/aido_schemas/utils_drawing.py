@@ -150,7 +150,7 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
 from duckietown_world.world_duckietown import DB18, construct_map
 
 
-def read_observations(ld: LogData, robot_name):
+def read_observations(ld: LogData, robot_name: str) -> SampledSequence:
     ssb = SampledSequenceBuilder[bytes]()
     obs = list(read_topic2(ld, "robot_observations"))
     last_t = None
@@ -158,8 +158,8 @@ def read_observations(ld: LogData, robot_name):
         ro = cast(RobotObservations, object_from_ipce(ob["data"]))
         if ro.robot_name != robot_name:
             continue
-        do: Duckiebot1Observations = ro.observations
-
+        do  = ro.observations
+        assert isinstance(do,  Duckiebot1Observations)
         t = ro.t_effective
         camera = do.camera.jpg_data
 
@@ -170,7 +170,7 @@ def read_observations(ld: LogData, robot_name):
     return res
 
 
-def read_commands(ld: LogData, robot_name):
+def read_commands(ld: LogData, robot_name: str) -> SampledSequence:
     ssb = SampledSequenceBuilder[SetRobotCommands]()
     obs = list(read_topic2(ld, "set_robot_commands"))
     last_t = None

@@ -23,12 +23,12 @@ with "commands".
 
     """.strip(),
     inputs={
-        "observations": Any,
+        "observations": object,
         "seed": int,
         "get_commands": type(None),
         "episode_start": EpisodeStart,
     },
-    outputs={"commands": Any},
+    outputs={"commands": object},
     language="""
             in:seed? ;
             (   in:episode_start ; 
