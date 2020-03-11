@@ -203,17 +203,18 @@ def read_simulator_log_cbor(ld: LogData) -> SimulatorLog:
     )
 
 
-def read_and_draw(fn: str, output: str):
+def read_and_draw(fn: str, output: str, robot_main: str):
     ld = log_summary(fn)
 
     logger.info("Reading logs...")
     log0 = read_simulator_log_cbor(ld)
     logger.info("...done")
 
-    robot_main = "ego"
+    # for robot_main in pc_names:
     if not robot_main in log0.robots:
-        msg = f"Cannot find robot {robot_main}"
+        msg = f"Cannot find robot {robot_main!r}"
         raise Exception(msg)
+
     log = log0.robots[robot_main]
 
     if log.observations:
