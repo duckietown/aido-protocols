@@ -1,8 +1,8 @@
 import sys
 
-from aido_schemas.utils_drawing import read_simulator_log_cbor, log_summary
+from aido_schemas.utils_drawing import log_summary, read_simulator_log_cbor
 from duckietown_world.svg_drawing.draw_log import SimulatorLog
-from procgraph import Generator, Block, register_model_spec, pg
+from procgraph import Block, Generator, pg, register_model_spec
 
 
 class CBORRead(Generator):
@@ -48,7 +48,7 @@ class CBORRead(Generator):
         pass
 
 
-def make_video1(fn: str, robot_name: str, output: str) -> None:
+def make_video1(*, log_filename: str, robot_name: str, output_video: str) -> None:
     register_model_spec(
         """
     --- model video_aido
@@ -66,12 +66,12 @@ def make_video1(fn: str, robot_name: str, output: str) -> None:
         """
     )
 
-    pg("video_aido", dict(filename=fn, output=output, robot_name=robot_name))
+    pg("video_aido", dict(filename=log_filename, output=output_video, robot_name=robot_name))
 
 
 def aido_log_video_main():
-    make_video1(sys.argv[1], "out-aido-log-video.mp4", sys.argv[2])
+    make_video1(log_filename=sys.argv[1], output_video="out-aido-log-video.mp4", robot_name=sys.argv[2])
 
 
 if __name__ == "__main__":
-    make_video1(sys.argv[1], "out-aido-log-video.mp4", sys.argv[2])
+    make_video1(log_filename=sys.argv[1], output_video="out-aido-log-video.mp4", robot_name=sys.argv[2])
