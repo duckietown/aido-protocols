@@ -52,7 +52,7 @@ def make_video1(fn: str, robot_name: str, output: str) -> None:
     config robot_name
     
 
-    |cborread filename=$filename| --> |jpg2rgb| -> rgb
+    |cborread filename=$filename robot_name=$robot_name| --> |jpg2rgb| -> rgb
     rgb -> |identity| -> retimed
     # rgb --> |rewrite_timestamps interval=$factor| -> retimed
     retimed --> |info|
