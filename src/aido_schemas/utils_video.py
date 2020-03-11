@@ -17,24 +17,29 @@ class CBORRead(Generator):
     # noinspection PyAttributeOutsideInit
     def init(self):
         fn = self.get_config("filename")
+        robot_name = self.get_config("robot_name")
         self.ld = log_summary(fn)
         self.log: SimulatorLog = read_simulator_log_cbor(self.ld)
         self.i = 0
-        log = self.log.robots[self.config.robot_name]
+        if robot_name not in self.log.robots:
+            msg = f'Cannot find robot {robot_name} among {list(self.log.robots)}'
+            raise Exception(msg)
+
+        log = self.log.robots[robot_name]
         self.n = len(log.observations)
+        self.robot_log = log
 
     def next_data_status(self):
-        log = self.log.robots[self.config.robot_name]
+
         if self.i < self.n:
-            return True, log.observations.timestamps[self.i]
+            return True, self.robot_log.observations.timestamps[self.i]
         else:
             return False, None
 
     def update(self):
         i = self.i
-        log = self.log.robots[self.config.robot_name]
-        timestamp = log.observations.timestamps[i]
-        value = log.observations.values[i]
+        timestamp = self.robot_log.observations.timestamps[i]
+        value = self.robot_log.observations.values[i]
         self.set_output("image", value=value, timestamp=timestamp)
 
         self.i += 1
