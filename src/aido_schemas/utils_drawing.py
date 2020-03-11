@@ -5,28 +5,18 @@ from typing import *
 
 import cbor2
 import yaml
-from zuper_ipce.json2cbor import read_cbor_or_json_objects
 
-from aido_schemas import (
-    RobotState,
-    RobotObservations,
-    Duckiebot1Observations,
-    SetRobotCommands,
-)
-from duckietown_world import SE2Transform, SampledSequence, DuckietownMap, draw_static
+from aido_schemas import (Duckiebot1Observations, RobotObservations, RobotState, SetRobotCommands)
+from duckietown_world import draw_static, DuckietownMap, SampledSequence, SE2Transform
 from duckietown_world.rules import evaluate_rules
 from duckietown_world.rules.rule import make_timeseries, RuleEvaluationResult
 from duckietown_world.seqs.tsequence import SampledSequenceBuilder
-from duckietown_world.svg_drawing.draw_log import (
-    SimulatorLog,
-    timeseries_actions,
-    RobotTrajectories,
-)
+from duckietown_world.svg_drawing.draw_log import (RobotTrajectories, SimulatorLog, timeseries_actions)
 from duckietown_world.svg_drawing.misc import TimeseriesPlot
 from duckietown_world.world_duckietown.types import SE2v
 from duckietown_world.world_duckietown.utils import get_velocities_from_sequence
-
 from zuper_ipce.conv_object_from_ipce import object_from_ipce
+from zuper_ipce.json2cbor import read_cbor_or_json_objects
 from . import logger
 
 
@@ -158,8 +148,8 @@ def read_observations(ld: LogData, robot_name: str) -> SampledSequence:
         ro = cast(RobotObservations, object_from_ipce(ob["data"]))
         if ro.robot_name != robot_name:
             continue
-        do  = ro.observations
-        assert isinstance(do,  Duckiebot1Observations)
+        do = ro.observations
+        # assert isinstance(do, Duckiebot1Observations), type(do)
         t = ro.t_effective
         camera = do.camera.jpg_data
 
