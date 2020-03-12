@@ -1,18 +1,19 @@
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import *
+from typing import Any, cast, Dict, List, Optional
 
 import cbor2
 import yaml
 
-from aido_schemas import (Duckiebot1Observations, RobotObservations, RobotState, SetRobotCommands)
+from aido_schemas import (RobotObservations, RobotState, SetRobotCommands)
 from duckietown_world import draw_static, DuckietownMap, SampledSequence, SE2Transform
 from duckietown_world.rules import evaluate_rules
 from duckietown_world.rules.rule import make_timeseries, RuleEvaluationResult
 from duckietown_world.seqs.tsequence import SampledSequenceBuilder
 from duckietown_world.svg_drawing.draw_log import (RobotTrajectories, SimulatorLog, timeseries_actions)
 from duckietown_world.svg_drawing.misc import TimeseriesPlot
+from duckietown_world.world_duckietown import construct_map, DB18
 from duckietown_world.world_duckietown.types import SE2v
 from duckietown_world.world_duckietown.utils import get_velocities_from_sequence
 from zuper_ipce.conv_object_from_ipce import object_from_ipce
@@ -137,9 +138,6 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
     return robot2trajs
 
 
-from duckietown_world.world_duckietown import DB18, construct_map
-
-
 def read_observations(ld: LogData, robot_name: str) -> SampledSequence:
     ssb = SampledSequenceBuilder[bytes]()
     obs = list(read_topic2(ld, "robot_observations"))
@@ -179,13 +177,23 @@ def read_commands(ld: LogData, robot_name: str) -> SampledSequence:
     return seq
 
 
-def read_simulator_log_cbor(ld: LogData) -> SimulatorLog:
+def read_simulator_log_cbor(ld: LogData, main_robot_name: Optional[str] = None) -> SimulatorLog:
     render_time = read_perfomance(ld)
     duckietown_map = read_map_info(ld)
     robots = read_trajectories(ld)
+    # logger.info(f'robots: {len(robots)}')
 
     for robot_name, trajs in robots.items():
-        robot = DB18()
+        logger.info(f'robots: {robot_name} trajs: {trajs.pose.get_sampling_points()}')
+        if main_robot_name is not None:
+            if robot_name == main_robot_name:
+                color = 'red'
+            else:
+                color = 'grey'
+        else:
+            color = 'red'
+
+        robot = DB18(color=color)
         duckietown_map.set_object(robot_name, robot, ground_truth=trajs.pose)
 
     return SimulatorLog(
@@ -197,7 +205,7 @@ def read_and_draw(fn: str, output: str, robot_main: str):
     ld = log_summary(fn)
 
     logger.info("Reading logs...")
-    log0 = read_simulator_log_cbor(ld)
+    log0 = read_simulator_log_cbor(ld, main_robot_name=robot_main)
     logger.info("...done")
 
     # for robot_main in pc_names:
@@ -235,7 +243,8 @@ def read_and_draw(fn: str, output: str, robot_main: str):
             logger.info("%20s %20s %s" % (k, kk, vv))
     timeseries.update(make_timeseries(evaluated))
     logger.info("Drawing...")
-    draw_static(duckietown_env, output, images=images, timeseries=timeseries)
+    draw_static(duckietown_env, output, images=images, timeseries=timeseries,
+                main_robot_name=robot_main)
     logger.info("...done.")
     return evaluated
 
@@ -262,7 +271,7 @@ def timeseries_robot_velocity(log_velocity):
     timeseries = {}
     sequences = {}
 
-    logger.info(log_velocity)
+    # logger.info(log_velocity)
 
     def speed(x) -> float:
         l, omega = geometry.linear_angular_from_se2(x)
@@ -276,15 +285,15 @@ def timeseries_robot_velocity(log_velocity):
     sequences["angular_velocity"] = log_velocity.transform_values(
         lambda _: omega(_), float
     )
-    logger.info("linear speed: %s" % sequences["linear_speed"])
-    logger.info("angular velocity: %s" % sequences["angular_velocity"])
+    # logger.info("linear speed: %s" % sequences["linear_speed"])
+    # logger.info("angular velocity: %s" % sequences["angular_velocity"])
     timeseries["velocity"] = TimeseriesPlot("Velocities", "velocities", sequences)
     return timeseries
 
 
 def aido_log_draw_main():
-    read_and_draw(sys.argv[1], "test")
+    read_and_draw(sys.argv[1], "test", robot_main=sys.argv[2])
 
 
 if __name__ == "__main__":
-    read_and_draw(sys.argv[1], "test")
+    aido_log_draw_main()
