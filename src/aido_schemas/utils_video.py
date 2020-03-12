@@ -74,4 +74,4 @@ def aido_log_video_main():
 
 
 if __name__ == "__main__":
-    make_video1(log_filename=sys.argv[1], output_video="out-aido-log-video.mp4", robot_name=sys.argv[2])
+    aido_log_video_main()
