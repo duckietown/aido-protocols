@@ -6,7 +6,7 @@ from typing import Any, cast, Dict, List, Optional
 import cbor2
 import yaml
 
-from aido_schemas import (RobotObservations, RobotState, SetRobotCommands)
+from aido_schemas import (RobotObservations, RobotState, SetRobotCommands, Duckiebot1Observations)
 from duckietown_world import draw_static, DuckietownMap, SampledSequence, SE2Transform
 from duckietown_world.rules import evaluate_rules
 from duckietown_world.rules.rule import make_timeseries, RuleEvaluationResult
@@ -123,7 +123,6 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
             ssb_wheels_velocities.add(t, wheels_velocities)
             # ssb_velocities.add(t, velocity)
 
-        logger.info(ssb_pose_SE2=ssb_pose_SE2)
         seq_velocities = get_velocities_from_sequence(ssb_pose_SE2)
         observations = read_observations(ld, robot_name)
         commands = read_commands(ld, robot_name)
@@ -147,8 +146,8 @@ def read_observations(ld: LogData, robot_name: str) -> SampledSequence:
         ro = cast(RobotObservations, object_from_ipce(ob["data"]))
         if ro.robot_name != robot_name:
             continue
-        do = ro.observations
-        # assert isinstance(do, Duckiebot1Observations), type(do)
+        do = cast(Duckiebot1Observations, ro.observations)
+
         t = ro.t_effective
         camera = do.camera.jpg_data
 
