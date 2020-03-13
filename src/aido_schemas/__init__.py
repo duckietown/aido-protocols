@@ -1,11 +1,8 @@
 __version__ = "5.0.34"
 
+from zuper_commons.logs import ZLogger
 
-import logging
-
-logging.basicConfig()
-logger = logging.getLogger("aido-protocols")
-logger.setLevel(logging.DEBUG)
+logger = ZLogger(__name__)
 logger.info(f"aido-protocols {__version__}")
 
 from zuper_nodes import InteractionProtocol, particularize

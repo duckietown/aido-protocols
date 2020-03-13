@@ -102,8 +102,8 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
     for robot_name in robot_names:
         ssb_pose = SampledSequenceBuilder[SE2Transform]()
         ssb_pose_SE2 = SampledSequenceBuilder[SE2v]()
-        ssb_actions = SampledSequenceBuilder[Any]()
-        ssb_wheels_velocities = SampledSequenceBuilder[Any]()
+        ssb_actions = SampledSequenceBuilder[object]()
+        ssb_wheels_velocities = SampledSequenceBuilder[object]()
         # ssb_velocities = SampledSequenceBuilder[Any]()
         for r in rs:
 
@@ -123,6 +123,7 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
             ssb_wheels_velocities.add(t, wheels_velocities)
             # ssb_velocities.add(t, velocity)
 
+        logger.info(ssb_pose_SE2=ssb_pose_SE2)
         seq_velocities = get_velocities_from_sequence(ssb_pose_SE2)
         observations = read_observations(ld, robot_name)
         commands = read_commands(ld, robot_name)
