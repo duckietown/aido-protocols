@@ -217,8 +217,21 @@ def read_simulator_log_cbor(ld: LogData, main_robot_name: Optional[str] = None) 
         duckietown=duckietown_map, robots=robots, render_time=render_time
     )
 
+def evaluate_stats(fn: str, robot_main: str) -> Dict[str, RuleEvaluationResult]:
+    ld = log_summary(fn)
+    log0 = read_simulator_log_cbor(ld, main_robot_name=robot_main)
+    log = log0.robots[robot_main]
+    duckietown_env = log0.duckietown
+    interval = SampledSequence.from_iterator(enumerate(log.pose.timestamps))
+    evaluated = evaluate_rules(
+        poses_sequence=log.pose,
+        interval=interval,
+        world=duckietown_env,
+        ego_name=robot_main,
+    )
+    return evaluated
 
-def read_and_draw(fn: str, output: str, robot_main: str):
+def read_and_draw(fn: str, output: str, robot_main: str) -> Dict[str, RuleEvaluationResult]:
     ld = log_summary(fn)
 
     logger.info("Reading logs...")
