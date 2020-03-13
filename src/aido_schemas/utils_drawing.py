@@ -1,12 +1,16 @@
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, cast, Dict, List, Optional
+from typing import cast, Dict, List, Optional
 
 import cbor2
 import yaml
 
-from aido_schemas import (RobotObservations, RobotState, SetRobotCommands, Duckiebot1Observations)
+import numpy as np
+from cbor2 import CBORDecodeEOF
+
+import geometry
+from aido_schemas import Duckiebot1Observations, logger, RobotObservations, RobotState, SetRobotCommands  # keep
 from duckietown_world import draw_static, DuckietownMap, SampledSequence, SE2Transform
 from duckietown_world.rules import evaluate_rules
 from duckietown_world.rules.rule import make_timeseries, RuleEvaluationResult
@@ -16,9 +20,9 @@ from duckietown_world.svg_drawing.misc import TimeseriesPlot
 from duckietown_world.world_duckietown import construct_map, DB18
 from duckietown_world.world_duckietown.types import SE2v
 from duckietown_world.world_duckietown.utils import get_velocities_from_sequence
+from zuper_ipce import IEDO
 from zuper_ipce.conv_object_from_ipce import object_from_ipce
-from zuper_ipce.json2cbor import read_cbor_or_json_objects
-from . import logger
+from zuper_ipce.json2cbor import read_cbor_or_json_objects, tag_hook
 
 
 @dataclass
@@ -26,14 +30,22 @@ class LogData:
     objects: List[dict]
 
 
-def log_summary(filename) -> LogData:
+def log_summary(filename: str) -> LogData:
     objects = []
     with open(filename, "rb") as f:
         counts = defaultdict(lambda: 0)
         sizes = defaultdict(lambda: 0)
-        for ob in read_cbor_or_json_objects(f):
+
+        while True:
+            try:
+                ob = cbor2.load(f, tag_hook=tag_hook)
+            except CBORDecodeEOF:
+                break
+
+            # for ob in read_cbor_or_json_objects(f):
             topic = ob["topic"]
-            size_ob = len(cbor2.dumps(ob))
+            size_ob = 0
+            # size_ob = len(cbor2.dumps(ob))
             counts[topic] += 1
             sizes[topic] += size_ob
             objects.append(ob)
@@ -64,7 +76,6 @@ def read_map_info(ld: LogData) -> DuckietownMap:
     return duckietown_map
 
 
-import numpy as np
 
 
 def read_perfomance(ld: LogData) -> Dict[str, RuleEvaluationResult]:
@@ -106,8 +117,8 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
         ssb_wheels_velocities = SampledSequenceBuilder[object]()
         # ssb_velocities = SampledSequenceBuilder[Any]()
         for r in rs:
-
-            robot_state = cast(RobotState, object_from_ipce(r["data"]))
+            found = object_from_ipce(r["data"], iedo=iedo)
+            robot_state = cast(RobotState, found)
             if robot_state.robot_name != robot_name:
                 continue
 
@@ -143,7 +154,9 @@ def read_observations(ld: LogData, robot_name: str) -> SampledSequence:
     obs = list(read_topic2(ld, "robot_observations"))
     last_t = None
     for ob in obs:
-        ro = cast(RobotObservations, object_from_ipce(ob["data"]))
+        found = object_from_ipce(ob["data"], iedo=iedo)
+
+        ro = cast(RobotObservations, found)
         if ro.robot_name != robot_name:
             continue
         do = cast(Duckiebot1Observations, ro.observations)
@@ -158,12 +171,16 @@ def read_observations(ld: LogData, robot_name: str) -> SampledSequence:
     return res
 
 
+iedo = IEDO(use_remembered_classes=True, remember_deserialized_classes=True)
+
+
 def read_commands(ld: LogData, robot_name: str) -> SampledSequence:
     ssb = SampledSequenceBuilder[SetRobotCommands]()
     obs = list(read_topic2(ld, "set_robot_commands"))
     last_t = None
     for ob in obs:
-        ro = cast(SetRobotCommands, object_from_ipce(ob["data"]))
+        found = object_from_ipce(ob["data"], iedo=iedo)
+        ro = cast(SetRobotCommands, found)
         if ro.robot_name != robot_name:
             continue
         t = ro.t_effective
@@ -236,7 +253,8 @@ def read_and_draw(fn: str, output: str, robot_main: str):
         world=duckietown_env,
         ego_name=robot_main,
     )
-    evaluated.update(log0.render_time)
+    if False:
+        evaluated.update(log0.render_time)
 
     for k, v in evaluated.items():
         for kk, vv in v.metrics.items():
@@ -252,19 +270,19 @@ def read_and_draw(fn: str, output: str, robot_main: str):
 def timeseries_wheels_velocities(log_commands):
     timeseries = {}
     sequences = {}
-    sequences["motor_left"] = log_commands.transform_values(
-        lambda _: _.wheels.motor_left, float
-    )
-    sequences["motor_right"] = log_commands.transform_values(
-        lambda _: _.wheels.motor_right, float
-    )
+
+    def get_left(_):
+        return _.wheels.motor_left
+
+    def get_right(_):
+        return _.wheels.motor_right
+
+    sequences["motor_left"] = log_commands.transform_values(get_left, float)
+    sequences["motor_right"] = log_commands.transform_values(get_right, float)
     timeseries["pwm_commands"] = TimeseriesPlot(
         "PWM commands", "pwm_commands", sequences
     )
     return timeseries
-
-
-import geometry
 
 
 def timeseries_robot_velocity(log_velocity):
@@ -296,4 +314,5 @@ def aido_log_draw_main():
 
 
 if __name__ == "__main__":
-    aido_log_draw_main()
+    # in case called
+    read_and_draw(sys.argv[2], "test", robot_main=sys.argv[3])
