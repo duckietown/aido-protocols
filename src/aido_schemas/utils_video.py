@@ -68,7 +68,6 @@ class CBORReadTopic(Generator):
         self.n = len(self.topics)
 
     def next_data_status(self):
-
         if self.i < self.n:
             return True, None
         else:
@@ -77,7 +76,9 @@ class CBORReadTopic(Generator):
     def update(self):
         i = self.i
         timestamp = i * 0.04 # XXX
-        value = self.topics[i]['data']
+        jpg_image = self.topics[i]['data']
+        # print(f'jpg_image: {jpg_image}')
+        value = jpg_image['jpg_data']
         self.set_output("image", value=value, timestamp=timestamp)
 
         self.i += 1
@@ -110,6 +111,15 @@ def make_video1(*, log_filename: str, robot_name: str, output_video: str) -> Non
     )
 
 
+
+def aido_log_video_main():
+    make_video1(
+        log_filename=sys.argv[1],
+        output_video="out-aido-log-video.mp4",
+        robot_name=sys.argv[2],
+    )
+
+
 def make_video_ui_image(*, log_filename: str,  output_video: str) -> None:
     register_model_spec(
         """
@@ -134,13 +144,12 @@ def make_video_ui_image(*, log_filename: str,  output_video: str) -> None:
     )
 
 
-def aido_log_video_main():
-    make_video1(
-        log_filename=sys.argv[1],
-        output_video="out-aido-log-video.mp4",
-        robot_name=sys.argv[2],
-    )
 
+def aido_log_video_ui_image_main():
+    make_video_ui_image(
+        log_filename=sys.argv[1],
+        output_video="out-aido-log-video_ui_image.mp4",
+    )
 
 if __name__ == "__main__":
     aido_log_video_main()

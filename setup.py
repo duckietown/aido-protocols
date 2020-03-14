@@ -41,6 +41,7 @@ setup(
         "console_scripts": [
             "aido-log-draw=aido_schemas.utils_drawing:aido_log_draw_main",
             "aido-log-video=aido_schemas.utils_video:aido_log_video_main",
+            "aido-log-video-ui-image=aido_schemas.utils_video:aido_log_video_ui_image_main",
         ],
     },
 )
