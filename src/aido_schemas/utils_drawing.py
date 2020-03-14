@@ -1,7 +1,7 @@
 import sys
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import cast, Dict, List, Optional
+from typing import cast, Dict, List, Optional, Iterator
 
 import cbor2
 import numpy as np
@@ -58,7 +58,7 @@ def log_summary(filename: str) -> LogData:
     return LogData(objects)
 
 
-def read_topic2(ld: LogData, topic):
+def read_topic2(ld: LogData, topic: str) -> Iterator[object] :
     for ob in ld.objects:
         if ob["topic"] == topic:
             yield ob

@@ -1,6 +1,6 @@
 import sys
 
-from aido_schemas.utils_drawing import log_summary, read_simulator_log_cbor
+from aido_schemas.utils_drawing import log_summary, read_simulator_log_cbor, read_topic2
 from duckietown_world.svg_drawing.draw_log import SimulatorLog
 from procgraph import Block, Generator, pg, register_model_spec
 
@@ -48,6 +48,44 @@ class CBORRead(Generator):
         pass
 
 
+class CBORReadTopic(Generator):
+    """
+    """
+
+    Block.alias("cborread_topic")
+    Block.output("image")
+    Block.config("filename", "CBOR file to read")
+    Block.config("topic", "which topic to display")
+
+    # noinspection PyAttributeOutsideInit
+    def init(self):
+        fn = self.get_config("filename")
+        topic = self.get_config("topic")
+        self.ld = log_summary(fn)
+        self.topics =  list(read_topic2(self.ld, topic))
+        print(self.topics)
+        self.i = 0
+        self.n = len(self.topics)
+
+    def next_data_status(self):
+
+        if self.i < self.n:
+            return True, None
+        else:
+            return False, None
+
+    def update(self):
+        i = self.i
+        timestamp = i * 0.04 # XXX
+        value = self.topics[i]['data']
+        self.set_output("image", value=value, timestamp=timestamp)
+
+        self.i += 1
+
+    def finish(self):
+        pass
+
+
 def make_video1(*, log_filename: str, robot_name: str, output_video: str) -> None:
     register_model_spec(
         """
@@ -69,6 +107,30 @@ def make_video1(*, log_filename: str, robot_name: str, output_video: str) -> Non
     pg(
         "video_aido",
         dict(filename=log_filename, output=output_video, robot_name=robot_name),
+    )
+
+
+def make_video_ui_image(*, log_filename: str,  output_video: str) -> None:
+    register_model_spec(
+        """
+    --- model video_aido_ui_image
+    config output
+    config filename 
+    config topic
+
+
+    |cborread_topic filename=$filename topic=$topic| --> |jpg2rgb| -> rgb
+    rgb -> |identity| -> retimed
+    # rgb --> |rewrite_timestamps interval=$factor| -> retimed
+    retimed --> |info|
+    retimed -> |mencoder quiet=1 file=$output timestamps=0|
+
+        """
+    )
+
+    pg(
+        "video_aido_ui_image",
+        dict(filename=log_filename, output=output_video, topic="ui_image"),
     )
 
 
