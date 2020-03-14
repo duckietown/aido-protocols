@@ -4,7 +4,8 @@ from typing import Dict, Any, Optional
 import numpy as np
 
 from zuper_typing.literal import make_Literal
-from . import InteractionProtocol
+from .protocols import InteractionProtocol
+from .schemas import JPGImage
 from .protocol_agent import EpisodeStart
 
 RobotName = str
@@ -274,7 +275,8 @@ protocol_simulator = InteractionProtocol(
                     (in:get_robot_performance ;  out:robot_performance) |
                     (in:get_robot_state ;  out:robot_state) |
                     (in:get_sim_state ;  out:sim_state) |
-                    (in:dump_state   ;  out:state_dump) 
+                    (in:dump_state   ;  out:state_dump) |
+                    (in:get_ui_image ; out:ui_image) 
                 )* 
         )*
 """,
@@ -293,6 +295,7 @@ protocol_simulator = InteractionProtocol(
         "set_robot_commands": SetRobotCommands,
         "get_robot_observations": GetRobotObservations,
         "get_robot_state": GetRobotState,
+        "get_ui_image": type(None),
         # Dump state information
         "dump_state": DumpState,
     },
@@ -303,6 +306,7 @@ protocol_simulator = InteractionProtocol(
         "robot_interface_description": RobotInterfaceDescription,
         "sim_state": SimulationState,
         "state_dump": StateDump,
+        "ui_image": JPGImage
     },
 )
 
