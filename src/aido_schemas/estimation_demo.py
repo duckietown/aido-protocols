@@ -1,4 +1,4 @@
-from . import InteractionProtocol
+from .basics import InteractionProtocol
 
 __all__ = ["protocol_simple_predictor"]
 

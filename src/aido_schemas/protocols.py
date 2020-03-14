@@ -1,4 +1,4 @@
-from . import InteractionProtocol
+from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
 from .schemas import JPGImage
 

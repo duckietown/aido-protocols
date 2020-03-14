@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from . import InteractionProtocol
+from .basics import InteractionProtocol
 
-__all__ = ["EpisodeStart", "protocol_agent"]
+__all__ = ["EpisodeStart", "protocol_agent", "GetCommands"]
 
 
 @dataclass

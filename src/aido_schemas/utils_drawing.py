@@ -9,19 +9,20 @@ import yaml
 from cbor2 import CBORDecodeEOF
 
 import geometry
-from aido_schemas import Duckiebot1Observations, logger, RobotObservations, RobotState, SetRobotCommands  # keep
 from duckietown_world import draw_static, DuckietownMap, SampledSequence, SE2Transform
 from duckietown_world.rules import evaluate_rules
 from duckietown_world.rules.rule import make_timeseries, RuleEvaluationResult
 from duckietown_world.seqs.tsequence import SampledSequenceBuilder
-from duckietown_world.svg_drawing.draw_log import (RobotTrajectories, SimulatorLog, timeseries_actions)
+from duckietown_world.svg_drawing.draw_log import (RobotTrajectories, SimulatorLog)
 from duckietown_world.svg_drawing.misc import TimeseriesPlot
 from duckietown_world.world_duckietown import construct_map, DB18
 from duckietown_world.world_duckietown.types import SE2v
 from duckietown_world.world_duckietown.utils import get_velocities_from_sequence
-from zuper_ipce import IEDO
-from zuper_ipce.conv_object_from_ipce import object_from_ipce
+from zuper_ipce import IEDO, object_from_ipce
 from zuper_ipce.json2cbor import tag_hook
+from . import logger
+from .protocol_simulator import RobotObservations, RobotState, SetRobotCommands
+from .schemas import Duckiebot1Observations, MyRobotInfo
 
 
 @dataclass
@@ -118,11 +119,11 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
             robot_state = cast(RobotState, found)
             if robot_state.robot_name != robot_name:
                 continue
-
-            pose = robot_state.state.pose
+            state = cast(MyRobotInfo, robot_state.state)
+            pose = state.pose
             # velocity = robot_state.state.velocity
-            last_action = robot_state.state.last_action
-            wheels_velocities = robot_state.state.wheels_velocities
+            last_action =  state.last_action
+            wheels_velocities =  state.wheels_velocities
 
             t = robot_state.t_effective
             ssb_pose_SE2.add(t, pose)

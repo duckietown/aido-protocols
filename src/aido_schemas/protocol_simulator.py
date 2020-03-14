@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 import numpy as np
 
 from zuper_typing.literal import make_Literal
-from .protocols import InteractionProtocol
-from .schemas import JPGImage
+from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
 
 RobotName = str
@@ -31,7 +30,19 @@ __all__ = [
     "SimulationState",
     "Scenario",
     "StateDump",
+    "JPGImage",
 ]
+
+
+@dataclass
+class JPGImage:
+    """
+        An image in JPG format.
+
+        jpg_data: Bytes of a JPG file
+    """
+
+    jpg_data: bytes
 
 
 @dataclass
@@ -148,9 +159,11 @@ class StateDump:
 
     state: object
 
+
 MOTION_PARKED = 'parked'
 MOTION_MOVING = 'moving'
 NPMotion = make_Literal(MOTION_PARKED, MOTION_MOVING)
+
 
 @dataclass
 class ScenarioRobotSpec:
@@ -161,13 +174,13 @@ class ScenarioRobotSpec:
     # if not playable
     motion: Optional[NPMotion]
 
+
 @dataclass
 class SpawnRobot:
     playable: bool
     robot_name: RobotName
     configuration: RobotConfiguration
     motion: Optional[NPMotion]
-
 
 
 @dataclass
