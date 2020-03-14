@@ -198,7 +198,7 @@ def read_simulator_log_cbor(ld: LogData, main_robot_name: Optional[str] = None) 
     # logger.info(f'robots: {len(robots)}')
 
     for robot_name, trajs in robots.items():
-        logger.info(f'robots: {robot_name} trajs: {trajs.pose.get_sampling_points()}')
+        # logger.info(f'robots: {robot_name} trajs: {trajs.pose.get_sampling_points()}')
         if robot_name == main_robot_name:
             color = 'red'
         elif 'ego' in robot_name:
@@ -254,8 +254,8 @@ def read_and_draw(fn: str, output: str, robot_main: str) -> Dict[str, RuleEvalua
     duckietown_env = log0.duckietown
     timeseries = {}
 
-    logger.info("Computing timeseries_actions...")
-    timeseries.update(timeseries_actions(log))
+    # logger.info("Computing timeseries_actions...")
+    # timeseries.update(timeseries_actions(log))
     logger.info("Computing timeseries_wheels_velocities...")
     timeseries.update(timeseries_wheels_velocities(log.commands))
     logger.info("Computing timeseries_robot_velocity...")
@@ -295,7 +295,7 @@ def timeseries_wheels_velocities(log_commands):
     sequences["motor_left"] = log_commands.transform_values(get_left, float)
     sequences["motor_right"] = log_commands.transform_values(get_right, float)
     timeseries["pwm_commands"] = TimeseriesPlot(
-        "PWM commands", "pwm_commands", sequences
+        "PWM commands", "The PWM commands sent to the wheels", sequences
     )
     return timeseries
 
