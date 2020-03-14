@@ -13,7 +13,7 @@ from duckietown_world import draw_static, DuckietownMap, SampledSequence, SE2Tra
 from duckietown_world.rules import evaluate_rules
 from duckietown_world.rules.rule import make_timeseries, RuleEvaluationResult
 from duckietown_world.seqs.tsequence import SampledSequenceBuilder
-from duckietown_world.svg_drawing.draw_log import (RobotTrajectories, SimulatorLog)
+from duckietown_world.svg_drawing.draw_log import RobotTrajectories, SimulatorLog
 from duckietown_world.svg_drawing.misc import TimeseriesPlot
 from duckietown_world.world_duckietown import construct_map, DB18
 from duckietown_world.world_duckietown.types import SE2v
@@ -122,8 +122,8 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
             state = cast(MyRobotInfo, robot_state.state)
             pose = state.pose
             # velocity = robot_state.state.velocity
-            last_action =  state.last_action
-            wheels_velocities =  state.wheels_velocities
+            last_action = state.last_action
+            wheels_velocities = state.wheels_velocities
 
             t = robot_state.t_effective
             ssb_pose_SE2.add(t, pose)
@@ -192,7 +192,9 @@ def read_commands(ld: LogData, robot_name: str) -> SampledSequence:
     return seq
 
 
-def read_simulator_log_cbor(ld: LogData, main_robot_name: Optional[str] = None) -> SimulatorLog:
+def read_simulator_log_cbor(
+    ld: LogData, main_robot_name: Optional[str] = None
+) -> SimulatorLog:
     render_time = read_perfomance(ld)
     duckietown_map = read_map_info(ld)
     robots = read_trajectories(ld)
@@ -201,15 +203,15 @@ def read_simulator_log_cbor(ld: LogData, main_robot_name: Optional[str] = None) 
     for robot_name, trajs in robots.items():
         # logger.info(f'robots: {robot_name} trajs: {trajs.pose.get_sampling_points()}')
         if robot_name == main_robot_name:
-            color = 'red'
-        elif 'ego' in robot_name:
-            color = 'pink'
-        elif 'parked' in robot_name:
-            color = 'blue'
-        elif 'npc' in robot_name:
-            color = 'yellow'
+            color = "red"
+        elif "ego" in robot_name:
+            color = "pink"
+        elif "parked" in robot_name:
+            color = "blue"
+        elif "npc" in robot_name:
+            color = "yellow"
         else:
-            color = 'grey'
+            color = "grey"
 
         robot = DB18(color=color)
         duckietown_map.set_object(robot_name, robot, ground_truth=trajs.pose)
@@ -234,7 +236,9 @@ def evaluate_stats(fn: str, robot_main: str) -> Dict[str, RuleEvaluationResult]:
     return evaluated
 
 
-def read_and_draw(fn: str, output: str, robot_main: str) -> Dict[str, RuleEvaluationResult]:
+def read_and_draw(
+    fn: str, output: str, robot_main: str
+) -> Dict[str, RuleEvaluationResult]:
     ld = log_summary(fn)
 
     logger.info("Reading logs...")
@@ -277,8 +281,13 @@ def read_and_draw(fn: str, output: str, robot_main: str) -> Dict[str, RuleEvalua
             logger.info("%20s %20s %s" % (k, kk, vv))
     timeseries.update(make_timeseries(evaluated))
     logger.info("Drawing...")
-    draw_static(duckietown_env, output, images=images, timeseries=timeseries,
-                main_robot_name=robot_main)
+    draw_static(
+        duckietown_env,
+        output,
+        images=images,
+        timeseries=timeseries,
+        main_robot_name=robot_main,
+    )
     logger.info("...done.")
     return evaluated
 

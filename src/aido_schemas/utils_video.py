@@ -22,7 +22,7 @@ class CBORRead(Generator):
         self.log: SimulatorLog = read_simulator_log_cbor(self.ld)
         self.i = 0
         if robot_name not in self.log.robots:
-            msg = f'Cannot find robot {robot_name} among {list(self.log.robots)}'
+            msg = f"Cannot find robot {robot_name} among {list(self.log.robots)}"
             raise Exception(msg)
 
         log = self.log.robots[robot_name]
@@ -66,11 +66,18 @@ def make_video1(*, log_filename: str, robot_name: str, output_video: str) -> Non
         """
     )
 
-    pg("video_aido", dict(filename=log_filename, output=output_video, robot_name=robot_name))
+    pg(
+        "video_aido",
+        dict(filename=log_filename, output=output_video, robot_name=robot_name),
+    )
 
 
 def aido_log_video_main():
-    make_video1(log_filename=sys.argv[1], output_video="out-aido-log-video.mp4", robot_name=sys.argv[2])
+    make_video1(
+        log_filename=sys.argv[1],
+        output_video="out-aido-log-video.mp4",
+        robot_name=sys.argv[2],
+    )
 
 
 if __name__ == "__main__":

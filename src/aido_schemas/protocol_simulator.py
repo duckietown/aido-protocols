@@ -160,8 +160,8 @@ class StateDump:
     state: object
 
 
-MOTION_PARKED = 'parked'
-MOTION_MOVING = 'moving'
+MOTION_PARKED = "parked"
+MOTION_MOVING = "moving"
 NPMotion = make_Literal(MOTION_PARKED, MOTION_MOVING)
 
 
@@ -319,7 +319,7 @@ protocol_simulator = InteractionProtocol(
         "robot_interface_description": RobotInterfaceDescription,
         "sim_state": SimulationState,
         "state_dump": StateDump,
-        "ui_image": JPGImage
+        "ui_image": JPGImage,
     },
 )
 

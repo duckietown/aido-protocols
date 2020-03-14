@@ -3,13 +3,18 @@ from dataclasses import dataclass
 from .basics import particularize
 from .protocol_agent import protocol_agent
 
-from .protocol_simulator import JPGImage, SetRobotCommands, RobotName, RobotObservations, protocol_simulator
+from .protocol_simulator import (
+    JPGImage,
+    SetRobotCommands,
+    RobotName,
+    RobotObservations,
+    protocol_simulator,
+)
 
 import numpy as np
 
 __all__ = [
     "PWMCommands",
-
     "Duckiebot1Observations",
     "Duckiebot1Commands",
     "LEDSCommands",
@@ -44,8 +49,6 @@ class PWMCommands:
 #     """ Kinematic wheels commands. Radiants per second. """
 #     vel_left: float
 #     vel_right: float
-
-
 
 
 @dataclass
@@ -105,7 +108,6 @@ protocol_simulator_duckiebot1 = particularize(
     inputs={"set_robot_commands": DB18SetRobotCommands},
     outputs={"robot_observations": DB18RobotObservations},
 )
-
 
 
 @dataclass
