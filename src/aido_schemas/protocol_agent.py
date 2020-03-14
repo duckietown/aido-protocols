@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Any
 
 from . import InteractionProtocol
 
@@ -11,6 +10,11 @@ class EpisodeStart:
     """ Marker for the start of an episode. """
 
     episode_name: str
+
+
+@dataclass
+class GetCommands:
+    at_time: float
 
 
 protocol_agent = InteractionProtocol(
@@ -25,7 +29,7 @@ with "commands".
     inputs={
         "observations": object,
         "seed": int,
-        "get_commands": type(None),
+        "get_commands": GetCommands,
         "episode_start": EpisodeStart,
     },
     outputs={"commands": object},
