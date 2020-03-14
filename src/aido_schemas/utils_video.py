@@ -63,7 +63,7 @@ class CBORReadTopic(Generator):
         topic = self.get_config("topic")
         self.ld = log_summary(fn)
         self.topics =  list(read_topic2(self.ld, topic))
-        print(self.topics)
+        # print(self.topics)
         self.i = 0
         self.n = len(self.topics)
 
