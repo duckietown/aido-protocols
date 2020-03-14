@@ -3,6 +3,7 @@ from typing import Dict, Any, Optional
 
 import numpy as np
 
+from zuper_typing.literal import make_Literal
 from . import InteractionProtocol
 from .protocol_agent import EpisodeStart
 
@@ -41,13 +42,6 @@ class SetMap:
 class RobotConfiguration:
     pose: np.ndarray
     velocity: np.ndarray
-
-
-@dataclass
-class SpawnRobot:
-    playable: bool
-    robot_name: RobotName
-    configuration: RobotConfiguration
 
 
 @dataclass
@@ -153,12 +147,26 @@ class StateDump:
 
     state: object
 
+MOTION_PARKED = 'parked'
+MOTION_MOVING = 'moving'
+NPMotion = make_Literal(MOTION_PARKED, MOTION_MOVING)
 
 @dataclass
 class ScenarioRobotSpec:
     description: str
     playable: bool
     configuration: RobotConfiguration
+
+    # if not playable
+    motion: Optional[NPMotion]
+
+@dataclass
+class SpawnRobot:
+    playable: bool
+    robot_name: RobotName
+    configuration: RobotConfiguration
+    motion: Optional[NPMotion]
+
 
 
 @dataclass
