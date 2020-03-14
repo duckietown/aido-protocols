@@ -4,9 +4,8 @@ from dataclasses import dataclass
 from typing import cast, Dict, List, Optional
 
 import cbor2
-import yaml
-
 import numpy as np
+import yaml
 from cbor2 import CBORDecodeEOF
 
 import geometry
@@ -22,7 +21,7 @@ from duckietown_world.world_duckietown.types import SE2v
 from duckietown_world.world_duckietown.utils import get_velocities_from_sequence
 from zuper_ipce import IEDO
 from zuper_ipce.conv_object_from_ipce import object_from_ipce
-from zuper_ipce.json2cbor import read_cbor_or_json_objects, tag_hook
+from zuper_ipce.json2cbor import tag_hook
 
 
 @dataclass
@@ -74,8 +73,6 @@ def read_map_info(ld: LogData) -> DuckietownMap:
     map_data = yaml.load(map_data_yaml, Loader=yaml.SafeLoader)
     duckietown_map = construct_map(map_data)
     return duckietown_map
-
-
 
 
 def read_perfomance(ld: LogData) -> Dict[str, RuleEvaluationResult]:
@@ -202,13 +199,16 @@ def read_simulator_log_cbor(ld: LogData, main_robot_name: Optional[str] = None) 
 
     for robot_name, trajs in robots.items():
         logger.info(f'robots: {robot_name} trajs: {trajs.pose.get_sampling_points()}')
-        if main_robot_name is not None:
-            if robot_name == main_robot_name:
-                color = 'red'
-            else:
-                color = 'grey'
-        else:
+        if robot_name == main_robot_name:
             color = 'red'
+        elif 'ego' in robot_name:
+            color = 'pink'
+        elif 'parked' in robot_name:
+            color = 'blue'
+        elif 'npc' in robot_name:
+            color = 'yellow'
+        else:
+            color = 'grey'
 
         robot = DB18(color=color)
         duckietown_map.set_object(robot_name, robot, ground_truth=trajs.pose)
@@ -216,6 +216,7 @@ def read_simulator_log_cbor(ld: LogData, main_robot_name: Optional[str] = None) 
     return SimulatorLog(
         duckietown=duckietown_map, robots=robots, render_time=render_time
     )
+
 
 def evaluate_stats(fn: str, robot_main: str) -> Dict[str, RuleEvaluationResult]:
     ld = log_summary(fn)
@@ -230,6 +231,7 @@ def evaluate_stats(fn: str, robot_main: str) -> Dict[str, RuleEvaluationResult]:
         ego_name=robot_main,
     )
     return evaluated
+
 
 def read_and_draw(fn: str, output: str, robot_main: str) -> Dict[str, RuleEvaluationResult]:
     ld = log_summary(fn)
