@@ -133,7 +133,7 @@ def make_video_ui_image(*, log_filename: str,  output_video: str) -> None:
     rgb -> |identity| -> retimed
     # rgb --> |rewrite_timestamps interval=$factor| -> retimed
     retimed --> |info|
-    retimed -> |mencoder quiet=1 file=$output timestamps=0|
+    retimed -> |mencoder quiet=1 file=$output timestamps=0 firstpass_bitrate=120000000|
 
         """
     )
