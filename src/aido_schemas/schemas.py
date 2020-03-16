@@ -1,17 +1,12 @@
 from dataclasses import dataclass
+from typing import Dict
+
+import numpy as np
 
 from .basics import particularize
 from .protocol_agent import protocol_agent
-
-from .protocol_simulator import (
-    JPGImage,
-    SetRobotCommands,
-    RobotName,
-    RobotObservations,
-    protocol_simulator,
-)
-
-import numpy as np
+from .protocol_simulator import (JPGImage, protocol_simulator, RobotName, RobotObservations, RobotState,
+                                 SetRobotCommands, StateDump)
 
 __all__ = [
     "PWMCommands",
@@ -23,6 +18,7 @@ __all__ = [
     "DB18RobotObservations",
     "protocol_agent_duckiebot1",
     "protocol_simulator_duckiebot1",
+    'DTSimRobotInfo', 'DTSimRobotState', 'DTSimState', 'DTSimStateDump'
 ]
 
 
@@ -111,8 +107,28 @@ protocol_simulator_duckiebot1 = particularize(
 
 
 @dataclass
-class MyRobotInfo:
+class DTSimRobotInfo:
     pose: np.ndarray
     velocity: np.ndarray
-    last_action: np.ndarray
-    wheels_velocities: np.ndarray
+    # last_action: np.ndarray
+    # wheels_velocities: np.ndarray
+    pwm: PWMCommands
+    leds: LEDSCommands
+
+
+@dataclass
+class DTSimRobotState(RobotState):
+    robot_name: RobotName
+    t_effective: float
+    state: DTSimRobotInfo
+
+
+@dataclass
+class DTSimState:
+    t_effective: float
+    duckiebots: Dict[str, DTSimRobotInfo]
+
+
+@dataclass
+class DTSimStateDump(StateDump):
+    state: DTSimState

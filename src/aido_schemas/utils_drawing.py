@@ -22,7 +22,7 @@ from zuper_ipce import IEDO, object_from_ipce
 from zuper_ipce.json2cbor import tag_hook
 from . import logger
 from .protocol_simulator import RobotObservations, RobotState, SetRobotCommands
-from .schemas import Duckiebot1Observations, MyRobotInfo
+from .schemas import Duckiebot1Observations, DTSimRobotInfo
 
 
 @dataclass
@@ -58,7 +58,7 @@ def log_summary(filename: str) -> LogData:
     return LogData(objects)
 
 
-def read_topic2(ld: LogData, topic: str) -> Iterator[object] :
+def read_topic2(ld: LogData, topic: str) -> Iterator[dict] :
     for ob in ld.objects:
         if ob["topic"] == topic:
             yield ob
@@ -111,25 +111,25 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
     for robot_name in robot_names:
         ssb_pose = SampledSequenceBuilder[SE2Transform]()
         ssb_pose_SE2 = SampledSequenceBuilder[SE2v]()
-        ssb_actions = SampledSequenceBuilder[object]()
-        ssb_wheels_velocities = SampledSequenceBuilder[object]()
+        # ssb_actions = SampledSequenceBuilder[object]()
+        # ssb_wheels_velocities = SampledSequenceBuilder[object]()
         # ssb_velocities = SampledSequenceBuilder[Any]()
         for r in rs:
             found = object_from_ipce(r["data"], iedo=iedo)
             robot_state = cast(RobotState, found)
             if robot_state.robot_name != robot_name:
                 continue
-            state = cast(MyRobotInfo, robot_state.state)
+            state = cast(DTSimRobotInfo, robot_state.state)
             pose = state.pose
             # velocity = robot_state.state.velocity
-            last_action = state.last_action
-            wheels_velocities = state.wheels_velocities
+            # last_action = state.last_action
+            # wheels_velocities = state.wheels_velocities
 
             t = robot_state.t_effective
             ssb_pose_SE2.add(t, pose)
             ssb_pose.add(t, SE2Transform.from_SE2(pose))
-            ssb_actions.add(t, last_action)
-            ssb_wheels_velocities.add(t, wheels_velocities)
+            # ssb_actions.add(t, last_action)
+            # ssb_wheels_velocities.add(t, wheels_velocities)
             # ssb_velocities.add(t, velocity)
 
         seq_velocities = get_velocities_from_sequence(ssb_pose_SE2)
@@ -137,10 +137,10 @@ def read_trajectories(ld: LogData) -> Dict[str, RobotTrajectories]:
         commands = read_commands(ld, robot_name)
 
         robot2trajs[robot_name] = RobotTrajectories(
-            ssb_pose.as_sequence(),
-            ssb_actions.as_sequence(),
-            ssb_wheels_velocities.as_sequence(),
-            seq_velocities,
+            pose=ssb_pose.as_sequence(),
+            # ssb_actions.as_sequence(),
+            # ssb_wheels_velocities.as_sequence(),
+            velocity=seq_velocities,
             observations=observations,
             commands=commands,
         )
@@ -214,6 +214,7 @@ def read_simulator_log_cbor(
             color = "grey"
 
         robot = DB18(color=color)
+        # noinspection PyTypeChecker
         duckietown_map.set_object(robot_name, robot, ground_truth=trajs.pose)
 
     return SimulatorLog(
@@ -292,7 +293,7 @@ def read_and_draw(
     return evaluated
 
 
-def timeseries_wheels_velocities(log_commands):
+def timeseries_wheels_velocities(log_commands: SampledSequence) -> Dict[str, TimeseriesPlot]:
     timeseries = {}
     sequences = {}
 
@@ -310,7 +311,7 @@ def timeseries_wheels_velocities(log_commands):
     return timeseries
 
 
-def timeseries_robot_velocity(log_velocity):
+def timeseries_robot_velocity(log_velocity: SampledSequence) -> Dict[str, TimeseriesPlot]:
     timeseries = {}
     sequences = {}
 
