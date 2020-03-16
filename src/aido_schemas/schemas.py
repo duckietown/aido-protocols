@@ -58,6 +58,11 @@ class RGB:
     g: float
     b: float
 
+    def __post_init__(self):
+        for a in [self.r, self.g, self.b]:
+            if not isinstance(a, float):
+                raise ValueError(a)
+
 
 @dataclass
 class LEDSCommands:
@@ -97,20 +102,13 @@ class DB18RobotObservations(RobotObservations):
     observations: Duckiebot1Observations
 
 
-description = """Particularization for Duckiebot1 observations and commands."""
-protocol_simulator_duckiebot1 = particularize(
-    protocol_simulator,
-    description=description,
-    inputs={"set_robot_commands": DB18SetRobotCommands},
-    outputs={"robot_observations": DB18RobotObservations},
-)
 
 
 @dataclass
 class DTSimRobotInfo:
     pose: np.ndarray
     velocity: np.ndarray
-    # last_action: np.ndarray
+    # last_action: np.ndarray[
     # wheels_velocities: np.ndarray
     pwm: PWMCommands
     leds: LEDSCommands
@@ -132,3 +130,14 @@ class DTSimState:
 @dataclass
 class DTSimStateDump(StateDump):
     state: DTSimState
+
+description = """Particularization for Duckiebot1 observations and commands."""
+protocol_simulator_duckiebot1 = particularize(
+    protocol_simulator,
+    description=description,
+    inputs={"set_robot_commands": DB18SetRobotCommands},
+    outputs={"robot_observations": DB18RobotObservations,
+            "robot_state": DTSimRobotState,
+            'state_dump': DTSimStateDump
+    },
+)
