@@ -3,7 +3,7 @@ import io
 import numpy as np
 from PIL import Image
 
-__all__ = ['jpg2rgb']
+__all__ = ["jpg2rgb"]
 
 
 def jpg2rgb(image_data: bytes) -> np.ndarray:

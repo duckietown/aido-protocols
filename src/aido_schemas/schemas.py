@@ -5,13 +5,20 @@ import numpy as np
 
 from .basics import particularize
 from .protocol_agent import protocol_agent
-from .protocol_simulator import (JPGImage, protocol_simulator, RobotName, RobotObservations, RobotState,
-                                 SetRobotCommands, StateDump)
+from .protocol_simulator import (
+    JPGImage,
+    protocol_simulator,
+    RobotName,
+    RobotObservations,
+    RobotState,
+    SetRobotCommands,
+    StateDump,
+)
 
 __all__ = [
     "PWMCommands",
     "Duckiebot1Observations",
-"Duckiebot1ObservationsPlusState",
+    "Duckiebot1ObservationsPlusState",
     "Duckiebot1Commands",
     "LEDSCommands",
     "RGB",
@@ -20,7 +27,10 @@ __all__ = [
     "protocol_agent_duckiebot1",
     "protocol_simulator_duckiebot1",
     "protocol_agent_duckiebot1_fullstate",
-    'DTSimRobotInfo', 'DTSimRobotState', 'DTSimState', 'DTSimStateDump'
+    "DTSimRobotInfo",
+    "DTSimRobotState",
+    "DTSimState",
+    "DTSimStateDump",
 ]
 
 
@@ -137,10 +147,11 @@ protocol_agent_duckiebot1 = particularize(
     outputs={"commands": Duckiebot1Commands},
 )
 
-description = """Particularization for Duckiebot1 observations and commands with full state """
+description = (
+    """Particularization for Duckiebot1 observations and commands with full state """
+)
 protocol_agent_duckiebot1_fullstate = particularize(
-    protocol_agent_duckiebot1,
-    inputs={"observations": Duckiebot1ObservationsPlusState},
+    protocol_agent_duckiebot1, inputs={"observations": Duckiebot1ObservationsPlusState},
 )
 
 protocol_simulator_duckiebot1 = particularize(
@@ -150,6 +161,6 @@ protocol_simulator_duckiebot1 = particularize(
     outputs={
         "robot_observations": DB18RobotObservations,
         "robot_state": DTSimRobotState,
-        'state_dump': DTSimStateDump
+        "state_dump": DTSimStateDump,
     },
 )

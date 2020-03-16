@@ -2,13 +2,17 @@ import numpy as np
 
 from .schemas import LEDSCommands, RGB
 
-__all__ = ['get_normal_LEDs', 'get_blinking_LEDs_left', 'get_blinking_LEDs_right',
-           'get_braking_LEDs']
+__all__ = [
+    "get_normal_LEDs",
+    "get_blinking_LEDs_left",
+    "get_blinking_LEDs_right",
+    "get_braking_LEDs",
+]
 
 blue = RGB(0.0, 0.0, 0.8)
 white = RGB(0.6, 0.6, 0.6)
 yellow = RGB(1.0, 1.0, 0.0)
-red = RGB(.6, 0.6, 0.6)
+red = RGB(0.6, 0.6, 0.6)
 red2 = RGB(1.0, 0.0, 0.0)
 
 phase2leds = {
@@ -30,9 +34,12 @@ phase2leds = {
         center=blue, back_left=red, back_right=red, front_left=white, front_right=white
     ),
     "brake": LEDSCommands(
-        center=blue, back_left=red2, back_right=red2, front_left=white, front_right=white
+        center=blue,
+        back_left=red2,
+        back_right=red2,
+        front_left=white,
+        front_right=white,
     ),
-
 }
 phase_period = 0.5
 

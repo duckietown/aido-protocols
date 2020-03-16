@@ -58,7 +58,7 @@ def log_summary(filename: str) -> LogData:
     return LogData(objects)
 
 
-def read_topic2(ld: LogData, topic: str) -> Iterator[dict] :
+def read_topic2(ld: LogData, topic: str) -> Iterator[dict]:
     for ob in ld.objects:
         if ob["topic"] == topic:
             yield ob
@@ -293,7 +293,9 @@ def read_and_draw(
     return evaluated
 
 
-def timeseries_wheels_velocities(log_commands: SampledSequence) -> Dict[str, TimeseriesPlot]:
+def timeseries_wheels_velocities(
+    log_commands: SampledSequence,
+) -> Dict[str, TimeseriesPlot]:
     timeseries = {}
     sequences = {}
 
@@ -311,7 +313,9 @@ def timeseries_wheels_velocities(log_commands: SampledSequence) -> Dict[str, Tim
     return timeseries
 
 
-def timeseries_robot_velocity(log_velocity: SampledSequence) -> Dict[str, TimeseriesPlot]:
+def timeseries_robot_velocity(
+    log_velocity: SampledSequence,
+) -> Dict[str, TimeseriesPlot]:
     timeseries = {}
     sequences = {}
 
