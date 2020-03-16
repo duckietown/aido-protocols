@@ -11,6 +11,7 @@ from .protocol_simulator import (JPGImage, protocol_simulator, RobotName, RobotO
 __all__ = [
     "PWMCommands",
     "Duckiebot1Observations",
+"Duckiebot1ObservationsPlusState",
     "Duckiebot1Commands",
     "LEDSCommands",
     "RGB",
@@ -18,6 +19,7 @@ __all__ = [
     "DB18RobotObservations",
     "protocol_agent_duckiebot1",
     "protocol_simulator_duckiebot1",
+    "protocol_agent_duckiebot1_fullstate",
     'DTSimRobotInfo', 'DTSimRobotState', 'DTSimState', 'DTSimStateDump'
 ]
 
@@ -79,15 +81,6 @@ class Duckiebot1Commands:
     LEDS: LEDSCommands
 
 
-description = """Particularization for Duckiebot1 observations and commands."""
-protocol_agent_duckiebot1 = particularize(
-    protocol_agent,
-    description=description,
-    inputs={"observations": Duckiebot1Observations},
-    outputs={"commands": Duckiebot1Commands},
-)
-
-
 @dataclass
 class DB18SetRobotCommands(SetRobotCommands):
     robot_name: RobotName
@@ -100,8 +93,6 @@ class DB18RobotObservations(RobotObservations):
     robot_name: RobotName
     t_effective: float
     observations: Duckiebot1Observations
-
-
 
 
 @dataclass
@@ -131,13 +122,34 @@ class DTSimState:
 class DTSimStateDump(StateDump):
     state: DTSimState
 
+
+@dataclass
+class Duckiebot1ObservationsPlusState(Duckiebot1Observations):
+    your_name: RobotName
+    state: DTSimState
+
+
 description = """Particularization for Duckiebot1 observations and commands."""
+protocol_agent_duckiebot1 = particularize(
+    protocol_agent,
+    description=description,
+    inputs={"observations": Duckiebot1Observations},
+    outputs={"commands": Duckiebot1Commands},
+)
+
+description = """Particularization for Duckiebot1 observations and commands with full state """
+protocol_agent_duckiebot1_fullstate = particularize(
+    protocol_agent_duckiebot1,
+    inputs={"observations": Duckiebot1ObservationsPlusState},
+)
+
 protocol_simulator_duckiebot1 = particularize(
     protocol_simulator,
-    description=description,
+    description="""Particularization for Duckiebot1 observations and commands.""",
     inputs={"set_robot_commands": DB18SetRobotCommands},
-    outputs={"robot_observations": DB18RobotObservations,
-            "robot_state": DTSimRobotState,
-            'state_dump': DTSimStateDump
+    outputs={
+        "robot_observations": DB18RobotObservations,
+        "robot_state": DTSimRobotState,
+        'state_dump': DTSimStateDump
     },
 )
