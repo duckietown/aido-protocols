@@ -134,7 +134,8 @@ class DTSimStateDump(StateDump):
 
 
 @dataclass
-class Duckiebot1ObservationsPlusState(Duckiebot1Observations):
+class Duckiebot1ObservationsPlusState:
+    camera: JPGImage
     your_name: RobotName
     state: DTSimState
 
