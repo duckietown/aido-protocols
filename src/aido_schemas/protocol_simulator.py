@@ -187,7 +187,7 @@ class SpawnRobot:
 class Scenario:
     # Specification of the environments
     scenario_name: str
-    environment: Any
+    environment: object
     robots: Dict[str, ScenarioRobotSpec]
 
 
@@ -323,8 +323,8 @@ protocol_simulator = InteractionProtocol(
     },
 )
 
-protocol_evaluator = InteractionProtocol(
-    description="""Protocol for performance evaluator""",
+protocol_scorer = InteractionProtocol(
+    description="""Protocol for scorer""",
     language="""\
             in:set_map ;
             (

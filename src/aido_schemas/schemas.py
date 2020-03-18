@@ -123,6 +123,11 @@ class DTSimRobotState(RobotState):
 
 
 @dataclass
+class DTSetMap:
+    map_data: str
+
+
+@dataclass
 class DTSimState:
     t_effective: float
     duckiebots: Dict[str, DTSimRobotInfo]
@@ -138,6 +143,7 @@ class Duckiebot1ObservationsPlusState:
     camera: JPGImage
     your_name: RobotName
     state: DTSimState
+    map_data: str
 
 
 description = """Particularization for Duckiebot1 observations and commands."""
@@ -149,7 +155,7 @@ protocol_agent_duckiebot1 = particularize(
 )
 
 description = (
-    """Particularization for Duckiebot1 observations and commands with full state """
+    """Particularization for Duckiebot1; observations and commands with full state """
 )
 protocol_agent_duckiebot1_fullstate = particularize(
     protocol_agent_duckiebot1, inputs={"observations": Duckiebot1ObservationsPlusState},
@@ -158,7 +164,10 @@ protocol_agent_duckiebot1_fullstate = particularize(
 protocol_simulator_duckiebot1 = particularize(
     protocol_simulator,
     description="""Particularization for Duckiebot1 observations and commands.""",
-    inputs={"set_robot_commands": DB18SetRobotCommands},
+    inputs={
+        "set_robot_commands": DB18SetRobotCommands,
+        "set_map": DTSetMap,
+    },
     outputs={
         "robot_observations": DB18RobotObservations,
         "robot_state": DTSimRobotState,
