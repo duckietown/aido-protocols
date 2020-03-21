@@ -1,13 +1,21 @@
+AIDO_REGISTRY ?= docker.io
+PIP_INDEX_URL ?= https://pypi.org/simple
+
 repo=aidonode-dummy_image_source
 # repo=$(shell basename -s .git `git config --get remote.origin.url`)
 branch=$(shell git rev-parse --abbrev-ref HEAD)
 tag=duckietown/$(repo):$(branch)
 
+
+build_options=\
+ 	--build-arg AIDO_REGISTRY=$(AIDO_REGISTRY)\
+ 	--build-arg PIP_INDEX_URL=$(PIP_INDEX_URL)
+
 build:
-	docker build --pull -t $(tag) .
+	docker build --pull -t $(tag) $(build_options) .
 
 build-no-cache:
-	docker build --pull -t $(tag)  --no-cache .
+	docker build --pull -t $(tag) $(build_options) --no-cache .
 
 push: build
 	docker push $(tag)
