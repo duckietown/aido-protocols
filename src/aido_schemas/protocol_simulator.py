@@ -172,7 +172,7 @@ class ScenarioRobotSpec:
     configuration: RobotConfiguration
 
     # if not playable
-    motion: Optional[NPMotion]
+    motion: Optional[NPMotion] = None
 
 
 @dataclass
@@ -180,7 +180,7 @@ class SpawnRobot:
     playable: bool
     robot_name: RobotName
     configuration: RobotConfiguration
-    motion: Optional[NPMotion]
+    motion: Optional[NPMotion] = None
 
 
 @dataclass
