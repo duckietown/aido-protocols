@@ -1,6 +1,6 @@
 AIDO_REGISTRY ?= docker.io
 PIP_INDEX_URL ?= https://pypi.org/simple
-	
+
 build:
 	make -C dummy_image_source build
 	make -C dummy_image_filter build
@@ -40,6 +40,6 @@ build_options=\
 test-docker-build: build
 	docker-compose build $(build_options)
 
-test-docker-up: build
-	docker-compose up --build
+test-docker-up: test-docker-build
+	docker-compose up #--build
 
