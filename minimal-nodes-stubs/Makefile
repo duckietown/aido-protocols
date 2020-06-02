@@ -1,3 +1,5 @@
+AIDO_REGISTRY ?= docker.io
+PIP_INDEX_URL ?= https://pypi.org/simple
 
 build:
 	make -C dummy_image_source build
@@ -30,9 +32,14 @@ test-all_connected-cbor:
 	AIDONODE_ENCODING=cbor AIDONODE_NAME=node1   AIDONODE_META_OUT=meta.json ./dummy_image_filter/dummy_image_filter.py  | \
 	AIDONODE_ENCODING=cbor AIDONODE_NAME=node2   AIDONODE_META_OUT=meta.json ./dummy_image_filter/dummy_image_filter.py  > res2.cbor
 
-test-docker-build: build
-	docker-compose build
 
-test-docker-up: build
-	docker-compose up --build
+build_options=\
+ 	--build-arg AIDO_REGISTRY=$(AIDO_REGISTRY)\
+ 	--build-arg PIP_INDEX_URL=$(PIP_INDEX_URL)
+
+test-docker-build: build
+	docker-compose build $(build_options)
+
+test-docker-up: test-docker-build
+	docker-compose up #--build
 

@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import   Dict, Optional
 
 import numpy as np
 
-from zuper_typing.literal import make_Literal
+from zuper_typing.literal import make_Literal # XXX
 from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
 
@@ -187,7 +187,7 @@ class SpawnRobot:
 class Scenario:
     # Specification of the environments
     scenario_name: str
-    environment: Any
+    environment: object
     robots: Dict[str, ScenarioRobotSpec]
 
 
@@ -323,8 +323,8 @@ protocol_simulator = InteractionProtocol(
     },
 )
 
-protocol_evaluator = InteractionProtocol(
-    description="""Protocol for performance evaluator""",
+protocol_scorer = InteractionProtocol(
+    description="""Protocol for scorer""",
     language="""\
             in:set_map ;
             (
