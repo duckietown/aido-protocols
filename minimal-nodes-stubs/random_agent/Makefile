@@ -9,8 +9,8 @@ tag=$(AIDO_REGISTRY)/duckietown/$(repo):$(branch)
 
 
 build_options=\
- 	--build-arg AIDO_REGISTRY=$(AIDO_REGISTRY)\
- 	--build-arg PIP_INDEX_URL=$(PIP_INDEX_URL)
+	--build-arg AIDO_REGISTRY=$(AIDO_REGISTRY)\
+	--build-arg PIP_INDEX_URL=$(PIP_INDEX_URL)
 
 update-reqs:
 	pur --index-url $(PIP_INDEX_URL) -r requirements.txt -f -m '*' -o requirements.resolved
