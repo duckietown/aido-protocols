@@ -1,14 +1,15 @@
 zuper-ipce-z6==6.0.29
 zuper-nodes-z6==6.0.15
 
-compmake==6.0.4
+
 pyparsing==2.4.6
-PyContracts==1.8.14
+
 networkx>=2.4,<3
 termcolor==1.1.0
 
 # testing
-comptests==6.0.3
+comptests-z6
+compmake-z6
 coverage==5.1
 coveralls==2.0.0
 # notebooks

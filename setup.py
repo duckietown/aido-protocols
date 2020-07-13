@@ -20,23 +20,24 @@ def get_version(filename: str):
 version = get_version(filename="src/aido_schemas/__init__.py")
 
 line = "daffy-aido4"
+install_requires = [
+    "compmake-z6",
+    "pyparsing",
+    "PyContracts3",
+    "networkx>=2,<3",
+    "termcolor",
+    "pydot",
+    "zuper-ipce-z6",
+    "zuper-nodes-z6",
+]
 
 setup(
     name=f"aido-protocols-{line}",
     version=version,
     keywords="",
     package_dir={"": "src"},
-    packages=["aido_schemas", "aido_schemas_tests",],
-    install_requires=[
-        "compmake",
-        "pyparsing",
-        "PyContracts",
-        "networkx>=2,<3",
-        "termcolor",
-        "pydot",
-        "zuper-ipce-z6",
-        "zuper-nodes-z6",
-    ],
+    packages=["aido_schemas", "aido_schemas_tests", ],
+    install_requires=install_requires,
     entry_points={
         "console_scripts": [
             "aido-log-draw=aido_schemas.utils_drawing:aido_log_draw_main",
