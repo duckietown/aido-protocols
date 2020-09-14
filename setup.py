@@ -27,8 +27,8 @@ install_requires = [
     "networkx>=2,<3",
     "termcolor",
     "pydot",
-    "zuper-ipce-z6",
-    "zuper-nodes-z6",
+    "zuper-ipce-z6>=6.0.34",
+    "zuper-nodes-z6>=6.0.25",
 ]
 
 setup(
