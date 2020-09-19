@@ -19,7 +19,7 @@ def get_version(filename: str):
 
 version = get_version(filename="src/aido_schemas/__init__.py")
 
-line = "daffy-aido4"
+line = "daffy"
 install_requires = [
     "compmake-z6",
     "pyparsing",
