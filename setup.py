@@ -36,7 +36,7 @@ setup(
     version=version,
     keywords="",
     package_dir={"": "src"},
-    packages=["aido_schemas", "aido_schemas_tests", ],
+    packages=["aido_schemas", "aido_schemas_tests",],
     install_requires=install_requires,
     entry_points={
         "console_scripts": [

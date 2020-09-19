@@ -3,19 +3,18 @@ from aido_schemas import protocol_image_filter, JPGImage, EpisodeStart, wrap_dir
 
 
 class DummyImageFilter:
-
     def init(self, context: Context):
-        context.info('init()')
+        context.info("init()")
 
     def on_received_episode_start(self, context: Context, data: EpisodeStart):
-        context.write('episode_start', data=data)
+        context.write("episode_start", data=data)
 
     def on_received_image(self, context: Context, data: JPGImage):
         transformed = data
-        context.write('image', transformed)
+        context.write("image", transformed)
 
     def finish(self, context: Context):
-        context.info('finish()')
+        context.info("finish()")
 
 
 def main():
@@ -24,5 +23,5 @@ def main():
     wrap_direct(node=node, protocol=protocol)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

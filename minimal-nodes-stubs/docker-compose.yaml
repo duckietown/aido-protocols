@@ -3,7 +3,7 @@ services:
   image_source:
     environment:
       AIDONODE_NAME: source
-      AIDONODE_DATA_IN: /test_data/in1.json
+      AIDONODE_DATA_IN: /test_data/in1.cbor
       AIDONODE_DATA_OUT: fifo:/fifos/image_source/out
       AIDONODE_META_IN:
       AIDONODE_META_OUT: /test_data/meta_out.json
@@ -16,7 +16,7 @@ services:
       # Uncomment the following to use the current python code
       #  - ../src:/src/aido-protocols/src
     cpu_percent: 50
-    mem_limit: 100MB
+    mem_limit: 300MB
 
   filter1:
     environment:
@@ -30,7 +30,7 @@ services:
       context: ./dummy_image_filter
     volumes: *volumes
     cpu_percent: 50
-    mem_limit: 100MB
+    mem_limit: 300MB
 
   filter2:
     build:
@@ -45,7 +45,7 @@ services:
       AIDONODE_ENCODING: cbor
     volumes: *volumes
     cpu_percent: 50
-    mem_limit: 100MB
+    mem_limit: 300MB
 
 #  agent:
 #    environment:

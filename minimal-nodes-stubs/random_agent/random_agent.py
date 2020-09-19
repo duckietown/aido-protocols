@@ -2,14 +2,22 @@
 
 import numpy as np
 
-from aido_schemas import EpisodeStart, protocol_agent_duckiebot1, PWMCommands, Duckiebot1Commands, LEDSCommands, RGB, wrap_direct, Context
+from aido_schemas import (
+    EpisodeStart,
+    protocol_agent_duckiebot1,
+    PWMCommands,
+    Duckiebot1Commands,
+    LEDSCommands,
+    RGB,
+    wrap_direct,
+    Context,
+)
 
 
 class RandomAgent:
-
     def init(self, context: Context):
         self.n = 0
-        context.info('init()')
+        context.info("init()")
 
     def on_received_seed(self, data: int):
         np.random.seed(data)
@@ -35,10 +43,10 @@ class RandomAgent:
         led_commands = LEDSCommands(grey, grey, grey, grey, grey)
         pwm_commands = PWMCommands(motor_left=pwm_left, motor_right=pwm_right)
         commands = Duckiebot1Commands(pwm_commands, led_commands)
-        context.write('commands', commands)
+        context.write("commands", commands)
 
     def finish(self, context: Context):
-        context.info('finish()')
+        context.info("finish()")
 
 
 def main():
@@ -47,5 +55,5 @@ def main():
     wrap_direct(node=node, protocol=protocol)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
