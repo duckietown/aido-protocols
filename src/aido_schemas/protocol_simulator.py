@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import   Dict, Optional
+from typing import Dict, Optional
 
 import numpy as np
 
-from zuper_typing.literal import make_Literal # XXX
+from zuper_typing.literal import make_Literal  # XXX
 from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
 

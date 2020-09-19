@@ -72,3 +72,6 @@ coverage-coveralls:
 
 
 
+
+black:
+	black -l 110  src

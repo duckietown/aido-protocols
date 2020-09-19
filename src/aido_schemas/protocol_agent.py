@@ -26,12 +26,7 @@ with "commands".
 "episode_start" marks the beginning of an episode.  
 
     """.strip(),
-    inputs={
-        "observations": object,
-        "seed": int,
-        "get_commands": GetCommands,
-        "episode_start": EpisodeStart,
-    },
+    inputs={"observations": object, "seed": int, "get_commands": GetCommands, "episode_start": EpisodeStart,},
     outputs={"commands": object},
     language="""
             in:seed? ;
