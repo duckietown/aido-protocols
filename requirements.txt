@@ -1,5 +1,5 @@
-zuper-ipce-z6==6.0.34
-zuper-nodes-z6==6.0.25
+zuper-ipce-z6>=6.0.34
+zuper-nodes-z6>=6.0.25
 
 
 pyparsing==2.4.6
