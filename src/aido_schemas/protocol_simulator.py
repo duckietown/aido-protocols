@@ -31,6 +31,7 @@ __all__ = [
     "Scenario",
     "StateDump",
     "JPGImage",
+    "DumpState",
 ]
 
 

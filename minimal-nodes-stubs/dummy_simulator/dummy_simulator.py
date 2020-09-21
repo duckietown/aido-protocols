@@ -102,11 +102,10 @@ def get_random_image(shape):
     image = JPGImage(jpg_data)
     return image
 
+import cv2
 
 # noinspection PyUnresolvedReferences
 def bgr2jpg(image_cv) -> bytes:
-    import cv2
-
     compress = cv2.imencode(".jpg", image_cv)[1]
     jpg_data = np.array(compress).tostring()
     return jpg_data
