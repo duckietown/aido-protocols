@@ -14,7 +14,7 @@ build-no-cache:
 	make -C random_agent       build-no-cache
 
 
-push:
+push: build
 	make -C dummy_image_source push
 	make -C dummy_image_filter push
 	make -C dummy_simulator    push
