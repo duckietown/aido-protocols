@@ -1,8 +1,8 @@
-from dataclasses import dataclass
 from typing import Dict
 
 import numpy as np
 from zuper_nodes import particularize_no_check
+from zuper_typing import dataclass
 
 from .protocol_agent import protocol_agent
 from .protocol_simulator import (
@@ -40,7 +40,6 @@ __all__ = [
     "protocol_agent_DB20",
     "protocol_agent_DB20_fullstate",
     "protocol_simulator_DB20"
-
 
 ]
 
@@ -208,6 +207,7 @@ class DB20ObservationsPlusState:
 class DB20Commands:
     wheels: PWMCommands
     LEDS: LEDSCommands
+
 
 @dataclass
 class DB20SetRobotCommands(SetRobotCommands):
