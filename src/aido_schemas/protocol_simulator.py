@@ -1,12 +1,11 @@
 from zuper_typing import dataclass
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import numpy as np
 
 from zuper_typing.literal import make_Literal  # XXX
 from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
-
 
 __all__ = [
     "RobotState",
@@ -37,6 +36,7 @@ __all__ = [
 
 RobotName = str
 
+
 @dataclass
 class JPGImage:
     """
@@ -50,7 +50,7 @@ class JPGImage:
 
 @dataclass
 class SetMap:
-    map_data: object
+    map_data: Any
 
 
 @dataclass
@@ -63,7 +63,7 @@ class RobotConfiguration:
 class SetRobotCommands:
     robot_name: RobotName
     t_effective: float
-    commands: object
+    commands: Any
 
 
 @dataclass
@@ -82,14 +82,14 @@ class GetRobotState:
 class RobotObservations:
     robot_name: RobotName
     t_effective: float
-    observations: object
+    observations: Any
 
 
 @dataclass
 class RobotState:
     robot_name: RobotName
     t_effective: float
-    state: object
+    state: Any
 
 
 @dataclass
