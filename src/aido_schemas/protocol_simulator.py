@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from zuper_typing import dataclass
 from typing import Dict, Optional
 
 import numpy as np
@@ -7,7 +7,6 @@ from zuper_typing.literal import make_Literal  # XXX
 from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
 
-RobotName = str
 
 __all__ = [
     "RobotState",
@@ -36,6 +35,7 @@ __all__ = [
     'MOTION_MOVING',
 ]
 
+RobotName = str
 
 @dataclass
 class JPGImage:
