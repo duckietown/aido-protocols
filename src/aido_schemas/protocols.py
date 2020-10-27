@@ -1,6 +1,6 @@
 from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
-from .schemas import JPGImage
+from .protocol_simulator import JPGImage
 
 __all__ = ["protocol_image_filter", "protocol_image_source"]
 

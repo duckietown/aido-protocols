@@ -31,6 +31,17 @@ __all__ = [
     "DTSimRobotState",
     "DTSimState",
     "DTSimStateDump",
+    "DB20Observations",
+    "DB20Commands",
+    "DB20Odometry",
+    "DB20ObservationsPlusState",
+    "DB20RobotObservations",
+    "DB20SetRobotCommands",
+    "protocol_agent_DB20",
+    "protocol_agent_DB20_fullstate",
+    "protocol_simulator_DB20"
+
+
 ]
 
 
@@ -52,13 +63,6 @@ class PWMCommands:
             raise ValueError(msg)
 
 
-# @dataclass
-# class WheelsCmd:
-#     """ Kinematic wheels commands. Radiants per second. """
-#     vel_left: float
-#     vel_right: float
-
-
 @dataclass
 class Duckiebot1Observations:
     camera: JPGImage
@@ -66,6 +70,7 @@ class Duckiebot1Observations:
 
 @dataclass
 class RGB:
+    """ Values between 0, 1. """
     r: float
     g: float
     b: float
@@ -162,9 +167,76 @@ protocol_agent_duckiebot1_fullstate = particularize(
 protocol_simulator_duckiebot1 = particularize(
     protocol_simulator,
     description="""Particularization for Duckiebot1 observations and commands.""",
-    inputs={"set_robot_commands": DB18SetRobotCommands, "set_map": DTSetMap,},
+    inputs={"set_robot_commands": DB18SetRobotCommands, "set_map": DTSetMap, },
     outputs={
         "robot_observations": DB18RobotObservations,
+        "robot_state": DTSimRobotState,
+        "state_dump": DTSimStateDump,
+    },
+)
+
+
+### DB20
+
+@dataclass
+class DB20Odometry:
+    resolution_rad: float
+    """ What is the resolution of 1 odometry tick"""
+    axis_left_rad: float
+    """" The current rotation of the left wheel. Positive when robot goes forward """
+    axis_right_rad: float
+    """" The current rotation of the right wheel. Positive when robot goes forward """
+
+
+@dataclass
+class DB20Observations:
+    camera: JPGImage
+    odometry: DB20Odometry
+
+
+@dataclass
+class DB20ObservationsPlusState(DB20Observations):
+    your_name: RobotName
+    state: DTSimState
+    map_data: str
+
+
+@dataclass
+class DB20Commands:
+    wheels: PWMCommands
+    LEDS: LEDSCommands
+
+@dataclass
+class DB20SetRobotCommands(SetRobotCommands):
+    robot_name: RobotName
+    t_effective: float
+    commands: DB20Commands
+
+
+@dataclass
+class DB20RobotObservations(RobotObservations):
+    robot_name: RobotName
+    t_effective: float
+    observations: DB20Observations
+
+
+protocol_agent_DB20 = particularize(
+    protocol_agent,
+    description="""Particularization for DB20 observations and commands.""",
+    inputs={"observations": DB20Observations},
+    outputs={"commands": DB20Commands},
+)
+
+protocol_agent_DB20_fullstate = particularize(
+    protocol_agent_duckiebot1, inputs={"observations": DB20ObservationsPlusState},
+)
+
+protocol_simulator_DB20 = particularize(
+    protocol_simulator,
+    description="""Particularization for Duckiebot1 observations and commands.""",
+    inputs={"set_robot_commands": DB20SetRobotCommands, "set_map": DTSetMap, },
+    outputs={
+        "robot_observations": DB20RobotObservations,
         "robot_state": DTSimRobotState,
         "state_dump": DTSimStateDump,
     },

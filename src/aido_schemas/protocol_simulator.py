@@ -32,6 +32,8 @@ __all__ = [
     "StateDump",
     "JPGImage",
     "DumpState",
+    "MOTION_PARKED",
+    'MOTION_MOVING',
 ]
 
 
@@ -250,11 +252,13 @@ Steps the simulation until the given timestamp.
 
 `simulator.set_robot_commands(t: timestamp, commands)`
 
-Steps the simulation until the given timestamp.
+Set the robot commands.
 
-`simulator.get_robot_observations(name, t: timestamps)`
 
-Asks for the dump of a robot state.
+`simulator.get_robot_observations(name, t: timestamp)`
+
+Asks for the dump of a robot observation.
+
 
 `simulator.dump_robot_state(name)`
 
@@ -324,6 +328,7 @@ protocol_simulator = InteractionProtocol(
     },
 )
 
+# XXX this is not implemented yet
 protocol_scorer = InteractionProtocol(
     description="""Protocol for scorer""",
     language="""\
