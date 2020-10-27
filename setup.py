@@ -28,7 +28,7 @@ install_requires = [
     "termcolor",
     "pydot",
     "zuper-ipce-z6>=6.0.34",
-    "zuper-nodes-z6>=6.0.25",
+    "zuper-nodes-z6>=6.0.33",
 ]
 
 setup(
