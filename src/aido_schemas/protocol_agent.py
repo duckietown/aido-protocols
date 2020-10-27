@@ -1,4 +1,9 @@
-from zuper_typing import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dataclasses import dataclass
+else:
+    from zuper_typing import dataclass
 
 from .basics import InteractionProtocol
 
@@ -26,7 +31,9 @@ with "commands".
 "episode_start" marks the beginning of an episode.  
 
     """.strip(),
-    inputs={"observations": object, "seed": int, "get_commands": GetCommands, "episode_start": EpisodeStart,},
+    inputs={
+        "observations": object, "seed": int, "get_commands": GetCommands, "episode_start": EpisodeStart,
+    },
     outputs={"commands": object},
     language="""
             in:seed? ;

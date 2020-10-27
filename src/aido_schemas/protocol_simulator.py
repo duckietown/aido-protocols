@@ -1,5 +1,9 @@
-from zuper_typing import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from dataclasses import dataclass
+else:
+    from zuper_typing import dataclass
+
 
 import numpy as np
 

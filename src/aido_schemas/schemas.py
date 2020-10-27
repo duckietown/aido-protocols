@@ -1,8 +1,11 @@
-from typing import Dict
+from typing import Dict, TYPE_CHECKING
 
 import numpy as np
 from zuper_nodes import particularize_no_check
-from zuper_typing import dataclass
+if TYPE_CHECKING:
+    from dataclasses import dataclass
+else:
+    from zuper_typing import dataclass
 
 from .protocol_agent import protocol_agent
 from .protocol_simulator import (
