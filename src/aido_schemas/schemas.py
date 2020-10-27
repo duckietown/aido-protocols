@@ -195,7 +195,10 @@ class DB20Observations:
 
 
 @dataclass
-class DB20ObservationsPlusState(DB20Observations):
+class DB20ObservationsPlusState:
+    camera: JPGImage
+    odometry: DB20Odometry
+
     your_name: RobotName
     state: DTSimState
     map_data: str
