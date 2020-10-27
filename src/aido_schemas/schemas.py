@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Dict
 
 import numpy as np
+from zuper_nodes import particularize_no_check
 
-from .basics import particularize
 from .protocol_agent import protocol_agent
 from .protocol_simulator import (
     JPGImage,
@@ -152,7 +152,7 @@ class Duckiebot1ObservationsPlusState:
 
 
 description = """Particularization for Duckiebot1 observations and commands."""
-protocol_agent_duckiebot1 = particularize(
+protocol_agent_duckiebot1 = particularize_no_check(
     protocol_agent,
     description=description,
     inputs={"observations": Duckiebot1Observations},
@@ -160,11 +160,11 @@ protocol_agent_duckiebot1 = particularize(
 )
 
 description = """Particularization for Duckiebot1; observations and commands with full state """
-protocol_agent_duckiebot1_fullstate = particularize(
+protocol_agent_duckiebot1_fullstate = particularize_no_check(
     protocol_agent_duckiebot1, inputs={"observations": Duckiebot1ObservationsPlusState},
 )
 
-protocol_simulator_duckiebot1 = particularize(
+protocol_simulator_duckiebot1 = particularize_no_check(
     protocol_simulator,
     description="""Particularization for Duckiebot1 observations and commands.""",
     inputs={"set_robot_commands": DB18SetRobotCommands, "set_map": DTSetMap, },
@@ -223,18 +223,18 @@ class DB20RobotObservations(RobotObservations):
     observations: DB20Observations
 
 
-protocol_agent_DB20 = particularize(
+protocol_agent_DB20 = particularize_no_check(
     protocol_agent,
     description="""Particularization for DB20 observations and commands.""",
     inputs={"observations": DB20Observations},
     outputs={"commands": DB20Commands},
 )
 
-protocol_agent_DB20_fullstate = particularize(
+protocol_agent_DB20_fullstate = particularize_no_check(
     protocol_agent_duckiebot1, inputs={"observations": DB20ObservationsPlusState},
 )
 
-protocol_simulator_DB20 = particularize(
+protocol_simulator_DB20 = particularize_no_check(
     protocol_simulator,
     description="""Particularization for Duckiebot1 observations and commands.""",
     inputs={"set_robot_commands": DB20SetRobotCommands, "set_map": DTSetMap, },
