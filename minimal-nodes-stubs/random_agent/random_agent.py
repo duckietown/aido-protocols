@@ -4,7 +4,7 @@ import numpy as np
 
 from aido_schemas import (
     EpisodeStart,
-    protocol_agent_duckiebot1,
+    protocol_agent_DB20,
     PWMCommands,
     Duckiebot1Commands,
     LEDSCommands,
@@ -51,7 +51,7 @@ class RandomAgent:
 
 def main():
     node = RandomAgent()
-    protocol = protocol_agent_duckiebot1
+    protocol = protocol_agent_DB20
     wrap_direct(node=node, protocol=protocol)
 
 
