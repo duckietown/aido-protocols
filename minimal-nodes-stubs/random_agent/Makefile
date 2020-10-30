@@ -23,7 +23,7 @@ build-no-cache: update-reqs
 	docker build --pull  -t $(tag) $(build_options) --no-cache .
 
 push: build
-	dts -q build_utils push $(tag)
+	dts build_utils push $(tag)
 
 test-data1-direct:
 	./random_agent.py < test_data/in1.json > test_data/out1.json
