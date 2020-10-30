@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from dataclasses import dataclass
@@ -32,9 +32,9 @@ with "commands".
 
     """.strip(),
     inputs={
-        "observations": object, "seed": int, "get_commands": GetCommands, "episode_start": EpisodeStart,
+        "observations": Any, "seed": int, "get_commands": GetCommands, "episode_start": EpisodeStart,
     },
-    outputs={"commands": object},
+    outputs={"commands": Any},
     language="""
             in:seed? ;
             (   in:episode_start ; 
