@@ -102,6 +102,7 @@ def get_random_image(shape):
     image = JPGImage(jpg_data)
     return image
 
+
 import cv2
 
 # noinspection PyUnresolvedReferences

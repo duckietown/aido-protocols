@@ -1,4 +1,5 @@
 from typing import Any, Dict, Optional, TYPE_CHECKING
+
 if TYPE_CHECKING:
     from dataclasses import dataclass
 else:
@@ -35,7 +36,7 @@ __all__ = [
     "JPGImage",
     "DumpState",
     "MOTION_PARKED",
-    'MOTION_MOVING',
+    "MOTION_MOVING",
 ]
 
 RobotName = str

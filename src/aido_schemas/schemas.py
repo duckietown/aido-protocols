@@ -2,6 +2,7 @@ from typing import Dict, TYPE_CHECKING
 
 import numpy as np
 from zuper_nodes import particularize_no_check
+
 if TYPE_CHECKING:
     from dataclasses import dataclass
 else:
@@ -42,8 +43,7 @@ __all__ = [
     "DB20SetRobotCommands",
     "protocol_agent_DB20",
     "protocol_agent_DB20_fullstate",
-    "protocol_simulator_DB20"
-
+    "protocol_simulator_DB20",
 ]
 
 
@@ -73,6 +73,7 @@ class Duckiebot1Observations:
 @dataclass
 class RGB:
     """ Values between 0, 1. """
+
     r: float
     g: float
     b: float
@@ -169,7 +170,7 @@ protocol_agent_duckiebot1_fullstate = particularize_no_check(
 protocol_simulator_duckiebot1 = particularize_no_check(
     protocol_simulator,
     description="""Particularization for Duckiebot1 observations and commands.""",
-    inputs={"set_robot_commands": DB18SetRobotCommands, "set_map": DTSetMap, },
+    inputs={"set_robot_commands": DB18SetRobotCommands, "set_map": DTSetMap,},
     outputs={
         "robot_observations": DB18RobotObservations,
         "robot_state": DTSimRobotState,
@@ -179,6 +180,7 @@ protocol_simulator_duckiebot1 = particularize_no_check(
 
 
 ### DB20
+
 
 @dataclass
 class DB20Odometry:
@@ -240,7 +242,7 @@ protocol_agent_DB20_fullstate = particularize_no_check(
 protocol_simulator_DB20 = particularize_no_check(
     protocol_simulator,
     description="""Particularization for Duckiebot1 observations and commands.""",
-    inputs={"set_robot_commands": DB20SetRobotCommands, "set_map": DTSetMap, },
+    inputs={"set_robot_commands": DB20SetRobotCommands, "set_map": DTSetMap,},
     outputs={
         "robot_observations": DB20RobotObservations,
         "robot_state": DTSimRobotState,
