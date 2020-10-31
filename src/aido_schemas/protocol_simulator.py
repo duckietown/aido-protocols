@@ -32,6 +32,7 @@ __all__ = [
     "Step",
     "SimulationState",
     "Scenario",
+    "ScenarioDuckieSpec",
     "StateDump",
     "JPGImage",
     "DumpState",
@@ -178,9 +179,16 @@ class ScenarioRobotSpec:
     description: str
     playable: bool
     configuration: RobotConfiguration
+    color: str
 
     # if not playable
     motion: Optional[NPMotion]
+
+
+@dataclass
+class ScenarioDuckieSpec:
+    color: str  # css color
+    pose: np.ndarray  # SE2
 
 
 @dataclass
@@ -197,6 +205,7 @@ class Scenario:
     scenario_name: str
     environment: object
     robots: Dict[str, ScenarioRobotSpec]
+    duckies: Dict[str, ScenarioDuckieSpec]
 
 
 description = """\
