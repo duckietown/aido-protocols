@@ -203,7 +203,7 @@ class SpawnRobot:
 class Scenario:
     # Specification of the environments
     scenario_name: str
-    environment: object
+    environment: Any
     robots: Dict[str, ScenarioRobotSpec]
     duckies: Dict[str, ScenarioDuckieSpec]
 
