@@ -200,6 +200,13 @@ class SpawnRobot:
 
 
 @dataclass
+class SpawnDuckie:
+    name: str
+    color: str
+    pose: np.ndarray
+
+
+@dataclass
 class Scenario:
     # Specification of the environments
     scenario_name: str
@@ -294,7 +301,7 @@ protocol_simulator = InteractionProtocol(
             (
             in:clear ; 
             in:set_map ;
-            (in:spawn_robot)*;
+            (in:spawn_robot|in:spawn_duckie)*;
             
             (in:get_robot_interface_description; out:robot_interface_description)*;
             
@@ -318,6 +325,7 @@ protocol_simulator = InteractionProtocol(
         "clear": type(None),
         "set_map": SetMap,
         "spawn_robot": SpawnRobot,
+        "spawn_duckie": SpawnDuckie,
         "get_robot_interface_description": RobotName,
         "get_robot_performance": RobotName,
         "get_sim_state": type(None),
