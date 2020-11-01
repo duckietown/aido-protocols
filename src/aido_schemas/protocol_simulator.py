@@ -38,6 +38,7 @@ __all__ = [
     "DumpState",
     "MOTION_PARKED",
     "MOTION_MOVING",
+    "SpawnDuckie",
 ]
 
 RobotName = str
