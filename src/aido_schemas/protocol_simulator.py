@@ -247,6 +247,7 @@ class SpawnRobot:
     """ It is owned by player. Terminate when they all terminate. """
     robot_name: RobotName
     configuration: RobotConfiguration
+    color: str = "red"
     # motion: Optional[NPMotion]
 
 
