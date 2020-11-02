@@ -80,12 +80,6 @@ class GetRobotObservations:
 
 
 @dataclass
-class GetRobotState:
-    robot_name: RobotName
-    t_effective: float
-
-
-@dataclass
 class RobotObservations:
     robot_name: RobotName
     t_effective: float
@@ -93,8 +87,27 @@ class RobotObservations:
 
 
 @dataclass
+class GetRobotState:
+    robot_name: RobotName
+    t_effective: float
+
+
+@dataclass
 class RobotState:
     robot_name: RobotName
+    t_effective: float
+    state: Any
+
+
+@dataclass
+class GetDuckieState:
+    duckie_name: str
+    t_effective: float
+
+
+@dataclass
+class DuckieState:
+    duckie_name: str
     t_effective: float
     state: Any
 
@@ -314,6 +327,7 @@ protocol_simulator = InteractionProtocol(
                     (in:get_robot_observations ;  out:robot_observations) |
                     (in:get_robot_performance ;  out:robot_performance) |
                     (in:get_robot_state ;  out:robot_state) |
+                    (in:get_duckie_state ;  out:duckie_state) |
                     (in:get_sim_state ;  out:sim_state) |
                     (in:dump_state   ;  out:state_dump) |
                     (in:get_ui_image ; out:ui_image) 
@@ -336,6 +350,7 @@ protocol_simulator = InteractionProtocol(
         "set_robot_commands": SetRobotCommands,
         "get_robot_observations": GetRobotObservations,
         "get_robot_state": GetRobotState,
+        "get_duckie_state": GetDuckieState,
         "get_ui_image": type(None),
         # Dump state information
         "dump_state": DumpState,
@@ -343,6 +358,7 @@ protocol_simulator = InteractionProtocol(
     outputs={
         "robot_observations": RobotObservations,
         "robot_state": RobotState,
+        "duckie_state": DuckieState,
         "robot_performance": RobotPerformance,
         "robot_interface_description": RobotInterfaceDescription,
         "sim_state": SimulationState,

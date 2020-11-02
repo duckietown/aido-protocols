@@ -22,6 +22,7 @@ from aido_schemas import (
     DB18SetRobotCommands,
     DB18RobotObservations,
 )
+from aido_schemas.protocol_simulator import DuckieState
 
 
 class DummySimulator:
@@ -89,6 +90,11 @@ class DummySimulator:
         context.info(f"get_robot_state({data!r})")
         rs = RobotState(robot_name=data, t_effective=self.current_time, state=None)
         context.write("robot_state", rs)
+
+    def on_received_get_duckie_state(self, context: Context, data: str):
+        context.info(f"get_duckie_state({data!r})")
+        rs = DuckieState(duckie_name=data, t_effective=self.current_time, state=None)
+        context.write("duckie_state", rs)
 
     def on_received_dump_state(self, context: Context):
         context.info(f"dump_state()")

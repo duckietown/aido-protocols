@@ -10,6 +10,7 @@ else:
 
 from .protocol_agent import protocol_agent
 from .protocol_simulator import (
+    DuckieState,
     JPGImage,
     protocol_simulator,
     RobotName,
@@ -131,6 +132,19 @@ class DTSimRobotState(RobotState):
 
 
 @dataclass
+class DTSimDuckieInfo:
+    pose: np.ndarray
+    velocity: np.ndarray
+
+
+@dataclass
+class DTSimDuckieState(DuckieState):
+    duckie_name: RobotName
+    t_effective: float
+    state: DTSimDuckieInfo
+
+
+@dataclass
 class DTSetMap:
     map_data: str
 
@@ -139,6 +153,7 @@ class DTSetMap:
 class DTSimState:
     t_effective: float
     duckiebots: Dict[str, DTSimRobotInfo]
+    duckies: Dict[str, DTSimDuckieInfo]
 
 
 @dataclass
