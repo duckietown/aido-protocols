@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, NewType, Optional, TYPE_CHECKING
 
+
 if TYPE_CHECKING:
     from dataclasses import dataclass
 else:

@@ -120,8 +120,6 @@ class DB18RobotObservations(RobotObservations):
 class DTSimRobotInfo:
     pose: np.ndarray
     velocity: np.ndarray
-    # last_action: np.ndarray[
-    # wheels_velocities: np.ndarray
     pwm: PWMCommands
     leds: LEDSCommands
 
@@ -263,6 +261,7 @@ protocol_simulator_DB20 = particularize_no_check(
     outputs={
         "robot_observations": DB20RobotObservations,
         "robot_state": DTSimRobotState,
+        "duckie_state": DTSimDuckieState,
         "state_dump": DTSimStateDump,
     },
 )
