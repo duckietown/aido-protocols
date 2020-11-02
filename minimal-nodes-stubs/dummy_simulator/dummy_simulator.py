@@ -22,7 +22,7 @@ from aido_schemas import (
     DB18SetRobotCommands,
     DB18RobotObservations,
 )
-from aido_schemas.protocol_simulator import DuckieState
+from aido_schemas import DuckieState
 
 
 class DummySimulator:

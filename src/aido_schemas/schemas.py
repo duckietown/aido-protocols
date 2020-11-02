@@ -45,6 +45,8 @@ __all__ = [
     "protocol_agent_DB20",
     "protocol_agent_DB20_fullstate",
     "protocol_simulator_DB20",
+    "DTSimDuckieInfo",
+    "DTSimDuckieState",
 ]
 
 

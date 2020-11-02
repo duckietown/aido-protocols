@@ -1,19 +1,18 @@
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from typing import Any, Dict, List, NewType, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from dataclasses import dataclass
 else:
     from zuper_typing import dataclass
 
-
 import numpy as np
 
-from zuper_typing.literal import make_Literal  # XXX
 from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
 
 __all__ = [
     "RobotState",
+    "GetDuckieState",
     "RobotName",
     "RobotObservations",
     "RobotInterfaceDescription",
@@ -36,9 +35,12 @@ __all__ = [
     "StateDump",
     "JPGImage",
     "DumpState",
-    "MOTION_PARKED",
-    "MOTION_MOVING",
+    "DuckieState",
     "SpawnDuckie",
+    "PROTOCOL_FULL",
+    "PROTOCOL_LEARNING",
+    "PROTOCOL_NORMAL",
+    "Termination",
 ]
 
 RobotName = str
@@ -113,6 +115,13 @@ class DuckieState:
 
 
 @dataclass
+class Termination:
+    when: float
+    desc: str
+    code: str
+
+
+@dataclass
 class SimulationState:
     """
         Returns the simulation state.
@@ -123,8 +132,9 @@ class SimulationState:
     """
 
     done: bool
-    done_why: Optional[str]
-    done_code: Optional[str]
+    terminations: Dict[str, Optional[Termination]]
+    # done_why: Optional[str]
+    # done_code: Optional[str]
 
 
 @dataclass
@@ -183,20 +193,33 @@ class StateDump:
     state: object
 
 
-MOTION_PARKED = "parked"
-MOTION_MOVING = "moving"
-NPMotion = make_Literal(MOTION_PARKED, MOTION_MOVING)
+#
+# MOTION_PARKED = "parked"
+# MOTION_MOVING = "moving"
+# NPMotion = make_Literal(MOTION_PARKED, MOTION_MOVING)
+
+ProtocolDesc = NewType("ProtocolDesc", str)
+PROTOCOL_NORMAL = ProtocolDesc("PROTOCOL_NORMAL")
+""" only the things that are visible """
+PROTOCOL_FULL = ProtocolDesc("PROTOCOL_FULL")
+""" Full state observation"""
+PROTOCOL_LEARNING = ProtocolDesc("PROTOCOL_LEARNING")
+""" Also includes a feedback signal"""
 
 
 @dataclass
 class ScenarioRobotSpec:
-    description: str
-    playable: bool
     configuration: RobotConfiguration
     color: str
 
-    # if not playable
-    motion: Optional[NPMotion]
+    description: str
+
+    # if playable
+    controllable: bool
+    protocol: Optional[ProtocolDesc]
+
+    # # if not playable
+    # motion: Optional[NPMotion]
 
 
 @dataclass
@@ -206,11 +229,24 @@ class ScenarioDuckieSpec:
 
 
 @dataclass
+class Scenario:
+    # Specification of the environments
+    scenario_name: str
+    environment: Any
+    player_robots: List[str]
+    robots: Dict[str, ScenarioRobotSpec]
+    duckies: Dict[str, ScenarioDuckieSpec]
+
+
+@dataclass
 class SpawnRobot:
     playable: bool
+    """ we will send command """
+    owned_by_player: bool
+    """ It is owned by player. Terminate when they all terminate. """
     robot_name: RobotName
     configuration: RobotConfiguration
-    motion: Optional[NPMotion]
+    # motion: Optional[NPMotion]
 
 
 @dataclass
@@ -218,15 +254,6 @@ class SpawnDuckie:
     name: str
     color: str
     pose: np.ndarray
-
-
-@dataclass
-class Scenario:
-    # Specification of the environments
-    scenario_name: str
-    environment: Any
-    robots: Dict[str, ScenarioRobotSpec]
-    duckies: Dict[str, ScenarioDuckieSpec]
 
 
 description = """\
