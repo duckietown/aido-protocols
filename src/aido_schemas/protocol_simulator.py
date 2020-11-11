@@ -42,6 +42,7 @@ __all__ = [
     "PROTOCOL_LEARNING",
     "PROTOCOL_NORMAL",
     "Termination",
+    "ProtocolDesc",
 ]
 
 RobotName = str
