@@ -235,7 +235,7 @@ class Scenario:
     # Specification of the environments
     scenario_name: str
     environment: Any
-    player_robots: List[str]
+    player_robots: List[RobotName]
     robots: Dict[str, ScenarioRobotSpec]
     duckies: Dict[str, ScenarioDuckieSpec]
 

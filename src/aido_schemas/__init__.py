@@ -3,7 +3,7 @@ __version__ = "6.0.28"
 from zuper_commons.logs import ZLogger
 
 logger = ZLogger(__name__)
-logger.info(f"aido-protocols {__version__}")
+logger.debug(f"aido-protocols version {__version__}")
 
 from .protocols import *
 from .protocol_agent import *
