@@ -195,16 +195,14 @@ class StateDump:
     state: object
 
 
-#
-# MOTION_PARKED = "parked"
-# MOTION_MOVING = "moving"
-# NPMotion = make_Literal(MOTION_PARKED, MOTION_MOVING)
-
 ProtocolDesc = NewType("ProtocolDesc", str)
+
 PROTOCOL_NORMAL = ProtocolDesc("PROTOCOL_NORMAL")
 """ only the things that are visible """
+
 PROTOCOL_FULL = ProtocolDesc("PROTOCOL_FULL")
 """ Full state observation"""
+
 PROTOCOL_LEARNING = ProtocolDesc("PROTOCOL_LEARNING")
 """ Also includes a feedback signal"""
 
@@ -219,9 +217,6 @@ class ScenarioRobotSpec:
     # if playable
     controllable: bool
     protocol: Optional[ProtocolDesc]
-
-    # # if not playable
-    # motion: Optional[NPMotion]
 
 
 @dataclass
