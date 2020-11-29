@@ -19,14 +19,14 @@ class DummyImageSourceConfig:
     """
         Configuration for the node.
 
-        :param shape: Image shape in Numpy conventions (height, width).
-        :param images_per_episode: Number of images for each episode.
-        :param num_episodes: Number of episodes in total.
     """
 
     shape: Tuple[int, int] = (480, 640)
+    """ Image shape in Numpy conventions (height, width). """
     images_per_episode: int = 120
+    """ Number of images for each episode. """
     num_episodes: int = 10
+    """  Number of episodes in total. """
 
 
 @dataclass
