@@ -21,13 +21,11 @@ version = get_version(filename="src/aido_schemas/__init__.py")
 
 line = "daffy"
 install_requires = [
-    "compmake-z6",
-    "pyparsing",
-    "PyContracts3",
-    "networkx>=2,<3",
+    # "pyparsing",
+    # "networkx>=2,<3",
     "termcolor",
-    "pydot",
-    "zuper-ipce-z6>=6.0.34",
+    # "pydot",
+    # "zuper-ipce-z6>=6.0.34",
     "zuper-nodes-z6>=6.0.37",
 ]
 

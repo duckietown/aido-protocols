@@ -208,6 +208,13 @@ PROTOCOL_LEARNING = ProtocolDesc("PROTOCOL_LEARNING")
 
 
 @dataclass
+class InformalPoseSpec:
+    x: float
+    y: float
+    theta_deg: float
+
+
+@dataclass
 class ScenarioRobotSpec:
     configuration: RobotConfiguration
     color: str
