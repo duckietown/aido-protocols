@@ -34,13 +34,7 @@ setup(
     version=version,
     keywords="",
     package_dir={"": "src"},
-    packages=["aido_schemas", "aido_schemas_tests",],
+    packages=["aido_schemas"],
     install_requires=install_requires,
-    entry_points={
-        "console_scripts": [
-            "aido-log-draw=aido_schemas.utils_drawing:aido_log_draw_main",
-            "aido-log-video=aido_schemas.utils_video:aido_log_video_main",
-            "aido-log-video-ui-image=aido_schemas.utils_video:aido_log_video_ui_image_main",
-        ],
-    },
+    entry_points={"console_scripts": [],},
 )
