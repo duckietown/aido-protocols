@@ -1,5 +1,4 @@
-from typing import Any, Dict, List, NewType, Optional, TYPE_CHECKING
-
+from typing import Any, Dict, List, NewType, Optional, TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from dataclasses import dataclass
@@ -43,6 +42,8 @@ __all__ = [
     "PROTOCOL_NORMAL",
     "Termination",
     "ProtocolDesc",
+    "FriendlyVelocity",
+    "FriendlyPose",
 ]
 
 RobotName = str
@@ -65,9 +66,23 @@ class SetMap:
 
 
 @dataclass
+class FriendlyPose:
+    x: float
+    y: float
+    theta_deg: float
+
+
+@dataclass
+class FriendlyVelocity:
+    x: float
+    y: float
+    theta_deg: float
+
+
+@dataclass
 class RobotConfiguration:
-    pose: np.ndarray
-    velocity: np.ndarray
+    pose: FriendlyPose
+    velocity: FriendlyVelocity
 
 
 @dataclass
@@ -229,7 +244,7 @@ class ScenarioRobotSpec:
 @dataclass
 class ScenarioDuckieSpec:
     color: str  # css color
-    pose: np.ndarray  # SE2
+    pose: FriendlyPose  # SE2
 
 
 @dataclass
@@ -240,7 +255,7 @@ class Scenario:
     player_robots: List[RobotName]
     robots: Dict[str, ScenarioRobotSpec]
     duckies: Dict[str, ScenarioDuckieSpec]
-    payload_yaml: str = "null"
+    payload_yaml: str
 
 
 @dataclass
@@ -259,7 +274,7 @@ class SpawnRobot:
 class SpawnDuckie:
     name: str
     color: str
-    pose: np.ndarray
+    pose: FriendlyPose
 
 
 description = """\
