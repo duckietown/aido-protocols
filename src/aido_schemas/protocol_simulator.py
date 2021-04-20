@@ -240,6 +240,7 @@ class Scenario:
     player_robots: List[RobotName]
     robots: Dict[str, ScenarioRobotSpec]
     duckies: Dict[str, ScenarioDuckieSpec]
+    payload_yaml: str = "null"
 
 
 @dataclass
