@@ -15,7 +15,7 @@ class EpisodeStart:
     """ Marker for the start of an episode. """
 
     episode_name: str
-    yaml_payload: str
+    yaml_payload: str = '{}'
 
 
 @dataclass
