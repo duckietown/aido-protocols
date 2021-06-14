@@ -52,9 +52,9 @@ RobotName = str
 @dataclass
 class JPGImage:
     """
-        An image in JPG format.
+    An image in JPG format.
 
-        jpg_data: Bytes of a JPG file
+    jpg_data: Bytes of a JPG file
     """
 
     jpg_data: bytes
@@ -141,11 +141,11 @@ class Termination:
 @dataclass
 class SimulationState:
     """
-        Returns the simulation state.
+    Returns the simulation state.
 
-        done: Whether the simulation should be terminated.
-        done_why: Human-readable short message.
-        done_code: Short string to use as code for statistics.
+    done: Whether the simulation should be terminated.
+    done_why: Human-readable short message.
+    done_code: Short string to use as code for statistics.
     """
 
     done: bool
@@ -168,12 +168,12 @@ class Metric:
 @dataclass
 class PerformanceMetrics:
     """
-        Performance metrics for an agent.
+    Performance metrics for an agent.
 
-        By convention there will be one called "reward" for RL tasks.
+    By convention there will be one called "reward" for RL tasks.
 
-        Note that the values are *cumulative* to make it possible to have
-        a sampling-invariant behavior.
+    Note that the values are *cumulative* to make it possible to have
+    a sampling-invariant behavior.
     """
 
     metrics: Dict[str, Metric]
@@ -205,7 +205,7 @@ class DumpState:
 
 @dataclass
 class StateDump:
-    """ Opaque object that contains the simulator's state, whichever it is. """
+    """Opaque object that contains the simulator's state, whichever it is."""
 
     state: object
 
@@ -216,7 +216,10 @@ PROTOCOL_NORMAL = ProtocolDesc("PROTOCOL_NORMAL")
 """ only the things that are visible """
 
 PROTOCOL_FULL = ProtocolDesc("PROTOCOL_FULL")
-""" Full state observation"""
+""" Full state observation AND camera """
+
+PROTOCOL_STATE = ProtocolDesc("PROTOCOL_STATE")
+""" Only state observation, without camera """
 
 PROTOCOL_LEARNING = ProtocolDesc("PROTOCOL_LEARNING")
 """ Also includes a feedback signal"""
