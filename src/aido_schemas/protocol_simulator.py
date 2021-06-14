@@ -1,11 +1,9 @@
-from typing import Any, Dict, List, NewType, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, List, NewType, Optional, TYPE_CHECKING
+from zuper_typing import dataclass
 
 if TYPE_CHECKING:
     from dataclasses import dataclass
-else:
-    from zuper_typing import dataclass
 
-import numpy as np
 
 from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
@@ -52,9 +50,9 @@ RobotName = str
 @dataclass
 class JPGImage:
     """
-        An image in JPG format.
+    An image in JPG format.
 
-        jpg_data: Bytes of a JPG file
+    jpg_data: Bytes of a JPG file
     """
 
     jpg_data: bytes
@@ -141,11 +139,11 @@ class Termination:
 @dataclass
 class SimulationState:
     """
-        Returns the simulation state.
+    Returns the simulation state.
 
-        done: Whether the simulation should be terminated.
-        done_why: Human-readable short message.
-        done_code: Short string to use as code for statistics.
+    done: Whether the simulation should be terminated.
+    done_why: Human-readable short message.
+    done_code: Short string to use as code for statistics.
     """
 
     done: bool
@@ -168,12 +166,12 @@ class Metric:
 @dataclass
 class PerformanceMetrics:
     """
-        Performance metrics for an agent.
+    Performance metrics for an agent.
 
-        By convention there will be one called "reward" for RL tasks.
+    By convention there will be one called "reward" for RL tasks.
 
-        Note that the values are *cumulative* to make it possible to have
-        a sampling-invariant behavior.
+    Note that the values are *cumulative* to make it possible to have
+    a sampling-invariant behavior.
     """
 
     metrics: Dict[str, Metric]
