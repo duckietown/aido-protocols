@@ -41,6 +41,7 @@ __all__ = [
     "Termination",
     "ProtocolDesc",
     "FriendlyVelocity",
+    "JPGImageWithTimestamp",
     "FriendlyPose",
 ]
 
@@ -56,6 +57,11 @@ class JPGImage:
     """
 
     jpg_data: bytes
+
+
+@dataclass
+class JPGImageWithTimestamp(JPGImage):
+    timestamp: float
 
 
 @dataclass
@@ -269,6 +275,7 @@ class SpawnRobot:
     configuration: RobotConfiguration
     color: str = "red"
     # motion: Optional[NPMotion]
+    simulate_camera: bool = True
 
 
 @dataclass

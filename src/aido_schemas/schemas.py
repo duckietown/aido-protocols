@@ -1,6 +1,7 @@
 from typing import Dict, TYPE_CHECKING
 
 import numpy as np
+
 from zuper_nodes import particularize_no_check
 
 if TYPE_CHECKING:
@@ -12,6 +13,7 @@ from .protocol_agent import protocol_agent
 from .protocol_simulator import (
     DuckieState,
     JPGImage,
+    JPGImageWithTimestamp,
     protocol_simulator,
     RobotName,
     RobotObservations,
@@ -50,6 +52,11 @@ __all__ = [
     "DB20ObservationsOnlyState",
     "protocol_agent_DB20_onlystate",
     "DB20ObservationsOnlyState",
+    "protocol_agent_DB20_timestamps",
+    "protocol_simulator_DB20_timestamps",
+    "DB20ObservationsWithTimestamp",
+    "DB20OdometryWithTimestamp",
+    "DB20RobotObservationsWithTimestamp",
 ]
 
 
@@ -215,9 +222,20 @@ class DB20Odometry:
 
 
 @dataclass
+class DB20OdometryWithTimestamp(DB20Odometry):
+    timestamp: float
+
+
+@dataclass
 class DB20Observations:
     camera: JPGImage
     odometry: DB20Odometry
+
+
+@dataclass
+class DB20ObservationsWithTimestamp:
+    camera: JPGImageWithTimestamp
+    odometry: DB20OdometryWithTimestamp
 
 
 @dataclass
@@ -260,10 +278,23 @@ class DB20RobotObservations(RobotObservations):
     observations: DB20Observations
 
 
+@dataclass
+class DB20RobotObservationsWithTimestamp(RobotObservations):
+    robot_name: RobotName
+    t_effective: float
+    observations: DB20ObservationsWithTimestamp
+
+
 protocol_agent_DB20 = particularize_no_check(
     protocol_agent,
     description="""Particularization for DB20 observations and commands.""",
     inputs={"observations": DB20Observations},
+    outputs={"commands": DB20Commands},
+)
+protocol_agent_DB20_timestamps = particularize_no_check(
+    protocol_agent,
+    description="""Particularization for DB20 observations and commands and timestamps.""",
+    inputs={"observations": DB20ObservationsWithTimestamp},
     outputs={"commands": DB20Commands},
 )
 
@@ -286,6 +317,21 @@ protocol_simulator_DB20 = particularize_no_check(
     },
     outputs={
         "robot_observations": DB20RobotObservations,
+        "robot_state": DTSimRobotState,
+        "duckie_state": DTSimDuckieState,
+        "state_dump": DTSimStateDump,
+    },
+)
+
+protocol_simulator_DB20_timestamps = particularize_no_check(
+    protocol_simulator,
+    description="""Particularization for Duckiebot1 observations and commands with timestamps""",
+    inputs={
+        "set_robot_commands": DB20SetRobotCommands,
+        "set_map": DTSetMap,
+    },
+    outputs={
+        "robot_observations": DB20RobotObservationsWithTimestamp,
         "robot_state": DTSimRobotState,
         "duckie_state": DTSimDuckieState,
         "state_dump": DTSimStateDump,
