@@ -1,11 +1,9 @@
-from typing import Any, Dict, List, NewType, Optional, TYPE_CHECKING, Union
+from typing import Any, Dict, List, NewType, Optional, TYPE_CHECKING
+from zuper_typing import dataclass
 
 if TYPE_CHECKING:
     from dataclasses import dataclass
-else:
-    from zuper_typing import dataclass
 
-import numpy as np
 
 from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart

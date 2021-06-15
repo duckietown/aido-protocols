@@ -47,13 +47,15 @@ __all__ = [
     "protocol_simulator_DB20",
     "DTSimDuckieInfo",
     "DTSimDuckieState",
+    "DB20ObservationsOnlyState",
+    "protocol_agent_DB20_onlystate",
 ]
 
 
 @dataclass
 class PWMCommands:
     """
-        PWM commands are floats between -1 and 1.
+    PWM commands are floats between -1 and 1.
     """
 
     motor_left: float
@@ -75,7 +77,7 @@ class Duckiebot1Observations:
 
 @dataclass
 class RGB:
-    """ Values between 0, 1. """
+    """Values between 0, 1."""
 
     r: float
     g: float
@@ -179,13 +181,17 @@ protocol_agent_duckiebot1 = particularize_no_check(
 
 description = """Particularization for Duckiebot1; observations and commands with full state """
 protocol_agent_duckiebot1_fullstate = particularize_no_check(
-    protocol_agent_duckiebot1, inputs={"observations": Duckiebot1ObservationsPlusState},
+    protocol_agent_duckiebot1,
+    inputs={"observations": Duckiebot1ObservationsPlusState},
 )
 
 protocol_simulator_duckiebot1 = particularize_no_check(
     protocol_simulator,
     description="""Particularization for Duckiebot1 observations and commands.""",
-    inputs={"set_robot_commands": DB18SetRobotCommands, "set_map": DTSetMap,},
+    inputs={
+        "set_robot_commands": DB18SetRobotCommands,
+        "set_map": DTSetMap,
+    },
     outputs={
         "robot_observations": DB18RobotObservations,
         "robot_state": DTSimRobotState,
@@ -224,6 +230,16 @@ class DB20ObservationsPlusState:
 
 
 @dataclass
+class DB20ObservationsOnlyState:
+    # camera: JPGImage
+    # odometry: DB20Odometry
+
+    your_name: RobotName
+    state: DTSimState
+    map_data: str
+
+
+@dataclass
 class DB20Commands:
     wheels: PWMCommands
     LEDS: LEDSCommands
@@ -251,13 +267,22 @@ protocol_agent_DB20 = particularize_no_check(
 )
 
 protocol_agent_DB20_fullstate = particularize_no_check(
-    protocol_agent_duckiebot1, inputs={"observations": DB20ObservationsPlusState},
+    protocol_agent_duckiebot1,
+    inputs={"observations": DB20ObservationsPlusState},
+)
+
+protocol_agent_DB20_onlystate = particularize_no_check(
+    protocol_agent_duckiebot1,
+    inputs={"observations": DB20ObservationsOnlyState},
 )
 
 protocol_simulator_DB20 = particularize_no_check(
     protocol_simulator,
     description="""Particularization for Duckiebot1 observations and commands.""",
-    inputs={"set_robot_commands": DB20SetRobotCommands, "set_map": DTSetMap,},
+    inputs={
+        "set_robot_commands": DB20SetRobotCommands,
+        "set_map": DTSetMap,
+    },
     outputs={
         "robot_observations": DB20RobotObservations,
         "robot_state": DTSimRobotState,
