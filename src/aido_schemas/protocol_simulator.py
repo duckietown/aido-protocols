@@ -38,6 +38,7 @@ __all__ = [
     "PROTOCOL_FULL",
     "PROTOCOL_LEARNING",
     "PROTOCOL_NORMAL",
+    "PROTOCOL_STATE",
     "Termination",
     "ProtocolDesc",
     "FriendlyVelocity",
