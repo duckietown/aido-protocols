@@ -261,7 +261,7 @@ class Scenario:
     scenario_name: str
     environment: Any
     player_robots: List[RobotName]
-    robots: Dict[str, ScenarioRobotSpec]
+    robots: Dict[RobotName, ScenarioRobotSpec]
     duckies: Dict[str, ScenarioDuckieSpec]
     payload_yaml: str
 
