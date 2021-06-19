@@ -7,7 +7,7 @@ ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 
 COPY requirements.* ./
 RUN cat requirements.* > .requirements.txt
-RUN  pip3 install --use-feature=2020-resolver -r .requirements.txt
+RUN  pip3 install  -r .requirements.txt
 
 
 COPY . .
