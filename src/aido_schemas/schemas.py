@@ -240,8 +240,8 @@ class DB20ObservationsWithTimestamp:
 
 @dataclass
 class DB20ObservationsPlusState:
-    camera: JPGImage
-    odometry: DB20Odometry
+    camera: JPGImageWithTimestamp
+    odometry: DB20OdometryWithTimestamp
 
     your_name: RobotName
     state: DTSimState
