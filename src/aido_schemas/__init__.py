@@ -1,4 +1,4 @@
-__version__ = "6.0.49"
+__version__ = "6.0.51"
 
 from zuper_commons.logs import ZLogger
 
@@ -13,3 +13,4 @@ from .protocol_agent import *
 from .protocol_simulator import *
 from .schemas import *
 from .basics import *
+from .misc import *
