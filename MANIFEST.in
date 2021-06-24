@@ -1,0 +1,2 @@
+prune minimal-nodes-stubs
+prune test
