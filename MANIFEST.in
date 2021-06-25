@@ -1,2 +1,9 @@
 prune minimal-nodes-stubs
 prune test
+prune .circleci
+prune notebooks
+global-exclude *.py[cod]
+recursive-exclude __pycache__
+exclude .*
+exclude req*txt
+exclude MANIFEST.in
