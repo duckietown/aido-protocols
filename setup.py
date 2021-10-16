@@ -27,6 +27,9 @@ install_requires = [
     # "pydot",
     # "zuper-ipce-z6>=6.0.34",
     "zuper-nodes-z6>=6.0.37",
+    "zuper-typing-z6",
+    "zuper-commons-z6",
+    "numpy",
 ]
 
 setup(
@@ -36,5 +39,7 @@ setup(
     package_dir={"": "src"},
     packages=["aido_schemas"],
     install_requires=install_requires,
-    entry_points={"console_scripts": [],},
+    entry_points={
+        "console_scripts": [],
+    },
 )
