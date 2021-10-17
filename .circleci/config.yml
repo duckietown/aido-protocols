@@ -74,6 +74,8 @@ jobs:
       - run:
           name: Build docker example
           command: |
+            python3 -m pip install -U duckietown-build-utils-daffy
+
             find minimal-nodes-stubs
             make -C minimal-nodes-stubs test-docker-build
       - run:
@@ -102,9 +104,6 @@ jobs:
       - test-results-store:
           path: out-comptests/junit
 
-      - store_artifacts:
-          path: out-comptests/duckietown_world_tests
-          destination: duckietown_world_tests
 
       - store_artifacts:
           path: artifacts
