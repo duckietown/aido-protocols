@@ -1,4 +1,4 @@
-AIDO_REGISTRY ?= docker.io
+DOCKER_REGISTRY ?= docker.io
 PIP_INDEX_URL ?= https://pypi.org/simple
 
 build:
@@ -34,7 +34,7 @@ test-all_connected-cbor:
 
 
 build_options=\
- 	--build-arg AIDO_REGISTRY=$(AIDO_REGISTRY)\
+ 	--build-arg DOCKER_REGISTRY=$(DOCKER_REGISTRY)\
  	--build-arg PIP_INDEX_URL=$(PIP_INDEX_URL)
 
 test-docker-build: build
