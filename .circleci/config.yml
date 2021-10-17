@@ -33,7 +33,7 @@ jobs:
           command: |
             echo PATH=$PATH
             #            pip install -q --user --upgrade -r requirements.txt
-            python3 -m pip install -U pip pur
+            python3 -m pip install -U pip pur coverage
       - run:
           name: List deps
           command: |
@@ -43,7 +43,6 @@ jobs:
       - run:
           name: setup.py develop
           command: |
-            python3 -m pip install -U pip
             python3 -m pip install -e . --prefix ~/.local --no-deps
 
       - run:
@@ -90,11 +89,6 @@ jobs:
           command: |
             make coverage-report
 
-      - run:
-          name: Coveralls submission
-          when: always
-          command: |
-            make coverage-coveralls
 
       - run:
           name: Create JUnit output
