@@ -43,6 +43,7 @@ jobs:
       - run:
           name: setup.py develop
           command: |
+            python3 -m pip install -U pip
             python3 -m pip install -e . --prefix ~/.local --no-deps
 
       - run:
@@ -74,7 +75,7 @@ jobs:
       - run:
           name: Build docker example
           command: |
-            python3 -m pip install -U duckietown-build-utils-daffy
+            python3 -m pip install -U pur duckietown-build-utils-daffy
 
             find minimal-nodes-stubs
             make -C minimal-nodes-stubs test-docker-build
