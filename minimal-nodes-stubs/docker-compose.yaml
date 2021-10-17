@@ -7,7 +7,7 @@ services:
       AIDONODE_DATA_OUT: fifo:/fifos/image_source/out
       AIDONODE_META_IN:
       AIDONODE_META_OUT: /test_data/meta_out.json
-      AIDONODE_ENCODING: cbor
+
     build:
       context: ./dummy_image_source
     volumes: &volumes
@@ -25,7 +25,7 @@ services:
       AIDONODE_DATA_OUT: fifo:/fifos/filter1/out
       AIDONODE_META_IN:
       AIDONODE_META_OUT:
-      AIDONODE_ENCODING: cbor
+
     build:
       context: ./dummy_image_filter
     volumes: *volumes
@@ -42,7 +42,7 @@ services:
       AIDONODE_DATA_OUT: /test_data/out.json
       AIDONODE_META_IN:
       AIDONODE_META_OUT:
-      AIDONODE_ENCODING: cbor
+
     volumes: *volumes
     cpu_percent: 50
     mem_limit: 300MB
@@ -55,7 +55,7 @@ services:
 #      AIDONODE_META_IN:
 #      AIDONODE_META_OUT:
 #      AIDONODE_TRANSLATE: in:image:camera_image
-#      AIDONODE_ENCODING: cbor
+#
 #    build:
 #      context: ./random_agent
 #    volumes: *volumes

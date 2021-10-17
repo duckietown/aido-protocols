@@ -28,9 +28,9 @@ test-all_connected:
 
 test-all_connected-cbor:
 	cat  dummy_image_source/test_data/in1.json | json2cbor | \
-	AIDONODE_ENCODING=cbor AIDONODE_NAME=source1 AIDONODE_META_OUT=meta.json ./dummy_image_source/dummy_image_source.py  | \
-	AIDONODE_ENCODING=cbor AIDONODE_NAME=node1   AIDONODE_META_OUT=meta.json ./dummy_image_filter/dummy_image_filter.py  | \
-	AIDONODE_ENCODING=cbor AIDONODE_NAME=node2   AIDONODE_META_OUT=meta.json ./dummy_image_filter/dummy_image_filter.py  > res2.cbor
+	AIDONODE_NAME=source1 AIDONODE_META_OUT=meta.json ./dummy_image_source/dummy_image_source.py  | \
+	AIDONODE_NAME=node1   AIDONODE_META_OUT=meta.json ./dummy_image_filter/dummy_image_filter.py  | \
+	AIDONODE_NAME=node2   AIDONODE_META_OUT=meta.json ./dummy_image_filter/dummy_image_filter.py  > res2.cbor
 
 
 build_options=\
