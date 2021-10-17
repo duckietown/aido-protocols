@@ -27,6 +27,7 @@ install_requires = [
     "zuper-commons-z6",
     "numpy",
 ]
+tests_require = ["pydot"]
 
 setup(
     name=f"aido-protocols-{line}",
@@ -35,6 +36,7 @@ setup(
     package_dir={"": "src"},
     packages=["aido_schemas"],
     install_requires=install_requires,
+    tests_require=tests_require,
     entry_points={
         "console_scripts": [],
     },
