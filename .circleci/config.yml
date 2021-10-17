@@ -79,10 +79,10 @@ jobs:
 
             find minimal-nodes-stubs
             make -C minimal-nodes-stubs test-docker-build
-      - run:
-          name: Run docker example
-          command: |
-            make -C minimal-nodes-stubs test-docker-up
+#      - run:
+#          name: Run docker example
+#          command: |
+#            make -C minimal-nodes-stubs test-docker-up
 
       - run:
           name: Coverage analysis
