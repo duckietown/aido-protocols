@@ -32,18 +32,18 @@ jobs:
           name: Install deps
           command: |
             echo PATH=$PATH
-            pip install -q --user --upgrade -r requirements.txt
-
+            #            pip install -q --user --upgrade -r requirements.txt
+            python3 -m pip install -U pip pur
       - run:
           name: List deps
           command: |
             mkdir -p artifacts
-            pip freeze | tee artifacts/pip-freeze.txt
+            python3 -m pip freeze | tee artifacts/pip-freeze.txt
 
       - run:
           name: setup.py develop
           command: |
-            python setup.py develop --prefix ~/.local --no-deps
+            python3 -m pip install -e . --prefix ~/.local --no-deps
 
       - run:
           name: Run tests
