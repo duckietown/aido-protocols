@@ -21,12 +21,8 @@ version = get_version(filename="src/aido_schemas/__init__.py")
 
 line = "daffy"
 install_requires = [
-    # "pyparsing",
-    # "networkx>=2,<3",
     "termcolor",
-    # "pydot",
-    # "zuper-ipce-z6>=6.0.34",
-    "zuper-nodes-z6>=6.0.37",
+    "zuper-nodes-z6>=6.2.8",
     "zuper-typing-z6",
     "zuper-commons-z6",
     "numpy",
