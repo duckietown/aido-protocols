@@ -17,7 +17,7 @@ from zuper_nodes.structures import timestamp_from_seconds, TimeSpec, TimingInfo
 @dataclass
 class DummyImageSourceConfig:
     """
-        Configuration for the node.
+    Configuration for the node.
 
     """
 
@@ -32,7 +32,7 @@ class DummyImageSourceConfig:
 @dataclass
 class DummyImageSourceState:
     """
-        State for the node.
+    State for the node.
     """
 
     episode: int = -1
@@ -43,7 +43,7 @@ class DummyImageSourceState:
 
 @dataclass
 class DummyImageSource:
-    """ A simple example of an image source """
+    """A simple example of an image source"""
 
     config: DummyImageSourceConfig = field(default_factory=DummyImageSourceConfig)
     state: DummyImageSourceState = field(default_factory=DummyImageSourceState)

@@ -12,10 +12,10 @@ __all__ = ["EpisodeStart", "protocol_agent", "GetCommands"]
 
 @dataclass
 class EpisodeStart:
-    """ Marker for the start of an episode. """
+    """Marker for the start of an episode."""
 
     episode_name: str
-    yaml_payload: str = '{}'
+    yaml_payload: str = "{}"
 
 
 @dataclass
@@ -32,7 +32,12 @@ with "commands".
 "episode_start" marks the beginning of an episode.  
 
     """.strip(),
-    inputs={"observations": Any, "seed": int, "get_commands": GetCommands, "episode_start": EpisodeStart,},
+    inputs={
+        "observations": Any,
+        "seed": int,
+        "get_commands": GetCommands,
+        "episode_start": EpisodeStart,
+    },
     outputs={"commands": Any},
     language="""
             in:seed? ;

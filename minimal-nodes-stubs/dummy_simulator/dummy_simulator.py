@@ -26,7 +26,7 @@ from aido_schemas import DuckieState
 
 
 class DummySimulator:
-    """ A dummy simulator implementation. """
+    """A dummy simulator implementation."""
 
     current_time: float
     robot_name: str
