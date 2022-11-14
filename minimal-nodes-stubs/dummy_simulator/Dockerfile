@@ -1,7 +1,7 @@
 ARG DOCKER_REGISTRY
 ARG ARCH=amd64
 ARG MAJOR=daffy
-ARG BASE_TAG=${MAJOR}-${ARCH}
+ARG BASE_TAG=${MAJOR}
 
 FROM ${DOCKER_REGISTRY}/duckietown/aido-base-python3:${BASE_TAG}
 
@@ -17,4 +17,3 @@ COPY . .
 
 
 ENTRYPOINT ["python3", "dummy_simulator.py"]
-
