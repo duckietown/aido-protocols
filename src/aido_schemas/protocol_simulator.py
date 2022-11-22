@@ -2,8 +2,7 @@ from typing import Any, Dict, List, NewType, Optional, TYPE_CHECKING
 from zuper_typing import dataclass
 
 if TYPE_CHECKING:
-    from dataclasses import dataclass
-
+    from dataclasses import dataclass, field
 
 from .basics import InteractionProtocol
 from .protocol_agent import EpisodeStart
@@ -247,6 +246,8 @@ class ScenarioRobotSpec:
     # if playable
     controllable: bool
     protocol: Optional[ProtocolDesc]
+    dynamics: str
+    dynamics_params: Dict[str, Any]
 
 
 @dataclass
@@ -274,6 +275,10 @@ class SpawnRobot:
     """ It is owned by player. Terminate when they all terminate. """
     robot_name: RobotName
     configuration: RobotConfiguration
+
+    dynamics: str
+    dynamics_params: Dict[str, Any]
+
     color: str = "red"
     # motion: Optional[NPMotion]
     simulate_camera: bool = True
