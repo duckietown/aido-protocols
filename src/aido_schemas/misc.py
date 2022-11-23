@@ -19,4 +19,5 @@ def no_hardware_GPU_available(context: Context):
     if should_bail_if_no_hardware_GPU(context):
         msg = "I need a GPU; bailing."
         context.error(msg)
-        raise Exception(msg)
+        raise SystemExit(138)
+        # raise Exception(msg)
