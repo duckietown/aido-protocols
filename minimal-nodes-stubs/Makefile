@@ -1,5 +1,5 @@
 DOCKER_REGISTRY ?= docker.io
-PIP_INDEX_URL ?= https://pypi.org/simple
+PIP_INDEX_URL ?= https://pypi.org/simple/
 
 build:
 	make -C dummy_image_source build
@@ -42,4 +42,3 @@ test-docker-build: build
 
 test-docker-up: test-docker-build
 	docker-compose up #--build
-

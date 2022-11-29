@@ -1,6 +1,6 @@
 
 DOCKER_REGISTRY ?= docker.io
-PIP_INDEX_URL ?= https://pypi.org/simple
+PIP_INDEX_URL ?= https://pypi.org/simple/
 
 repo=aidonode-dummy_image_source
 # repo=$(shell basename -s .git `git config --get remote.origin.url`)

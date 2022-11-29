@@ -1,5 +1,5 @@
 DOCKER_REGISTRY ?= docker.io
-PIP_INDEX_URL ?= https://pypi.org/simple
+PIP_INDEX_URL ?= https://pypi.org/simple/
 
 repo=aidonode-random_agent
 # repo=$(shell basename -s .git `git config --get remote.origin.url`)
@@ -30,4 +30,3 @@ test-data1-direct:
 
 test-data1-docker:
 	docker run -i $(tag) < test_data/in1.json > test_data/out1.json
-
