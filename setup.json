@@ -10,7 +10,7 @@
     "pydot"
   ],
   "srcdir": "src",
-  "package_name": "aido-protocols-daffy",
+  "package_name": "aido-protocols-ente",
   "entry_points": {
     "console_scripts": []
   },

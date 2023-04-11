@@ -1,6 +1,6 @@
 ARG DOCKER_REGISTRY
 ARG ARCH=amd64
-ARG MAJOR=daffy
+ARG MAJOR=ente
 ARG BASE_TAG=${MAJOR}-${ARCH}
 
 FROM ${DOCKER_REGISTRY}/duckietown/aido-base-python3:${BASE_TAG}

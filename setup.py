@@ -19,7 +19,7 @@ def get_version(filename: str):
 
 version = get_version(filename="src/aido_schemas/__init__.py")
 
-line = "daffy"
+line = "ente"
 install_requires = [
     "termcolor",
     "zuper-nodes-z6>=6.2.8",
